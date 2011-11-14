@@ -28,3 +28,4 @@ add_executable(demo_number demo_number.cpp)
 add_dependencies(demo_number number_hpp string_hpp)
 
 add_subdirectory(tests)
+add_subdirectory(speed_tests)
