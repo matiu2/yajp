@@ -9,8 +9,6 @@
 
 namespace yajp {
 
-
-
 %%{
     # number machine
     machine number;
@@ -77,7 +75,7 @@ namespace yajp {
         }
     }
     # JSON Number expression
-    basic_int = ('-'?@setNegative).([1-9])@recordInt.([0-9]*)@recordInt;
+    basic_int = ('-'?@setNegative).([0-9]+@recordInt)@recordInt;
     basic_float = (basic_int|'-'?.'0').'.'.([0-9]+)@recordDecimal;
     exponent = [eE].([+\-]?@setExpNeg).([0-9]+)@recordExponent;
     number = (basic_int . (exponent?) | basic_float . (exponent?))%gotNumber;

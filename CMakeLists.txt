@@ -12,9 +12,11 @@ add_custom_target(number_hpp ALL
     SOURCES number.rl
 )
 
-if ( STREQUAL(CMAKE_BUILD_TYPE, "Debug") )
+if ( ${CMAKE_BUILD_TYPE} STREQUAL "Debug" )
     add_definitions( -D DEBUG )
 endif()
 
 add_executable(demo_number demo_number.cpp)
 add_dependencies(demo_number number_hpp)
+
+add_subdirectory(tests)
