@@ -1,7 +1,6 @@
 /** Ragel file for parsing a number in json **/
 
 #include <string>
-#include <cstdlib>
 
 #ifdef DEBUG
 #include <iostream>
@@ -94,16 +93,11 @@ void parseNumber(const std::string& json, T& callback) {
     const char *pe = p + json.length();
     const char *eof = pe;
     // action vars
-    unsigned long result1; // One of these will be the result
-    signed long result2;   // This one if we hit a sign but no -ve exponent or float
-    double result3;        // This one if hit a -ve exponent or float
-    const char *numStart = p; // Where the last number start was discovered
     bool intIsNeg=false; // true if the int part is negative
     bool expIsNeg=false; // true if the exponent part is negative
     unsigned long long intPart=0; // The integer part of the number
     long expPart1=0; // The inferred exponent part gotten from counting the decimal digits
     long expPart2=0; // The explicit exponent part from the number itself, added to the inferred exponent part
-    bool isFloat = false; // is set to true if we see a '.'
     // Initialization of state machine
     %%write init;
     // Execution of state machine
