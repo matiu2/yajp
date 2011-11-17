@@ -17,10 +17,9 @@
  */
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE json_number_module
+#define BOOST_TEST_MODULE "main"
 
 #include <boost/test/unit_test.hpp>
-#include <boost/test/test_tools.hpp>
 #include "../number.hpp"
 
 struct CallbackHandler {
@@ -42,8 +41,6 @@ struct CallbackHandler {
     }
     CallbackHandler() : lc(none) {}
 };
-
-BOOST_AUTO_TEST_SUITE( json_number );
 
 BOOST_AUTO_TEST_CASE( zero ) {
     CallbackHandler cb;
@@ -129,4 +126,9 @@ BOOST_AUTO_TEST_CASE( neg_neg ) {
     BOOST_CHECK_CLOSE(cb.dVal, -0.00000000000321, 10);
 }
 
-BOOST_AUTO_TEST_SUITE_END() // number_suite
+BOOST_AUTO_TEST_CASE( longlong ) {
+    CallbackHandler cb;
+    yajp::parseNumber("3.141592653589793", cb);
+    BOOST_CHECK_EQUAL(cb.lc, CallbackHandler::d);
+    BOOST_CHECK_CLOSE(cb.dVal, 3.141592653589793, 10);
+}
