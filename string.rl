@@ -11,9 +11,6 @@ namespace yajp {
 %%{
     machine string;
 
-    action recordBackSlash { result += '\\'; }
-    action recordQuote { result += '"'; }
-    action recordSlash { result += '/'; }
     action recordBackspace { result += '\b'; }
     action recordFormFeed { result += '\f'; }
     action recordNewLine { result += '\n'; }
@@ -38,19 +35,18 @@ namespace yajp {
         callback.foundString(std::move(result));
     }
 
-    esc_esc = "\\\\"@recordBackSlash;
-    esc_quote = '\\'.'"'@recordQuote;
-    esc_slash = "\\/"@recordSlash;
     esc_b = "\\b"@recordBackspace;
     esc_f = "\\f"@recordFormFeed;
     esc_n = "\\n"@recordNewLine;
     esc_r = "\\r"@recordReturn;
     esc_t = "\\t"@recordTab;
-    normal_char = [^\\"];
+    normal_char = [^\\"]@getChar;
+    esc_any = "\\".[^\\"bfnrut]@getChar;
 
     hex_digit = [0-9a-fA-F]@getUnicode;
     unicode = '\\u'.hex_digit{1,4} % endUnicode;
-    string = ('"').((esc_esc)|(esc_quote)|(esc_slash)|(esc_b)|(esc_f)|(esc_n)|(esc_r)|(esc_t)|(unicode)|('\\'.normal_char@getChar)|(normal_char@getChar))**.('"'@stringDone); 
+    #string = ('"').((esc_b)|(esc_f)|(esc_n)|(esc_r)|(esc_t)|(unicode)|(normal_char))**.('"'@stringDone); 
+    string = '"'.(esc_b|esc_f|esc_n|esc_r|esc_t|esc_any|unicode|normal_char)**:>>'"'@stringDone; 
     main := string;
 }%%
 

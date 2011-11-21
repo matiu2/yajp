@@ -17,7 +17,7 @@
  */
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE "main"
+#define BOOST_TEST_MODULE "number"
 
 #include <boost/test/unit_test.hpp>
 #include "../number.hpp"

@@ -35,4 +35,11 @@ boost_test(number
 boost_test(string
     empty_string
     simple_string
+    carriage
+    back_slash
+    quote_start
+    quote_middle
+    quote_end
+    quote_three
+    lots_of_specials1
 )
