@@ -1,5 +1,5 @@
 
-#line 1 "number.rl"
+/* #line 1 "number.rl" */
 /** Ragel file for parsing a number in json **/
 
 #include <string>
@@ -11,12 +11,12 @@
 namespace yajp {
 
 
-#line 83 "number.rl"
+/* #line 83 "number.rl" */
 
 
 // data //////////////////////////////////////////
 
-#line 20 "number.hpp"
+/* #line 20 "number.hpp" */
 static const int number_start = 1;
 static const int number_first_final = 6;
 static const int number_error = 0;
@@ -24,7 +24,7 @@ static const int number_error = 0;
 static const int number_en_main = 1;
 
 
-#line 87 "number.rl"
+/* #line 87 "number.rl" */
 
 template <class T>
 void parseNumber(const std::string& json, T& callback) {
@@ -41,15 +41,15 @@ void parseNumber(const std::string& json, T& callback) {
     long expPart2=0; // The explicit exponent part from the number itself, added to the inferred exponent part
     // Initialization of state machine
     
-#line 45 "number.hpp"
+/* #line 45 "number.hpp" */
 	{
 	cs = number_start;
 	}
 
-#line 103 "number.rl"
+/* #line 103 "number.rl" */
     // Execution of state machine
     
-#line 53 "number.hpp"
+/* #line 53 "number.hpp" */
 	{
 	if ( p == pe )
 		goto _test_eof;
@@ -65,7 +65,7 @@ st0:
 cs = 0;
 	goto _out;
 tr0:
-#line 17 "number.rl"
+/* #line 17 "number.rl" */
 	{
         #ifdef DEBUG
         std::cout << "setNegative" << std::endl;
@@ -77,12 +77,12 @@ st2:
 	if ( ++p == pe )
 		goto _test_eof2;
 case 2:
-#line 81 "number.hpp"
+/* #line 81 "number.hpp" */
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr2;
 	goto st0;
 tr2:
-#line 23 "number.rl"
+/* #line 23 "number.rl" */
 	{
         intPart *= 10;
         intPart += *p - '0';
@@ -95,7 +95,7 @@ st6:
 	if ( ++p == pe )
 		goto _test_eof6;
 case 6:
-#line 99 "number.hpp"
+/* #line 99 "number.hpp" */
 	switch( (*p) ) {
 		case 46: goto st3;
 		case 69: goto st4;
@@ -112,7 +112,7 @@ case 3:
 		goto tr3;
 	goto st0;
 tr3:
-#line 30 "number.rl"
+/* #line 30 "number.rl" */
 	{
         intPart *= 10;
         intPart += *p - '0';
@@ -126,7 +126,7 @@ st7:
 	if ( ++p == pe )
 		goto _test_eof7;
 case 7:
-#line 130 "number.hpp"
+/* #line 130 "number.hpp" */
 	switch( (*p) ) {
 		case 69: goto st4;
 		case 101: goto st4;
@@ -146,7 +146,7 @@ case 4:
 		goto tr5;
 	goto st0;
 tr4:
-#line 38 "number.rl"
+/* #line 38 "number.rl" */
 	{
         if (*p == '-')
             expIsNeg = true;
@@ -159,12 +159,12 @@ st5:
 	if ( ++p == pe )
 		goto _test_eof5;
 case 5:
-#line 163 "number.hpp"
+/* #line 163 "number.hpp" */
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr5;
 	goto st0;
 tr5:
-#line 45 "number.rl"
+/* #line 45 "number.rl" */
 	{
         expPart2 *= 10;
         expPart2 += *p - '0';
@@ -177,7 +177,7 @@ st8:
 	if ( ++p == pe )
 		goto _test_eof8;
 case 8:
-#line 181 "number.hpp"
+/* #line 181 "number.hpp" */
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr5;
 	goto st0;
@@ -197,7 +197,7 @@ case 8:
 	case 6: 
 	case 7: 
 	case 8: 
-#line 52 "number.rl"
+/* #line 52 "number.rl" */
 	{
         #ifdef DEBUG
         std::cout << "gotNumber " << expIsNeg << " - " << expPart1 << " - " << expPart2 << " - " << intPart << " - " << intIsNeg << " - ";
@@ -223,14 +223,14 @@ case 8:
         }
     }
 	break;
-#line 227 "number.hpp"
+/* #line 227 "number.hpp" */
 	}
 	}
 
 	_out: {}
 	}
 
-#line 105 "number.rl"
+/* #line 105 "number.rl" */
 }
 
 }

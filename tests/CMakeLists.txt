@@ -12,8 +12,8 @@ find_package(Boost REQUIRED COMPONENTS unit_test_framework)
 # Any other args are the tests to run on it
 function(boost_test MAIN_NAME)
     set(EXE_NAME test_${MAIN_NAME})
-    ADD_EXECUTABLE(${EXE_NAME} test_${MAIN_NAME}.cpp)
-    ADD_DEPENDENCIES(${EXE_NAME} "../${MAIN_NAME}.hpp")
+    ADD_EXECUTABLE(${EXE_NAME} ${EXE_NAME}.cpp)
+    add_dependencies(${EXE_NAME} ${MAIN_NAME}.hpp)
     TARGET_LINK_LIBRARIES(${EXE_NAME} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
     FOREACH(TEST IN ITEMS ${ARGN})
         ADD_TEST(${TEST} ${EXE_NAME} --run_test=${TEST})
@@ -32,7 +32,7 @@ boost_test(number
 
 # For each test library copy and paste and change this
 
-boost_test(string
+boost_test("string"
     empty_string
     simple_string
     carriage

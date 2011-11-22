@@ -41,12 +41,11 @@ namespace yajp {
     esc_r = "\\r"@recordReturn;
     esc_t = "\\t"@recordTab;
     normal_char = [^\\"]@getChar;
-    esc_any = "\\".[^\\"bfnrut]@getChar;
-
     hex_digit = [0-9a-fA-F]@getUnicode;
-    unicode = '\\u'.hex_digit{1,4} % endUnicode;
-    #string = ('"').((esc_b)|(esc_f)|(esc_n)|(esc_r)|(esc_t)|(unicode)|(normal_char))**.('"'@stringDone); 
-    string = '"'.(esc_b|esc_f|esc_n|esc_r|esc_t|esc_any|unicode|normal_char)**:>>'"'@stringDone; 
+    esc_uni = '\\u'.hex_digit{1,4} % endUnicode;
+    esc_any = "\\".[^bfnrut]@getChar;
+
+    string = '"'.(esc_b|esc_f|esc_n|esc_r|esc_t|esc_any|esc_uni|normal_char)**:>'"'@stringDone; 
     main := string;
 }%%
 

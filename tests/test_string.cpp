@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE( back_slash  ) {
 }
 
 BOOST_AUTO_TEST_CASE( quote_start ) {
-    yajp::parseString("\"\\\"This is a quote\"", *this);
+    yajp::parseString("\"\\\"This is a quote.\"", *this);
     BOOST_CHECK_EQUAL("\"This is a quote.", this->output);
 }
 
