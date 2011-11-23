@@ -7,13 +7,11 @@ find_package(Boost REQUIRED COMPONENTS unit_test_framework)
 # A Function for integrating BOOST.TEST and CTEST a little bit
 # if MAIN_NAME is number:
 #   source file will be: test_number.cpp
-#   dependency file will be: ../number.hpp
 #   executable file will be: test_number
 # Any other args are the tests to run on it
 function(boost_test MAIN_NAME)
     set(EXE_NAME test_${MAIN_NAME})
     ADD_EXECUTABLE(${EXE_NAME} ${EXE_NAME}.cpp)
-    add_dependencies(${EXE_NAME} ${MAIN_NAME}.hpp)
     TARGET_LINK_LIBRARIES(${EXE_NAME} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
     FOREACH(TEST IN ITEMS ${ARGN})
         ADD_TEST(${TEST} ${EXE_NAME} --run_test=${TEST})
