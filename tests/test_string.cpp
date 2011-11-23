@@ -72,10 +72,9 @@ BOOST_AUTO_TEST_CASE( quote_three ) {
     BOOST_CHECK_EQUAL("\"This is a \"quote\"", this->output);
 }
 
-/*
 BOOST_AUTO_TEST_CASE( lots_of_specials1 ) {
     yajp::parseString("\"This is a \\\"quote. A backslash \\\\. A front slash \\/. A formfeed \\f. A new line \\n. a carriage return \\r.BC\"", *this);
     BOOST_CHECK_EQUAL("This is a \"quote. A backslash \\. A front slash /. A formfeed \f. A new line \n. a carriage return \r.BC", this->output);
 }
-*/
+
 BOOST_AUTO_TEST_SUITE_END()
