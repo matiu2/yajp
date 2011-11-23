@@ -10,17 +10,11 @@ add_custom_target(ragel_images ALL
 )
 
 add_custom_target(
-    number.hpp
-    ragel -L -G2 number.rl -o number.hpp
+    ragel_headers ALL
+    COMMAND ragel -L -G2 number.rl -o number.hpp
+    COMMAND ragel -L -G2 "string.rl" -o "string.hpp"
+    DEPENDS number.rl string.rl
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    SOURCES number.rl
-)
-
-add_custom_target(
-    string.hpp
-    ragel -L -G2 "string.rl" -o "string.hpp"
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    SOURCES string.rl
 )
 
 if ( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
@@ -28,7 +22,6 @@ if ( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
 endif()
 
 add_executable(demo_number demo_number.cpp)
-add_dependencies(demo_number number.hpp)
 
 # Tests
 set( BUILD_TESTS true CACHE bool "Build tests so you can run: make test" )
