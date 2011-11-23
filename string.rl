@@ -34,16 +34,16 @@ namespace yajp {
             result += static_cast<unsigned char>(uniChar);
         } else if (uniChar <= 0x7ff) {
             result += (uniChar >> 6) | 0xC0; // 110 to indicate 2 byte encoding + 5 bits of data
-            result += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
+            result += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
         } else if (uniChar <= 0xffff) {
             result += (uniChar >> 12) | 0xE0; // 1110 to indicate 3 byte encoding + 4 bits of data
-            result += ((uniChar >> 6) & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
-            result += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
+            result += ((uniChar >> 6) & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
+            result += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
         } else if (uniChar <= 0x10ffff) {
             result += (uniChar >> 18) | 0xF0; // 11110 to indicate 4 byte encoding + 3 bits of data
-            result += ((uniChar >> 12) & 0x3f) | 0x80; // 10 to indicate 2 byte encoding + 5 bits of data
-            result += ((uniChar >> 6) & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
-            result += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
+            result += ((uniChar >> 12) & 0x3f) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
+            result += ((uniChar >> 6) & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
+            result += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
         }
     }
     action stringDone {
