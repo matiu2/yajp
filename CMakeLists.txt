@@ -10,7 +10,7 @@ add_custom_target(ragel_images ALL
 )
 
 add_custom_target(
-    ragel_headers ALL
+    ragel_headers
     COMMAND ragel -L -G2 number.rl -o number.hpp
     COMMAND ragel -L -G2 "string.rl" -o "string.hpp"
     DEPENDS number.rl string.rl

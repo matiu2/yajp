@@ -59,17 +59,17 @@ BOOST_AUTO_TEST_CASE( quote_start ) {
 
 BOOST_AUTO_TEST_CASE( quote_middle ) {
     yajp::parseString("\"This is a \\\"quote\"", *this);
-    BOOST_CHECK_EQUAL("This is a \"quote.", this->output);
+    BOOST_CHECK_EQUAL("This is a \"quote", this->output);
 }
 
 BOOST_AUTO_TEST_CASE( quote_end ) {
     yajp::parseString("\"This is a quote\\\"\"", *this);
-    BOOST_CHECK_EQUAL("This is a quote.\"", this->output);
+    BOOST_CHECK_EQUAL("This is a quote\"", this->output);
 }
 
 BOOST_AUTO_TEST_CASE( quote_three ) {
     yajp::parseString("\"\\\"This is a \\\"quote\\\"\"", *this);
-    BOOST_CHECK_EQUAL("\"This is a quote.\"", this->output);
+    BOOST_CHECK_EQUAL("\"This is a \"quote\"", this->output);
 }
 
 /*
