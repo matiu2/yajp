@@ -79,7 +79,7 @@ namespace yajp {
     exponent = [eE].([+\-]?@setExpNeg).([0-9]+)@recordExponent;
     number = (basic_int . (exponent?) | basic_float . (exponent?))%gotNumber;
 
-    main := number;
+    number := number;
 }%%
 
 // data //////////////////////////////////////////
