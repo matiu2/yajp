@@ -1,7 +1,7 @@
 #include <cstdlib>
 #include <vector>
 
-int main(int argc, char** argv) {
+int main(int, char**) {
     std::vector<double> result;
     
     for(int i=0;i<1024*1024;++i) {

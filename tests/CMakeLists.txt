@@ -14,18 +14,24 @@ function(boost_test MAIN_NAME)
     ADD_EXECUTABLE(${EXE_NAME} ${EXE_NAME}.cpp)
     TARGET_LINK_LIBRARIES(${EXE_NAME} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
     FOREACH(TEST IN ITEMS ${ARGN})
-        ADD_TEST(${TEST} ${EXE_NAME} --run_test=${TEST})
+        ADD_TEST("${TEST} ${EXE_NAME} --run_test=${MAIN_NAME}/${TEST}")
     endforeach()
 endfunction()
 
 boost_test(number
     zero
     one
+    hundreds
     millions
+    negative_zero
     negative_zero_point_zero
+    zero_point_zero
     one_negative_exponent
+    positive_exponent_int
     float_to_int_with_exponent
+    neg_float_to_int_with_exponent
     neg_neg
+    long_double
 )
 
 # For each test library copy and paste and change this
@@ -40,4 +46,7 @@ boost_test("string"
     quote_end
     quote_three
     lots_of_specials1
+    unicode_cents
+    unicode_euro
+    unicode_square
 )

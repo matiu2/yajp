@@ -2,7 +2,7 @@ project(yajp)
 
 cmake_minimum_required(VERSION 2.8)
 
-add_definitions( -std=c++0x -Wall )
+add_definitions( -std=c++0x -Wall -Wextra )
 
 add_custom_target(ragel_images ALL
     COMMAND ragel -Vp ${CMAKE_CURRENT_SOURCE_DIR}/number.rl | dot -Tpng > number.png
@@ -11,8 +11,8 @@ add_custom_target(ragel_images ALL
 
 add_custom_target(
     ragel_headers
-    COMMAND ragel -L -G2 number.rl -o number.hpp
-    COMMAND ragel -L -G2 "string.rl" -o "string.hpp"
+    COMMAND ragel -L -G1 number.rl -o number.hpp
+    COMMAND ragel -L -G1 "string.rl" -o "string.hpp"
     DEPENDS number.rl string.rl
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )

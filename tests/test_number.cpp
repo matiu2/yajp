@@ -17,7 +17,7 @@
  */
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE "number"
+#define BOOST_TEST_MAIN
 
 #include <boost/test/unit_test.hpp>
 #include "../number.hpp"
@@ -42,93 +42,84 @@ struct CallbackHandler {
     CallbackHandler() : lc(none) {}
 };
 
+BOOST_FIXTURE_TEST_SUITE( number, CallbackHandler )
+
 BOOST_AUTO_TEST_CASE( zero ) {
-    CallbackHandler cb;
-    yajp::parseNumber("0", cb);
-    BOOST_CHECK_EQUAL(cb.lc, CallbackHandler::ul);
-    BOOST_CHECK_EQUAL(cb.ulVal, 0);
+    yajp::parseNumber("0", *this);
+    BOOST_CHECK_EQUAL(lc, CallbackHandler::ul);
+    BOOST_CHECK_EQUAL(ulVal, 0);
 }
 
 BOOST_AUTO_TEST_CASE( one ) {
-    CallbackHandler cb;
-    yajp::parseNumber("1", cb);
-    BOOST_CHECK_EQUAL(cb.lc, CallbackHandler::ul);
-    BOOST_CHECK_EQUAL(cb.ulVal, 1);
+    yajp::parseNumber("1", *this);
+    BOOST_CHECK_EQUAL(lc, CallbackHandler::ul);
+    BOOST_CHECK_EQUAL(ulVal, 1);
 }
 
 BOOST_AUTO_TEST_CASE( hundreds ) {
-    CallbackHandler cb;
-    yajp::parseNumber("234", cb);
-    BOOST_CHECK_EQUAL(cb.lc, CallbackHandler::ul);
-    BOOST_CHECK_EQUAL(cb.ulVal, 234);
+    yajp::parseNumber("234", *this);
+    BOOST_CHECK_EQUAL(lc, CallbackHandler::ul);
+    BOOST_CHECK_EQUAL(ulVal, 234);
 }
 
 BOOST_AUTO_TEST_CASE( millions ) {
-    CallbackHandler cb;
-    yajp::parseNumber("234989869", cb);
-    BOOST_CHECK_EQUAL(cb.lc, CallbackHandler::ul);
-    BOOST_CHECK_EQUAL(cb.ulVal, 234989869);
+    yajp::parseNumber("234989869", *this);
+    BOOST_CHECK_EQUAL(lc, CallbackHandler::ul);
+    BOOST_CHECK_EQUAL(ulVal, 234989869);
 }
 
 BOOST_AUTO_TEST_CASE( negative_zero ) {
-    CallbackHandler cb;
-    yajp::parseNumber("-0", cb);
-    BOOST_CHECK_EQUAL(cb.lc, CallbackHandler::l);
-    BOOST_CHECK_EQUAL(cb.lVal, 0);
+    yajp::parseNumber("-0", *this);
+    BOOST_CHECK_EQUAL(lc, CallbackHandler::l);
+    BOOST_CHECK_EQUAL(lVal, 0);
 }
 
 BOOST_AUTO_TEST_CASE( negative_zero_point_zero ) {
-    CallbackHandler cb;
-    yajp::parseNumber("-0.0", cb);
-    BOOST_CHECK_EQUAL(cb.lc, CallbackHandler::d);
-    BOOST_CHECK_EQUAL(cb.dVal, 0);
+    yajp::parseNumber("-0.0", *this);
+    BOOST_CHECK_EQUAL(lc, CallbackHandler::d);
+    BOOST_CHECK_EQUAL(dVal, 0);
 }
 
 BOOST_AUTO_TEST_CASE( zero_point_zero ) {
-    CallbackHandler cb;
-    yajp::parseNumber("0.0", cb);
-    BOOST_CHECK_EQUAL(cb.lc, CallbackHandler::d);
-    BOOST_CHECK_EQUAL(cb.dVal, 0);
+    yajp::parseNumber("0.0", *this);
+    BOOST_CHECK_EQUAL(lc, CallbackHandler::d);
+    BOOST_CHECK_EQUAL(dVal, 0);
 }
 
 BOOST_AUTO_TEST_CASE( one_negative_exponent ) {
-    CallbackHandler cb;
-    yajp::parseNumber("1e-1", cb);
-    BOOST_CHECK_EQUAL(cb.lc, CallbackHandler::d);
-    BOOST_CHECK_EQUAL(cb.dVal, 0.1);
+    yajp::parseNumber("1e-1", *this);
+    BOOST_CHECK_EQUAL(lc, CallbackHandler::d);
+    BOOST_CHECK_EQUAL(dVal, 0.1);
 }
 
 BOOST_AUTO_TEST_CASE( positive_exponent_int ) {
-    CallbackHandler cb;
-    yajp::parseNumber("1e10", cb);
-    BOOST_CHECK_EQUAL(cb.lc, CallbackHandler::ul);
-    BOOST_CHECK_EQUAL(cb.ulVal, 10000000000);
+    yajp::parseNumber("1e10", *this);
+    BOOST_CHECK_EQUAL(lc, CallbackHandler::ul);
+    BOOST_CHECK_EQUAL(ulVal, 10000000000);
 }
 
 BOOST_AUTO_TEST_CASE( float_to_int_with_exponent ) {
-    CallbackHandler cb;
-    yajp::parseNumber("0.0321e10", cb);
-    BOOST_CHECK_EQUAL(cb.lc, CallbackHandler::ul);
-    BOOST_CHECK_EQUAL(cb.ulVal, 321000000);
+    yajp::parseNumber("0.0321e10", *this);
+    BOOST_CHECK_EQUAL(lc, CallbackHandler::ul);
+    BOOST_CHECK_EQUAL(ulVal, 321000000);
 }
 
 BOOST_AUTO_TEST_CASE( neg_float_to_int_with_exponent ) {
-    CallbackHandler cb;
-    yajp::parseNumber("-0.0321e10", cb);
-    BOOST_CHECK_EQUAL(cb.lc, CallbackHandler::l);
-    BOOST_CHECK_EQUAL(cb.lVal, -321000000);
+    yajp::parseNumber("-0.0321e10", *this);
+    BOOST_CHECK_EQUAL(lc, CallbackHandler::l);
+    BOOST_CHECK_EQUAL(lVal, -321000000);
 }
 
 BOOST_AUTO_TEST_CASE( neg_neg ) {
-    CallbackHandler cb;
-    yajp::parseNumber("-0.0321e-10", cb);
-    BOOST_CHECK_EQUAL(cb.lc, CallbackHandler::d);
-    BOOST_CHECK_CLOSE(cb.dVal, -0.00000000000321, 10);
+    yajp::parseNumber("-0.0321e-10", *this);
+    BOOST_CHECK_EQUAL(lc, CallbackHandler::d);
+    BOOST_CHECK_CLOSE(dVal, -0.00000000000321, 10);
 }
 
-BOOST_AUTO_TEST_CASE( longlong ) {
-    CallbackHandler cb;
-    yajp::parseNumber("3.141592653589793", cb);
-    BOOST_CHECK_EQUAL(cb.lc, CallbackHandler::d);
-    BOOST_CHECK_CLOSE(cb.dVal, 3.141592653589793, 10);
+BOOST_AUTO_TEST_CASE( long_double ) {
+    yajp::parseNumber("3.141592653589793", *this);
+    BOOST_CHECK_EQUAL(lc, CallbackHandler::d);
+    BOOST_CHECK_CLOSE(dVal, 3.141592653589793, 10);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

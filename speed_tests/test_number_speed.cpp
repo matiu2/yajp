@@ -26,7 +26,7 @@ struct CallbackHandler {
     }
 };
 
-int main(int argc, char** argv) {
+int main(int, char**) {
     CallbackHandler cb;
     
     for(int i=0;i<1024*1024;++i) {

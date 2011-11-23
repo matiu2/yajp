@@ -11,7 +11,7 @@
 namespace yajp {
 
 
-/* #line 50 "string.rl" */
+/* #line 65 "string.rl" */
 
 
 // data //////////////////////////////////////////
@@ -24,7 +24,7 @@ static const int string_error = 0;
 static const int string_en_main = 1;
 
 
-/* #line 54 "string.rl" */
+/* #line 69 "string.rl" */
 
 /**
 * @brief Parse a json string
@@ -40,121 +40,51 @@ void parseString(const std::string& json, T& callback, unsigned long expectedSiz
     int cs;
     const char *p = &json.c_str()[0];
     const char *pe = p + json.length();
-    //const char *eof = pe;
     // action vars
-    //const char* stringStart = p;
-    wchar_t uniChar = 0;
+    unsigned long uniChar = 0;
     std::string result;
     result.reserve(expectedSize);
 
     
-/* #line 52 "string.hpp" */
+/* #line 50 "string.hpp" */
 	{
 	cs = string_start;
 	}
 
-/* #line 77 "string.rl" */
+/* #line 90 "string.rl" */
     
-/* #line 59 "string.hpp" */
+/* #line 57 "string.hpp" */
 	{
 	if ( p == pe )
 		goto _test_eof;
-	switch ( cs )
-	{
+	if ( cs == 0 )
+		goto _out;
+_resume:
+	switch ( cs ) {
 case 1:
 	if ( (*p) == 34 )
-		goto st2;
-	goto st0;
-st0:
-cs = 0;
+		goto tr0;
+	goto tr1;
+case 0:
 	goto _out;
-tr2:
-/* #line 19 "string.rl" */
-	{ result += *p; }
-	goto st2;
-tr5:
-/* #line 14 "string.rl" */
-	{ result += '\b'; }
-	goto st2;
-tr6:
-/* #line 15 "string.rl" */
-	{ result += '\f'; }
-	goto st2;
-tr7:
-/* #line 16 "string.rl" */
-	{ result += '\n'; }
-	goto st2;
-tr8:
-/* #line 17 "string.rl" */
-	{ result += '\r'; }
-	goto st2;
-tr9:
-/* #line 18 "string.rl" */
-	{ result += '\t'; }
-	goto st2;
-tr12:
-/* #line 31 "string.rl" */
-	{
-        result += uniChar;
-    }
-/* #line 19 "string.rl" */
-	{ result += *p; }
-	goto st2;
-st2:
-	if ( ++p == pe )
-		goto _test_eof2;
 case 2:
-/* #line 108 "string.hpp" */
 	switch( (*p) ) {
 		case 34: goto tr3;
-		case 92: goto st3;
+		case 92: goto tr4;
 	}
 	goto tr2;
-tr3:
-/* #line 34 "string.rl" */
-	{
-        callback.foundString(std::move(result));
-    }
-	goto st9;
-tr13:
-/* #line 31 "string.rl" */
-	{
-        result += uniChar;
-    }
-/* #line 34 "string.rl" */
-	{
-        callback.foundString(std::move(result));
-    }
-	goto st9;
-st9:
-	if ( ++p == pe )
-		goto _test_eof9;
 case 9:
-/* #line 134 "string.hpp" */
-	goto st0;
-tr15:
-/* #line 31 "string.rl" */
-	{
-        result += uniChar;
-    }
-	goto st3;
-st3:
-	if ( ++p == pe )
-		goto _test_eof3;
+	goto tr1;
 case 3:
-/* #line 146 "string.hpp" */
 	switch( (*p) ) {
 		case 98: goto tr5;
 		case 102: goto tr6;
 		case 110: goto tr7;
 		case 114: goto tr8;
 		case 116: goto tr9;
-		case 117: goto st4;
+		case 117: goto tr10;
 	}
 	goto tr2;
-st4:
-	if ( ++p == pe )
-		goto _test_eof4;
 case 4:
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
@@ -164,29 +94,28 @@ case 4:
 			goto tr11;
 	} else
 		goto tr11;
-	goto st0;
-tr11:
-/* #line 21 "string.rl" */
-	{
-        uniChar <<= 4;
-        char ch = *p;
-        if (ch > 'a') 
-            uniChar += ch - 'a' + 0xa;
-        else if (ch > 'A')
-            uniChar += ch - 'A' + 0xa;
-        else
-            uniChar += ch - '0';
-    }
-	goto st5;
-st5:
-	if ( ++p == pe )
-		goto _test_eof5;
+	goto tr1;
 case 5:
-/* #line 186 "string.hpp" */
-	switch( (*p) ) {
-		case 34: goto tr13;
-		case 92: goto tr15;
-	}
+	if ( (*p) < 65 ) {
+		if ( 48 <= (*p) && (*p) <= 57 )
+			goto tr12;
+	} else if ( (*p) > 70 ) {
+		if ( 97 <= (*p) && (*p) <= 102 )
+			goto tr12;
+	} else
+		goto tr12;
+	goto tr1;
+case 6:
+	if ( (*p) < 65 ) {
+		if ( 48 <= (*p) && (*p) <= 57 )
+			goto tr13;
+	} else if ( (*p) > 70 ) {
+		if ( 97 <= (*p) && (*p) <= 102 )
+			goto tr13;
+	} else
+		goto tr13;
+	goto tr1;
+case 7:
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr14;
@@ -195,107 +124,157 @@ case 5:
 			goto tr14;
 	} else
 		goto tr14;
-	goto tr12;
-tr14:
-/* #line 21 "string.rl" */
-	{
-        uniChar <<= 4;
-        char ch = *p;
-        if (ch > 'a') 
-            uniChar += ch - 'a' + 0xa;
-        else if (ch > 'A')
-            uniChar += ch - 'A' + 0xa;
-        else
-            uniChar += ch - '0';
-    }
-	goto st6;
-st6:
-	if ( ++p == pe )
-		goto _test_eof6;
-case 6:
-/* #line 217 "string.hpp" */
-	switch( (*p) ) {
-		case 34: goto tr13;
-		case 92: goto tr15;
-	}
-	if ( (*p) < 65 ) {
-		if ( 48 <= (*p) && (*p) <= 57 )
-			goto tr16;
-	} else if ( (*p) > 70 ) {
-		if ( 97 <= (*p) && (*p) <= 102 )
-			goto tr16;
-	} else
-		goto tr16;
-	goto tr12;
-tr16:
-/* #line 21 "string.rl" */
-	{
-        uniChar <<= 4;
-        char ch = *p;
-        if (ch > 'a') 
-            uniChar += ch - 'a' + 0xa;
-        else if (ch > 'A')
-            uniChar += ch - 'A' + 0xa;
-        else
-            uniChar += ch - '0';
-    }
-	goto st7;
-st7:
-	if ( ++p == pe )
-		goto _test_eof7;
-case 7:
-/* #line 248 "string.hpp" */
-	switch( (*p) ) {
-		case 34: goto tr13;
-		case 92: goto tr15;
-	}
-	if ( (*p) < 65 ) {
-		if ( 48 <= (*p) && (*p) <= 57 )
-			goto tr17;
-	} else if ( (*p) > 70 ) {
-		if ( 97 <= (*p) && (*p) <= 102 )
-			goto tr17;
-	} else
-		goto tr17;
-	goto tr12;
-tr17:
-/* #line 21 "string.rl" */
-	{
-        uniChar <<= 4;
-        char ch = *p;
-        if (ch > 'a') 
-            uniChar += ch - 'a' + 0xa;
-        else if (ch > 'A')
-            uniChar += ch - 'A' + 0xa;
-        else
-            uniChar += ch - '0';
-    }
-	goto st8;
-st8:
-	if ( ++p == pe )
-		goto _test_eof8;
+	goto tr1;
 case 8:
-/* #line 279 "string.hpp" */
 	switch( (*p) ) {
-		case 34: goto tr13;
-		case 92: goto tr15;
+		case 34: goto tr16;
+		case 92: goto tr17;
 	}
-	goto tr12;
+	goto tr15;
 	}
-	_test_eof2: cs = 2; goto _test_eof; 
-	_test_eof9: cs = 9; goto _test_eof; 
-	_test_eof3: cs = 3; goto _test_eof; 
-	_test_eof4: cs = 4; goto _test_eof; 
-	_test_eof5: cs = 5; goto _test_eof; 
-	_test_eof6: cs = 6; goto _test_eof; 
-	_test_eof7: cs = 7; goto _test_eof; 
-	_test_eof8: cs = 8; goto _test_eof; 
 
+	tr1: cs = 0; goto _again;
+	tr0: cs = 2; goto _again;
+	tr2: cs = 2; goto f0;
+	tr5: cs = 2; goto f2;
+	tr6: cs = 2; goto f3;
+	tr7: cs = 2; goto f4;
+	tr8: cs = 2; goto f5;
+	tr9: cs = 2; goto f6;
+	tr15: cs = 2; goto f8;
+	tr4: cs = 3; goto _again;
+	tr17: cs = 3; goto f10;
+	tr10: cs = 4; goto _again;
+	tr11: cs = 5; goto f7;
+	tr12: cs = 6; goto f7;
+	tr13: cs = 7; goto f7;
+	tr14: cs = 8; goto f7;
+	tr3: cs = 9; goto f1;
+	tr16: cs = 9; goto f9;
+
+f2:
+/* #line 14 "string.rl" */
+	{ result += '\b'; }
+	goto _again;
+f3:
+/* #line 15 "string.rl" */
+	{ result += '\f'; }
+	goto _again;
+f4:
+/* #line 16 "string.rl" */
+	{ result += '\n'; }
+	goto _again;
+f5:
+/* #line 17 "string.rl" */
+	{ result += '\r'; }
+	goto _again;
+f6:
+/* #line 18 "string.rl" */
+	{ result += '\t'; }
+	goto _again;
+f0:
+/* #line 19 "string.rl" */
+	{ result += *p; }
+	goto _again;
+f7:
+/* #line 21 "string.rl" */
+	{
+        uniChar <<= 4;
+        char ch = *p;
+        if (ch >= 'a') 
+            uniChar += ch - 'a' + 0xa;
+        else if (ch >= 'A')
+            uniChar += ch - 'A' + 0xa;
+        else
+            uniChar += ch - '0';
+    }
+	goto _again;
+f10:
+/* #line 31 "string.rl" */
+	{
+        // Encode it into utf-8
+        if (uniChar <= 0x7f) {
+            result += static_cast<unsigned char>(uniChar);
+        } else if (uniChar <= 0x7ff) {
+            result += (uniChar >> 6) | 0xC0; // 110 to indicate 2 byte encoding + 5 bits of data
+            result += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
+        } else if (uniChar <= 0xffff) {
+            result += (uniChar >> 12) | 0xE0; // 110 to indicate 2 byte encoding + 5 bits of data
+            result += ((uniChar >> 6) & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
+            result += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
+        } else if (uniChar <= 0x10ffff) {
+            result += (uniChar >> 18) | 0xF0; // 110 to indicate 2 byte encoding + 5 bits of data
+            result += ((uniChar >> 12) & 0x3f) | 0x80; // 110 to indicate 2 byte encoding + 5 bits of data
+            result += ((uniChar >> 6) & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
+            result += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
+        }
+    }
+	goto _again;
+f1:
+/* #line 49 "string.rl" */
+	{
+        callback.foundString(std::move(result));
+    }
+	goto _again;
+f8:
+/* #line 31 "string.rl" */
+	{
+        // Encode it into utf-8
+        if (uniChar <= 0x7f) {
+            result += static_cast<unsigned char>(uniChar);
+        } else if (uniChar <= 0x7ff) {
+            result += (uniChar >> 6) | 0xC0; // 110 to indicate 2 byte encoding + 5 bits of data
+            result += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
+        } else if (uniChar <= 0xffff) {
+            result += (uniChar >> 12) | 0xE0; // 110 to indicate 2 byte encoding + 5 bits of data
+            result += ((uniChar >> 6) & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
+            result += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
+        } else if (uniChar <= 0x10ffff) {
+            result += (uniChar >> 18) | 0xF0; // 110 to indicate 2 byte encoding + 5 bits of data
+            result += ((uniChar >> 12) & 0x3f) | 0x80; // 110 to indicate 2 byte encoding + 5 bits of data
+            result += ((uniChar >> 6) & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
+            result += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
+        }
+    }
+/* #line 19 "string.rl" */
+	{ result += *p; }
+	goto _again;
+f9:
+/* #line 31 "string.rl" */
+	{
+        // Encode it into utf-8
+        if (uniChar <= 0x7f) {
+            result += static_cast<unsigned char>(uniChar);
+        } else if (uniChar <= 0x7ff) {
+            result += (uniChar >> 6) | 0xC0; // 110 to indicate 2 byte encoding + 5 bits of data
+            result += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
+        } else if (uniChar <= 0xffff) {
+            result += (uniChar >> 12) | 0xE0; // 110 to indicate 2 byte encoding + 5 bits of data
+            result += ((uniChar >> 6) & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
+            result += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
+        } else if (uniChar <= 0x10ffff) {
+            result += (uniChar >> 18) | 0xF0; // 110 to indicate 2 byte encoding + 5 bits of data
+            result += ((uniChar >> 12) & 0x3f) | 0x80; // 110 to indicate 2 byte encoding + 5 bits of data
+            result += ((uniChar >> 6) & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
+            result += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
+        }
+    }
+/* #line 49 "string.rl" */
+	{
+        callback.foundString(std::move(result));
+    }
+	goto _again;
+
+_again:
+	if ( cs == 0 )
+		goto _out;
+	if ( ++p != pe )
+		goto _resume;
 	_test_eof: {}
 	_out: {}
 	}
 
-/* #line 78 "string.rl" */
+/* #line 91 "string.rl" */
 }
 
 }

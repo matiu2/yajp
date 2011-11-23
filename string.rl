@@ -21,15 +21,30 @@ namespace yajp {
     action getUnicode {
         uniChar <<= 4;
         char ch = *p;
-        if (ch > 'a') 
+        if (ch >= 'a') 
             uniChar += ch - 'a' + 0xa;
-        else if (ch > 'A')
+        else if (ch >= 'A')
             uniChar += ch - 'A' + 0xa;
         else
             uniChar += ch - '0';
     }
     action endUnicode {
-        result += uniChar;
+        // Encode it into utf-8
+        if (uniChar <= 0x7f) {
+            result += static_cast<unsigned char>(uniChar);
+        } else if (uniChar <= 0x7ff) {
+            result += (uniChar >> 6) | 0xC0; // 110 to indicate 2 byte encoding + 5 bits of data
+            result += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
+        } else if (uniChar <= 0xffff) {
+            result += (uniChar >> 12) | 0xE0; // 110 to indicate 2 byte encoding + 5 bits of data
+            result += ((uniChar >> 6) & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
+            result += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
+        } else if (uniChar <= 0x10ffff) {
+            result += (uniChar >> 18) | 0xF0; // 110 to indicate 2 byte encoding + 5 bits of data
+            result += ((uniChar >> 12) & 0x3f) | 0x80; // 110 to indicate 2 byte encoding + 5 bits of data
+            result += ((uniChar >> 6) & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
+            result += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
+        }
     }
     action stringDone {
         callback.foundString(std::move(result));
@@ -42,7 +57,7 @@ namespace yajp {
     esc_t = "\\t"@recordTab;
     normal_char = [^\\"]@getChar;
     hex_digit = [0-9a-fA-F]@getUnicode;
-    esc_uni = '\\u'.hex_digit{1,4} % endUnicode;
+    esc_uni = '\\u'.hex_digit{4} % endUnicode;
     esc_any = "\\".[^bfnrut]@getChar;
 
     string = '"'.(esc_b|esc_f|esc_n|esc_r|esc_t|esc_any|esc_uni|normal_char)**:>'"'@stringDone; 
@@ -66,10 +81,8 @@ void parseString(const std::string& json, T& callback, unsigned long expectedSiz
     int cs;
     const char *p = &json.c_str()[0];
     const char *pe = p + json.length();
-    //const char *eof = pe;
     // action vars
-    //const char* stringStart = p;
-    wchar_t uniChar = 0;
+    unsigned long uniChar = 0;
     std::string result;
     result.reserve(expectedSize);
 

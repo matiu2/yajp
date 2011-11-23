@@ -17,6 +17,11 @@ namespace yajp {
 // data //////////////////////////////////////////
 
 /* #line 20 "number.hpp" */
+static const char _number_eof_actions[] = {
+	0, 0, 0, 0, 0, 0, 6, 6, 
+	6
+};
+
 static const int number_start = 1;
 static const int number_first_final = 6;
 static const int number_error = 0;
@@ -41,7 +46,7 @@ void parseNumber(const std::string& json, T& callback) {
     long expPart2=0; // The explicit exponent part from the number itself, added to the inferred exponent part
     // Initialization of state machine
     
-/* #line 45 "number.hpp" */
+/* #line 50 "number.hpp" */
 	{
 	cs = number_start;
 	}
@@ -49,22 +54,75 @@ void parseNumber(const std::string& json, T& callback) {
 /* #line 103 "number.rl" */
     // Execution of state machine
     
-/* #line 53 "number.hpp" */
+/* #line 58 "number.hpp" */
 	{
 	if ( p == pe )
 		goto _test_eof;
-	switch ( cs )
-	{
+	if ( cs == 0 )
+		goto _out;
+_resume:
+	switch ( cs ) {
 case 1:
 	if ( (*p) == 45 )
 		goto tr0;
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr2;
-	goto st0;
-st0:
-cs = 0;
+	goto tr1;
+case 0:
 	goto _out;
-tr0:
+case 2:
+	if ( 48 <= (*p) && (*p) <= 57 )
+		goto tr2;
+	goto tr1;
+case 6:
+	switch( (*p) ) {
+		case 46: goto tr6;
+		case 69: goto tr7;
+		case 101: goto tr7;
+	}
+	if ( 48 <= (*p) && (*p) <= 57 )
+		goto tr2;
+	goto tr1;
+case 3:
+	if ( 48 <= (*p) && (*p) <= 57 )
+		goto tr3;
+	goto tr1;
+case 7:
+	switch( (*p) ) {
+		case 69: goto tr7;
+		case 101: goto tr7;
+	}
+	if ( 48 <= (*p) && (*p) <= 57 )
+		goto tr3;
+	goto tr1;
+case 4:
+	switch( (*p) ) {
+		case 43: goto tr4;
+		case 45: goto tr4;
+	}
+	if ( 48 <= (*p) && (*p) <= 57 )
+		goto tr5;
+	goto tr1;
+case 5:
+	if ( 48 <= (*p) && (*p) <= 57 )
+		goto tr5;
+	goto tr1;
+case 8:
+	if ( 48 <= (*p) && (*p) <= 57 )
+		goto tr5;
+	goto tr1;
+	}
+
+	tr1: cs = 0; goto _again;
+	tr0: cs = 2; goto f0;
+	tr6: cs = 3; goto _again;
+	tr7: cs = 4; goto _again;
+	tr4: cs = 5; goto f3;
+	tr2: cs = 6; goto f1;
+	tr3: cs = 7; goto f2;
+	tr5: cs = 8; goto f4;
+
+f0:
 /* #line 17 "number.rl" */
 	{
         #ifdef DEBUG
@@ -72,16 +130,8 @@ tr0:
         #endif
         intIsNeg = true;
     }
-	goto st2;
-st2:
-	if ( ++p == pe )
-		goto _test_eof2;
-case 2:
-/* #line 81 "number.hpp" */
-	if ( 48 <= (*p) && (*p) <= 57 )
-		goto tr2;
-	goto st0;
-tr2:
+	goto _again;
+f1:
 /* #line 23 "number.rl" */
 	{
         intPart *= 10;
@@ -90,28 +140,8 @@ tr2:
         std::cout << "recordInt " << *p << " - " << intPart << std::endl; 
         #endif
     }
-	goto st6;
-st6:
-	if ( ++p == pe )
-		goto _test_eof6;
-case 6:
-/* #line 99 "number.hpp" */
-	switch( (*p) ) {
-		case 46: goto st3;
-		case 69: goto st4;
-		case 101: goto st4;
-	}
-	if ( 48 <= (*p) && (*p) <= 57 )
-		goto tr2;
-	goto st0;
-st3:
-	if ( ++p == pe )
-		goto _test_eof3;
-case 3:
-	if ( 48 <= (*p) && (*p) <= 57 )
-		goto tr3;
-	goto st0;
-tr3:
+	goto _again;
+f2:
 /* #line 30 "number.rl" */
 	{
         intPart *= 10;
@@ -121,31 +151,8 @@ tr3:
         std::cout << "recordDecimal " << *p << " - " << intPart << " - " << expPart1 << std::endl; 
         #endif
     }
-	goto st7;
-st7:
-	if ( ++p == pe )
-		goto _test_eof7;
-case 7:
-/* #line 130 "number.hpp" */
-	switch( (*p) ) {
-		case 69: goto st4;
-		case 101: goto st4;
-	}
-	if ( 48 <= (*p) && (*p) <= 57 )
-		goto tr3;
-	goto st0;
-st4:
-	if ( ++p == pe )
-		goto _test_eof4;
-case 4:
-	switch( (*p) ) {
-		case 43: goto tr4;
-		case 45: goto tr4;
-	}
-	if ( 48 <= (*p) && (*p) <= 57 )
-		goto tr5;
-	goto st0;
-tr4:
+	goto _again;
+f3:
 /* #line 38 "number.rl" */
 	{
         if (*p == '-')
@@ -154,16 +161,8 @@ tr4:
         std::cout << "setExpNeg " << expIsNeg << std::endl;
         #endif
     }
-	goto st5;
-st5:
-	if ( ++p == pe )
-		goto _test_eof5;
-case 5:
-/* #line 163 "number.hpp" */
-	if ( 48 <= (*p) && (*p) <= 57 )
-		goto tr5;
-	goto st0;
-tr5:
+	goto _again;
+f4:
 /* #line 45 "number.rl" */
 	{
         expPart2 *= 10;
@@ -172,31 +171,18 @@ tr5:
         std::cout << "recordExponent " << *p << " - " << expPart2 << std::endl;
         #endif
     }
-	goto st8;
-st8:
-	if ( ++p == pe )
-		goto _test_eof8;
-case 8:
-/* #line 181 "number.hpp" */
-	if ( 48 <= (*p) && (*p) <= 57 )
-		goto tr5;
-	goto st0;
-	}
-	_test_eof2: cs = 2; goto _test_eof; 
-	_test_eof6: cs = 6; goto _test_eof; 
-	_test_eof3: cs = 3; goto _test_eof; 
-	_test_eof7: cs = 7; goto _test_eof; 
-	_test_eof4: cs = 4; goto _test_eof; 
-	_test_eof5: cs = 5; goto _test_eof; 
-	_test_eof8: cs = 8; goto _test_eof; 
+	goto _again;
 
+_again:
+	if ( cs == 0 )
+		goto _out;
+	if ( ++p != pe )
+		goto _resume;
 	_test_eof: {}
 	if ( p == eof )
 	{
-	switch ( cs ) {
-	case 6: 
-	case 7: 
-	case 8: 
+	switch ( _number_eof_actions[cs] ) {
+	case 6:
 /* #line 52 "number.rl" */
 	{
         #ifdef DEBUG
@@ -223,7 +209,7 @@ case 8:
         }
     }
 	break;
-/* #line 227 "number.hpp" */
+/* #line 213 "number.hpp" */
 	}
 	}
 
