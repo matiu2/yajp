@@ -26,7 +26,7 @@
 
 struct StringCallBackHandler {
     std::string output;
-    void foundString(std::string&& input) {
+    void foundSimpleValue(std::string&& input) {
         output = input;
     }
 };

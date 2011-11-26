@@ -1,5 +1,5 @@
 
-/* #line 1 "string.rl" */
+#line 1 "/home/matiu/projects/yajp/string_standalone.rl"
 /** Ragel file for parsing a string in json **/
 
 #include <string>
@@ -10,21 +10,25 @@
 
 namespace yajp {
 
-
-/* #line 65 "string.rl" */
-
-
 // data //////////////////////////////////////////
 
-/* #line 20 "string.hpp" */
-static const int string_start = 1;
-static const int string_first_final = 9;
-static const int string_error = 0;
+#line 16 "/home/matiu/projects/yajp/string.hpp"
+static const char _json_actions[] = {
+	0, 1, 0, 1, 1, 1, 2, 1, 
+	3, 1, 4, 1, 5, 1, 6, 1, 
+	7, 1, 8, 2, 7, 5, 2, 7, 
+	8
+};
 
-static const int string_en_main = 1;
+static const int json_start = 1;
+static const int json_first_final = 9;
+static const int json_error = 0;
+
+static const int json_en_main = 1;
 
 
-/* #line 69 "string.rl" */
+#line 17 "/home/matiu/projects/yajp/string_standalone.rl"
+
 
 /**
 * @brief Parse a json string
@@ -42,19 +46,22 @@ void parseString(const std::string& json, T& callback, unsigned long expectedSiz
     const char *pe = p + json.length();
     // action vars
     unsigned long uniChar = 0;
-    std::string result;
-    result.reserve(expectedSize);
+    std::string currentString;
+    currentString.reserve(expectedSize);
 
     
-/* #line 50 "string.hpp" */
+#line 54 "/home/matiu/projects/yajp/string.hpp"
 	{
-	cs = string_start;
+	cs = json_start;
 	}
 
-/* #line 90 "string.rl" */
+#line 39 "/home/matiu/projects/yajp/string_standalone.rl"
     
-/* #line 57 "string.hpp" */
+#line 61 "/home/matiu/projects/yajp/string.hpp"
 	{
+	const char *_acts;
+	unsigned int _nacts;
+
 	if ( p == pe )
 		goto _test_eof;
 	if ( cs == 0 )
@@ -152,117 +159,89 @@ case 8:
 	tr3: cs = 9; goto f1;
 	tr16: cs = 9; goto f9;
 
-f2:
-/* #line 14 "string.rl" */
-	{ result += '\b'; }
-	goto _again;
-f3:
-/* #line 15 "string.rl" */
-	{ result += '\f'; }
-	goto _again;
-f4:
-/* #line 16 "string.rl" */
-	{ result += '\n'; }
-	goto _again;
-f5:
-/* #line 17 "string.rl" */
-	{ result += '\r'; }
-	goto _again;
-f6:
-/* #line 18 "string.rl" */
-	{ result += '\t'; }
-	goto _again;
-f0:
-/* #line 19 "string.rl" */
-	{ result += *p; }
-	goto _again;
-f7:
-/* #line 21 "string.rl" */
+	f2: _acts = _json_actions + 1; goto execFuncs;
+	f3: _acts = _json_actions + 3; goto execFuncs;
+	f4: _acts = _json_actions + 5; goto execFuncs;
+	f5: _acts = _json_actions + 7; goto execFuncs;
+	f6: _acts = _json_actions + 9; goto execFuncs;
+	f0: _acts = _json_actions + 11; goto execFuncs;
+	f7: _acts = _json_actions + 13; goto execFuncs;
+	f10: _acts = _json_actions + 15; goto execFuncs;
+	f1: _acts = _json_actions + 17; goto execFuncs;
+	f8: _acts = _json_actions + 19; goto execFuncs;
+	f9: _acts = _json_actions + 22; goto execFuncs;
+
+execFuncs:
+	_nacts = *_acts++;
+	while ( _nacts-- > 0 ) {
+		switch ( *_acts++ ) {
+	case 0:
+#line 4 "/home/matiu/projects/yajp/string.rl"
+	{ currentString += '\b'; }
+	break;
+	case 1:
+#line 5 "/home/matiu/projects/yajp/string.rl"
+	{ currentString += '\f'; }
+	break;
+	case 2:
+#line 6 "/home/matiu/projects/yajp/string.rl"
+	{ currentString += '\n'; }
+	break;
+	case 3:
+#line 7 "/home/matiu/projects/yajp/string.rl"
+	{ currentString += '\r'; }
+	break;
+	case 4:
+#line 8 "/home/matiu/projects/yajp/string.rl"
+	{ currentString += '\t'; }
+	break;
+	case 5:
+#line 9 "/home/matiu/projects/yajp/string.rl"
+	{ currentString += *p; }
+	break;
+	case 6:
+#line 11 "/home/matiu/projects/yajp/string.rl"
 	{
         uniChar <<= 4;
         char ch = *p;
         if (ch >= 'a') 
-            uniChar += ch - 'a' + 0xa;
+            uniChar += ch - 'a' + 0x0A;
         else if (ch >= 'A')
-            uniChar += ch - 'A' + 0xa;
+            uniChar += ch - 'A' + 0x0A;
         else
             uniChar += ch - '0';
     }
-	goto _again;
-f10:
-/* #line 31 "string.rl" */
+	break;
+	case 7:
+#line 21 "/home/matiu/projects/yajp/string.rl"
 	{
         // Encode it into utf-8
         if (uniChar <= 0x7f) {
-            result += static_cast<unsigned char>(uniChar);
+            currentString += static_cast<unsigned char>(uniChar);
         } else if (uniChar <= 0x7ff) {
-            result += (uniChar >> 6) | 0xC0; // 110 to indicate 2 byte encoding + 5 bits of data
-            result += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
+            currentString += (uniChar >> 6) | 0xC0; // 110 to indicate 2 byte encoding + 5 bits of data
+            currentString += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
         } else if (uniChar <= 0xffff) {
-            result += (uniChar >> 12) | 0xE0; // 110 to indicate 2 byte encoding + 5 bits of data
-            result += ((uniChar >> 6) & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
-            result += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
+            currentString += (uniChar >> 12) | 0xE0; // 1110 to indicate 3 byte encoding + 4 bits of data
+            currentString += ((uniChar >> 6) & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
+            currentString += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
         } else if (uniChar <= 0x10ffff) {
-            result += (uniChar >> 18) | 0xF0; // 110 to indicate 2 byte encoding + 5 bits of data
-            result += ((uniChar >> 12) & 0x3f) | 0x80; // 110 to indicate 2 byte encoding + 5 bits of data
-            result += ((uniChar >> 6) & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
-            result += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
+            currentString += (uniChar >> 18) | 0xF0; // 11110 to indicate 4 byte encoding + 3 bits of data
+            currentString += ((uniChar >> 12) & 0x3f) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
+            currentString += ((uniChar >> 6) & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
+            currentString += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
         }
     }
-	goto _again;
-f1:
-/* #line 49 "string.rl" */
+	break;
+	case 8:
+#line 39 "/home/matiu/projects/yajp/string.rl"
 	{
-        callback.foundString(std::move(result));
+        callback.foundSimpleValue(std::move(currentString));
     }
-	goto _again;
-f8:
-/* #line 31 "string.rl" */
-	{
-        // Encode it into utf-8
-        if (uniChar <= 0x7f) {
-            result += static_cast<unsigned char>(uniChar);
-        } else if (uniChar <= 0x7ff) {
-            result += (uniChar >> 6) | 0xC0; // 110 to indicate 2 byte encoding + 5 bits of data
-            result += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
-        } else if (uniChar <= 0xffff) {
-            result += (uniChar >> 12) | 0xE0; // 110 to indicate 2 byte encoding + 5 bits of data
-            result += ((uniChar >> 6) & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
-            result += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
-        } else if (uniChar <= 0x10ffff) {
-            result += (uniChar >> 18) | 0xF0; // 110 to indicate 2 byte encoding + 5 bits of data
-            result += ((uniChar >> 12) & 0x3f) | 0x80; // 110 to indicate 2 byte encoding + 5 bits of data
-            result += ((uniChar >> 6) & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
-            result += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
-        }
-    }
-/* #line 19 "string.rl" */
-	{ result += *p; }
-	goto _again;
-f9:
-/* #line 31 "string.rl" */
-	{
-        // Encode it into utf-8
-        if (uniChar <= 0x7f) {
-            result += static_cast<unsigned char>(uniChar);
-        } else if (uniChar <= 0x7ff) {
-            result += (uniChar >> 6) | 0xC0; // 110 to indicate 2 byte encoding + 5 bits of data
-            result += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
-        } else if (uniChar <= 0xffff) {
-            result += (uniChar >> 12) | 0xE0; // 110 to indicate 2 byte encoding + 5 bits of data
-            result += ((uniChar >> 6) & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
-            result += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
-        } else if (uniChar <= 0x10ffff) {
-            result += (uniChar >> 18) | 0xF0; // 110 to indicate 2 byte encoding + 5 bits of data
-            result += ((uniChar >> 12) & 0x3f) | 0x80; // 110 to indicate 2 byte encoding + 5 bits of data
-            result += ((uniChar >> 6) & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
-            result += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 3 bits of data 
-        }
-    }
-/* #line 49 "string.rl" */
-	{
-        callback.foundString(std::move(result));
-    }
+	break;
+#line 243 "/home/matiu/projects/yajp/string.hpp"
+		}
+	}
 	goto _again;
 
 _again:
@@ -274,7 +253,7 @@ _again:
 	_out: {}
 	}
 
-/* #line 91 "string.rl" */
+#line 40 "/home/matiu/projects/yajp/string_standalone.rl"
 }
 
 }

@@ -1,16 +1,6 @@
-/** Ragel file for parsing a number in json **/
-
-#include <string>
-
-#ifdef DEBUG
-#include <iostream>
-#endif
-
-namespace yajp {
-
 %%{
     # number machine
-    machine number;
+    machine json;
 
     # Actions
     # handle a number
@@ -60,16 +50,16 @@ namespace yajp {
                 result *= 0.1;
             if (intIsNeg)
                 result = -result;
-            callback.foundNumber(result);
+            callback.foundSimpleValue(result);
         } else {
             unsigned long result = intPart;
             while (expPart-- > 0)
                 result *= 10;
             if (intIsNeg) {
                 signed long result2 = -result;
-                callback.foundNumber(result2);
+                callback.foundSimpleValue(result2);
             } else {
-                callback.foundNumber(result);
+                callback.foundSimpleValue(result);
             }
         }
     }
@@ -79,29 +69,4 @@ namespace yajp {
     exponent = [eE].([+\-]?@setExpNeg).([0-9]+)@recordExponent;
     number = (basic_int . (exponent?) | basic_float . (exponent?))%gotNumber;
 
-    number := number;
 }%%
-
-// data //////////////////////////////////////////
-%%write data;
-
-template <class T>
-void parseNumber(const std::string& json, T& callback) {
-    // Ragel vars
-    int cs;
-    const char *p = &json.c_str()[0];
-    const char *pe = p + json.length();
-    const char *eof = pe;
-    // action vars
-    bool intIsNeg=false; // true if the int part is negative
-    bool expIsNeg=false; // true if the exponent part is negative
-    unsigned long long intPart=0; // The integer part of the number
-    long expPart1=0; // The inferred exponent part gotten from counting the decimal digits
-    long expPart2=0; // The explicit exponent part from the number itself, added to the inferred exponent part
-    // Initialization of state machine
-    %%write init;
-    // Execution of state machine
-    %%write exec;
-}
-
-}

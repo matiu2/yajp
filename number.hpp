@@ -1,5 +1,5 @@
 
-/* #line 1 "number.rl" */
+#line 1 "/home/matiu/projects/yajp/number_standalone.rl"
 /** Ragel file for parsing a number in json **/
 
 #include <string>
@@ -10,26 +10,28 @@
 
 namespace yajp {
 
-
-/* #line 83 "number.rl" */
-
-
 // data //////////////////////////////////////////
 
-/* #line 20 "number.hpp" */
-static const char _number_eof_actions[] = {
-	0, 0, 0, 0, 0, 0, 6, 6, 
-	6
+#line 16 "/home/matiu/projects/yajp/number.hpp"
+static const char _json_actions[] = {
+	0, 1, 0, 1, 1, 1, 2, 1, 
+	3, 1, 4, 1, 5
 };
 
-static const int number_start = 1;
-static const int number_first_final = 6;
-static const int number_error = 0;
+static const char _json_eof_actions[] = {
+	0, 0, 0, 0, 0, 0, 11, 11, 
+	11
+};
 
-static const int number_en_main = 1;
+static const int json_start = 1;
+static const int json_first_final = 6;
+static const int json_error = 0;
+
+static const int json_en_main = 1;
 
 
-/* #line 87 "number.rl" */
+#line 17 "/home/matiu/projects/yajp/number_standalone.rl"
+
 
 template <class T>
 void parseNumber(const std::string& json, T& callback) {
@@ -46,16 +48,19 @@ void parseNumber(const std::string& json, T& callback) {
     long expPart2=0; // The explicit exponent part from the number itself, added to the inferred exponent part
     // Initialization of state machine
     
-/* #line 50 "number.hpp" */
+#line 52 "/home/matiu/projects/yajp/number.hpp"
 	{
-	cs = number_start;
+	cs = json_start;
 	}
 
-/* #line 103 "number.rl" */
+#line 34 "/home/matiu/projects/yajp/number_standalone.rl"
     // Execution of state machine
     
-/* #line 58 "number.hpp" */
+#line 60 "/home/matiu/projects/yajp/number.hpp"
 	{
+	const char *_acts;
+	unsigned int _nacts;
+
 	if ( p == pe )
 		goto _test_eof;
 	if ( cs == 0 )
@@ -122,17 +127,27 @@ case 8:
 	tr3: cs = 7; goto f2;
 	tr5: cs = 8; goto f4;
 
-f0:
-/* #line 17 "number.rl" */
+	f0: _acts = _json_actions + 1; goto execFuncs;
+	f1: _acts = _json_actions + 3; goto execFuncs;
+	f2: _acts = _json_actions + 5; goto execFuncs;
+	f3: _acts = _json_actions + 7; goto execFuncs;
+	f4: _acts = _json_actions + 9; goto execFuncs;
+
+execFuncs:
+	_nacts = *_acts++;
+	while ( _nacts-- > 0 ) {
+		switch ( *_acts++ ) {
+	case 0:
+#line 7 "/home/matiu/projects/yajp/number.rl"
 	{
         #ifdef DEBUG
         std::cout << "setNegative" << std::endl;
         #endif
         intIsNeg = true;
     }
-	goto _again;
-f1:
-/* #line 23 "number.rl" */
+	break;
+	case 1:
+#line 13 "/home/matiu/projects/yajp/number.rl"
 	{
         intPart *= 10;
         intPart += *p - '0';
@@ -140,9 +155,9 @@ f1:
         std::cout << "recordInt " << *p << " - " << intPart << std::endl; 
         #endif
     }
-	goto _again;
-f2:
-/* #line 30 "number.rl" */
+	break;
+	case 2:
+#line 20 "/home/matiu/projects/yajp/number.rl"
 	{
         intPart *= 10;
         intPart += *p - '0';
@@ -151,9 +166,9 @@ f2:
         std::cout << "recordDecimal " << *p << " - " << intPart << " - " << expPart1 << std::endl; 
         #endif
     }
-	goto _again;
-f3:
-/* #line 38 "number.rl" */
+	break;
+	case 3:
+#line 28 "/home/matiu/projects/yajp/number.rl"
 	{
         if (*p == '-')
             expIsNeg = true;
@@ -161,9 +176,9 @@ f3:
         std::cout << "setExpNeg " << expIsNeg << std::endl;
         #endif
     }
-	goto _again;
-f4:
-/* #line 45 "number.rl" */
+	break;
+	case 4:
+#line 35 "/home/matiu/projects/yajp/number.rl"
 	{
         expPart2 *= 10;
         expPart2 += *p - '0';
@@ -171,6 +186,10 @@ f4:
         std::cout << "recordExponent " << *p << " - " << expPart2 << std::endl;
         #endif
     }
+	break;
+#line 191 "/home/matiu/projects/yajp/number.hpp"
+		}
+	}
 	goto _again;
 
 _again:
@@ -181,9 +200,12 @@ _again:
 	_test_eof: {}
 	if ( p == eof )
 	{
-	switch ( _number_eof_actions[cs] ) {
-	case 6:
-/* #line 52 "number.rl" */
+	const char *__acts = _json_actions + _json_eof_actions[cs];
+	unsigned int __nacts = (unsigned int) *__acts++;
+	while ( __nacts-- > 0 ) {
+		switch ( *__acts++ ) {
+	case 5:
+#line 42 "/home/matiu/projects/yajp/number.rl"
 	{
         #ifdef DEBUG
         std::cout << "gotNumber " << expIsNeg << " - " << expPart1 << " - " << expPart2 << " - " << intPart << " - " << intIsNeg << " - ";
@@ -195,28 +217,29 @@ _again:
                 result *= 0.1;
             if (intIsNeg)
                 result = -result;
-            callback.foundNumber(result);
+            callback.foundSimpleValue(result);
         } else {
             unsigned long result = intPart;
             while (expPart-- > 0)
                 result *= 10;
             if (intIsNeg) {
                 signed long result2 = -result;
-                callback.foundNumber(result2);
+                callback.foundSimpleValue(result2);
             } else {
-                callback.foundNumber(result);
+                callback.foundSimpleValue(result);
             }
         }
     }
 	break;
-/* #line 213 "number.hpp" */
+#line 235 "/home/matiu/projects/yajp/number.hpp"
+		}
 	}
 	}
 
 	_out: {}
 	}
 
-/* #line 105 "number.rl" */
+#line 36 "/home/matiu/projects/yajp/number_standalone.rl"
 }
 
 }

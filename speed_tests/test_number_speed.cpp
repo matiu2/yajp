@@ -21,7 +21,7 @@
 
 struct CallbackHandler {
     std::vector<double> result;
-    inline void foundNumber(double num) {
+    inline void foundSimpleValue(double num) {
         result.push_back(num);
     }
 };

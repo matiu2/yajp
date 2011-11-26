@@ -27,15 +27,15 @@ struct CallbackHandler {
     unsigned long ulVal;
     long lVal;
     double dVal;
-    void foundNumber(unsigned long num) {
+    void foundSimpleValue(unsigned long num) {
         lc = ul;
         ulVal = num;
     }
-    void foundNumber(long num) {
+    void foundSimpleValue(long num) {
         lc = l;
         lVal = num;
     }
-    void foundNumber(double num) {
+    void foundSimpleValue(double num) {
         lc = d;
         dVal = num;
     }

@@ -14,7 +14,7 @@ function(boost_test MAIN_NAME)
     ADD_EXECUTABLE(${EXE_NAME} ${EXE_NAME}.cpp)
     TARGET_LINK_LIBRARIES(${EXE_NAME} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
     FOREACH(TEST IN ITEMS ${ARGN})
-        ADD_TEST("${TEST} ${EXE_NAME} --run_test=${MAIN_NAME}/${TEST}")
+        ADD_TEST(${TEST} ${EXE_NAME} --run_test=${MAIN_NAME}/${TEST})
     endforeach()
 endfunction()
 
@@ -49,4 +49,9 @@ boost_test("string"
     unicode_cents
     unicode_euro
     unicode_square
+)
+
+boost_test(
+    json
+    empty_string
 )

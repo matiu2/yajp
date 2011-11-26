@@ -23,13 +23,13 @@
 
 struct CallbackHandler {
     enum LastCall {ul, l, d} lc; // just used to know which one was called
-    void foundNumber(unsigned long num) {
+    void foundSimpleValue(unsigned long num) {
         std::cout << "Found unsigned long: " << num << std::endl;
     }
-    void foundNumber(long num) {
+    void foundSimpleValue(long num) {
         std::cout << "Found long: " << num << std::endl;
     }
-    void foundNumber(double num) {
+    void foundSimpleValue(double num) {
         std::cout << "Found double: " << num << std::endl;
     }
 };

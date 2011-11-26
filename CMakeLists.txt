@@ -4,17 +4,18 @@ cmake_minimum_required(VERSION 2.8)
 
 add_definitions( -std=c++0x -Wall -Wextra )
 
-add_custom_target(ragel_images ALL
-    COMMAND ragel -Vp ${CMAKE_CURRENT_SOURCE_DIR}/number.rl | dot -Tpng > number.png
-    COMMAND ragel -Vp "${CMAKE_CURRENT_SOURCE_DIR}/string.rl" | dot -Tpng > "string.png"
+add_custom_target(ragel_images
+    COMMAND ragel -Vp ${CMAKE_CURRENT_SOURCE_DIR}/number_standalone.rl | dot -Tpng > number.png
+    COMMAND ragel -Vp "${CMAKE_CURRENT_SOURCE_DIR}/string_standalone.rl" | dot -Tpng > "string.png"
+    COMMAND ragel -Vp "${CMAKE_CURRENT_SOURCE_DIR}/json.rl" | dot -Tpng > "json.png"
 )
 
 add_custom_target(
     ragel_headers
-    COMMAND ragel -L -G1 number.rl -o number.hpp
-    COMMAND ragel -L -G1 "string.rl" -o "string.hpp"
-    DEPENDS number.rl string.rl
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMAND ragel -G0 "${CMAKE_CURRENT_SOURCE_DIR}/number_standalone.rl" -o "${CMAKE_CURRENT_SOURCE_DIR}/number.hpp"
+    COMMAND ragel -G0 "${CMAKE_CURRENT_SOURCE_DIR}/string_standalone.rl" -o "${CMAKE_CURRENT_SOURCE_DIR}/string.hpp"
+    COMMAND ragel -G0 "${CMAKE_CURRENT_SOURCE_DIR}/json.rl" -o "${CMAKE_CURRENT_SOURCE_DIR}/json.hpp"
+    DEPENDS number.rl string.rl json.rl
 )
 
 if ( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
