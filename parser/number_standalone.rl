@@ -17,7 +17,7 @@ namespace yajp {
 }%%
 
 template <class T>
-void parseNumber(const std::string& json, T& callback) {
+void parseNumber(const std::string& json, T& mapper) {
     // Ragel vars
     int cs;
     const char *p = &json.c_str()[0];

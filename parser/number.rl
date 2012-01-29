@@ -50,16 +50,16 @@
                 result *= 0.1;
             if (intIsNeg)
                 result = -result;
-            callback.foundSimpleValue(result);
+            mapper.foundSimpleValue(result);
         } else {
             unsigned long result = intPart;
             while (expPart-- > 0)
                 result *= 10;
             if (intIsNeg) {
                 signed long result2 = -result;
-                callback.foundSimpleValue(result2);
+                mapper.foundSimpleValue(result2);
             } else {
-                callback.foundSimpleValue(result);
+                mapper.foundSimpleValue(result);
             }
         }
     }

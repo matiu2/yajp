@@ -52,6 +52,11 @@ boost_test("string"
 )
 
 boost_test(
-    json
-    empty_string
+    any
+    simpleMap
 )
+
+#boost_test(
+    #json
+    #empty_string
+#)

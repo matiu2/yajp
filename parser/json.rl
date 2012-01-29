@@ -25,22 +25,38 @@ namespace yajp {
     action parseArray {
         // Called when we hit the start of an array
         // The Array is recursive, as it can hold further arrays, so we need to employ our fake stack and use fcall
-        fhold;
         mapper.startArray();
         fcall array;
+    }
+    action endArray {
         mapper.endArray();
     }
-    action parseObject {
+    action startObject {
         // Called when we hit the start of an object '{' starts recursing to get the inside parts of an object
         // The Object is recursive, as it can hold further objects, so we need to employ our fake stack and use fcall
-        fhold;
         mapper.startObj();
         fcall object;
+    }
+    action endObject {
         mapper.endObj();
     }
     action propertyName {
         // Called when we found a new property for a value
         mapper.propertyName(std::move(currentString));
+    }
+    prepush {
+        if (stack == 0)
+            stack = (int*)malloc(STACK_JUMP_SIZE);
+        else if (top % STACK_JUMP_SIZE == 0)
+            stack = (int*)realloc(stack, (top+STACK_JUMP_SIZE) * sizeof(int));
+    }
+    postpop {
+        if (top == 0) {
+            free(stack);
+            stack = 0;
+        } else if ((top+1) % STACK_JUMP_SIZE == 0) {
+                stack = (int*)realloc(stack, (top+1)*sizeof(int));
+        }
     }
 
     # General JSON rules
@@ -49,40 +65,45 @@ namespace yajp {
     null_ = "null";
     _ = space**; # Stuff to ignore
     start_array = '['>parseArray;
-    start_object = '{'>parseObject;
+    start_object = '{'>startObject;
     value = start_array|start_object|string@stringDone|number|true|false|null_;
     main := _.value._;
 
-    empty_array = '['._.']';
-    array := empty_array|('['._.(value._.','._)**.value._.']');
+    empty_array = _.']';
+    array := (empty_array|(_.(value._.','._)**.value._.']'))@endArray;
 
-    empty_object = '{'._.'}';
-    object := empty_object|('{'.(_.string@propertyName._.':'._.value._.','._)**.(_.string@propertyName._.':'._.value._).'}'._);
+    empty_object = _.'}';
+    object := (empty_object|((_.string@propertyName._.':'._.value._.','._)**.(_.string@propertyName._.':'._.value._).'}'._))@endObject;
 }%%
+
+const int STACK_JUMP_SIZE=16384; // How much memory in 'ints' to get each time the yajp stack needs an update
 
 class JSONParser {
 private:
+
+    // All the bits it needs
     %%write data;
 
     // Ragel vars
     int cs; // Current state
-    const char *p = &json.c_str()[0];
-    const char *pe = p + json.length();
-    const char *eof = pe;
+    const char *p;
+    const char *pe;
+    const char *eof;
 
-    class JSONParser(const std::string& json) : p(json.c_str()[0]), pe(json.length()), eof(pe) {}
-    class JSONParser(JSONParser&& original) : p(original.p), pe(original.pe), eof(original.eof) {}
+public:
+    /// @param json - KEEP THIS STRING ALIVE .. WE DONT COPY IT .. WE USE IT
+    JSONParser(const std::string& json) : p(json.c_str()), pe(p+json.length()), eof(pe) {}
+    JSONParser(JSONParser&& original) : p(original.p), pe(original.pe), eof(original.eof) {}
 
     /**
     * @brief Parses a single JSON value. 
     *
     * @tparam Target The real type that we're parsing to
-    * @param target A reference to the C++ value that we're filling in
+    * @param mapper A reference to the mapper object that maps the json callbacks to an actual c++ object
     */
-    template <class Target>
-    void parseJSONValue(Target& target) {
-        Mapper<Target> mapper;
-        std::vector<int> stack; // fake stack for ragel's fcall
+    template <class Mapper>
+    void parseJSONValue(Mapper& mapper) {
+        int* stack = 0; // stack for ragel's fcall
         int top = 0;
         // int machine action vars
         bool intIsNeg=false; // true if the int part is negative

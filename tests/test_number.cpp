@@ -20,7 +20,7 @@
 #define BOOST_TEST_MAIN
 
 #include <boost/test/unit_test.hpp>
-#include "../number.hpp"
+#include "../parser/number.hpp"
 
 struct CallbackHandler {
     enum LastCall {none, ul, l, d} lc; // just used to know which one was called
