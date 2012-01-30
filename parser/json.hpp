@@ -16,13 +16,27 @@
 namespace yajp {
 
 
-/* #line 77 "/home/matiu/projects/yajp/parser/json.rl" */
+/* #line 78 "/home/matiu/projects/yajp/parser/json.rl" */
 
 
 const int STACK_JUMP_SIZE=16384; // How much memory in 'ints' to get each time the yajp stack needs an update
 
 class JSONParser {
 private:
+
+    // All the bits it needs
+    
+/* #line 30 "/home/matiu/projects/yajp/parser/json.hpp" */
+static const int json_start = 1;
+static const int json_first_final = 122;
+static const int json_error = 0;
+
+static const int json_en_main = 1;
+static const int json_en_array = 23;
+static const int json_en_object = 50;
+
+
+/* #line 87 "/home/matiu/projects/yajp/parser/json.rl" */
 
     // Ragel vars
     int cs; // Current state
@@ -31,6 +45,7 @@ private:
     const char *eof;
 
 public:
+    /// @param json - KEEP THIS STRING ALIVE .. WE DONT COPY IT .. WE USE IT
     JSONParser(const std::string& json) : p(json.c_str()), pe(p+json.length()), eof(pe) {}
     JSONParser(JSONParser&& original) : p(original.p), pe(original.pe), eof(original.eof) {}
 
@@ -53,31 +68,18 @@ public:
         // string machine action vars
         unsigned long uniChar = 0;
         std::string currentString;
-        // All the bits it needs
-        
-/* #line 59 "/home/matiu/projects/yajp/parser/json.hpp" */
-static const int json_start = 1;
-static const int json_first_final = 122;
-static const int json_error = 0;
-
-static const int json_en_main = 1;
-static const int json_en_array = 23;
-static const int json_en_object = 50;
-
-
-/* #line 115 "/home/matiu/projects/yajp/parser/json.rl" */
         // Initialization of state machine
         
-/* #line 72 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 74 "/home/matiu/projects/yajp/parser/json.hpp" */
 	{
 	cs = json_start;
 	top = 0;
 	}
 
-/* #line 117 "/home/matiu/projects/yajp/parser/json.rl" */
+/* #line 120 "/home/matiu/projects/yajp/parser/json.rl" */
         // Execution of state machine
         
-/* #line 81 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 83 "/home/matiu/projects/yajp/parser/json.hpp" */
 	{
 	if ( p == pe )
 		goto _test_eof;
@@ -157,7 +159,7 @@ st2:
 	if ( ++p == pe )
 		goto _test_eof2;
 case 2:
-/* #line 161 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 163 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 34: goto tr11;
 		case 92: goto st3;
@@ -195,6 +197,7 @@ tr11:
 /* #line 39 "/home/matiu/projects/yajp/parser/string.rl" */
 	{
         mapper.foundSimpleValue(std::move(currentString));
+        currentString.clear();
     }
 	goto st122;
 tr24:
@@ -220,6 +223,7 @@ tr24:
 /* #line 39 "/home/matiu/projects/yajp/parser/string.rl" */
 	{
         mapper.foundSimpleValue(std::move(currentString));
+        currentString.clear();
     }
 	goto st122;
 tr32:
@@ -261,7 +265,7 @@ st122:
 	if ( ++p == pe )
 		goto _test_eof122;
 case 122:
-/* #line 265 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 269 "/home/matiu/projects/yajp/parser/json.hpp" */
 	if ( (*p) == 32 )
 		goto st122;
 	if ( 9 <= (*p) && (*p) <= 13 )
@@ -292,7 +296,7 @@ st3:
 	if ( ++p == pe )
 		goto _test_eof3;
 case 3:
-/* #line 296 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 300 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 98: goto tr13;
 		case 102: goto tr14;
@@ -332,7 +336,7 @@ st5:
 	if ( ++p == pe )
 		goto _test_eof5;
 case 5:
-/* #line 336 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 340 "/home/matiu/projects/yajp/parser/json.hpp" */
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr20;
@@ -359,7 +363,7 @@ st6:
 	if ( ++p == pe )
 		goto _test_eof6;
 case 6:
-/* #line 363 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 367 "/home/matiu/projects/yajp/parser/json.hpp" */
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr21;
@@ -386,7 +390,7 @@ st7:
 	if ( ++p == pe )
 		goto _test_eof7;
 case 7:
-/* #line 390 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 394 "/home/matiu/projects/yajp/parser/json.hpp" */
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr22;
@@ -413,7 +417,7 @@ st8:
 	if ( ++p == pe )
 		goto _test_eof8;
 case 8:
-/* #line 417 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 421 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 34: goto tr24;
 		case 92: goto tr25;
@@ -432,7 +436,7 @@ st9:
 	if ( ++p == pe )
 		goto _test_eof9;
 case 9:
-/* #line 436 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 440 "/home/matiu/projects/yajp/parser/json.hpp" */
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr4;
 	goto st0;
@@ -450,7 +454,7 @@ st123:
 	if ( ++p == pe )
 		goto _test_eof123;
 case 123:
-/* #line 454 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 458 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 32: goto tr210;
 		case 46: goto st10;
@@ -485,7 +489,7 @@ st124:
 	if ( ++p == pe )
 		goto _test_eof124;
 case 124:
-/* #line 489 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 493 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 32: goto tr210;
 		case 69: goto st11;
@@ -522,7 +526,7 @@ st12:
 	if ( ++p == pe )
 		goto _test_eof12;
 case 12:
-/* #line 526 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 530 "/home/matiu/projects/yajp/parser/json.hpp" */
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr28;
 	goto st0;
@@ -540,7 +544,7 @@ st125:
 	if ( ++p == pe )
 		goto _test_eof125;
 case 125:
-/* #line 544 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 548 "/home/matiu/projects/yajp/parser/json.hpp" */
 	if ( (*p) == 32 )
 		goto tr210;
 	if ( (*p) > 13 ) {
@@ -691,7 +695,7 @@ st24:
 	if ( ++p == pe )
 		goto _test_eof24;
 case 24:
-/* #line 695 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 699 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 34: goto tr50;
 		case 92: goto st44;
@@ -729,6 +733,7 @@ tr50:
 /* #line 39 "/home/matiu/projects/yajp/parser/string.rl" */
 	{
         mapper.foundSimpleValue(std::move(currentString));
+        currentString.clear();
     }
 	goto st25;
 tr82:
@@ -754,6 +759,7 @@ tr82:
 /* #line 39 "/home/matiu/projects/yajp/parser/string.rl" */
 	{
         mapper.foundSimpleValue(std::move(currentString));
+        currentString.clear();
     }
 	goto st25;
 tr65:
@@ -795,7 +801,7 @@ st25:
 	if ( ++p == pe )
 		goto _test_eof25;
 case 25:
-/* #line 799 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 805 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 32: goto st25;
 		case 44: goto st26;
@@ -835,7 +841,7 @@ st26:
 	if ( ++p == pe )
 		goto _test_eof26;
 case 26:
-/* #line 839 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 845 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 32: goto st26;
 		case 34: goto st24;
@@ -865,7 +871,7 @@ st27:
 	if ( ++p == pe )
 		goto _test_eof27;
 case 27:
-/* #line 869 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 875 "/home/matiu/projects/yajp/parser/json.hpp" */
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr42;
 	goto st0;
@@ -883,7 +889,7 @@ st28:
 	if ( ++p == pe )
 		goto _test_eof28;
 case 28:
-/* #line 887 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 893 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 32: goto tr54;
 		case 44: goto tr55;
@@ -920,7 +926,7 @@ st30:
 	if ( ++p == pe )
 		goto _test_eof30;
 case 30:
-/* #line 924 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 930 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 32: goto tr54;
 		case 44: goto tr55;
@@ -959,7 +965,7 @@ st32:
 	if ( ++p == pe )
 		goto _test_eof32;
 case 32:
-/* #line 963 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 969 "/home/matiu/projects/yajp/parser/json.hpp" */
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr61;
 	goto st0;
@@ -977,7 +983,7 @@ st33:
 	if ( ++p == pe )
 		goto _test_eof33;
 case 33:
-/* #line 981 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 987 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 32: goto tr54;
 		case 44: goto tr55;
@@ -1030,7 +1036,7 @@ st126:
 	if ( ++p == pe )
 		goto _test_eof126;
 case 126:
-/* #line 1034 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 1040 "/home/matiu/projects/yajp/parser/json.hpp" */
 	goto st0;
 st34:
 	if ( ++p == pe )
@@ -1127,7 +1133,7 @@ st44:
 	if ( ++p == pe )
 		goto _test_eof44;
 case 44:
-/* #line 1131 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 1137 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 98: goto tr71;
 		case 102: goto tr72;
@@ -1167,7 +1173,7 @@ st46:
 	if ( ++p == pe )
 		goto _test_eof46;
 case 46:
-/* #line 1171 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 1177 "/home/matiu/projects/yajp/parser/json.hpp" */
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr78;
@@ -1194,7 +1200,7 @@ st47:
 	if ( ++p == pe )
 		goto _test_eof47;
 case 47:
-/* #line 1198 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 1204 "/home/matiu/projects/yajp/parser/json.hpp" */
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr79;
@@ -1221,7 +1227,7 @@ st48:
 	if ( ++p == pe )
 		goto _test_eof48;
 case 48:
-/* #line 1225 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 1231 "/home/matiu/projects/yajp/parser/json.hpp" */
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr80;
@@ -1248,7 +1254,7 @@ st49:
 	if ( ++p == pe )
 		goto _test_eof49;
 case 49:
-/* #line 1252 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 1258 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 34: goto tr82;
 		case 92: goto tr83;
@@ -1317,7 +1323,7 @@ st51:
 	if ( ++p == pe )
 		goto _test_eof51;
 case 51:
-/* #line 1321 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 1327 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 34: goto tr88;
 		case 92: goto st116;
@@ -1328,6 +1334,7 @@ tr88:
 	{
         // Called when we found a new property for a value
         mapper.propertyName(std::move(currentString));
+        currentString.clear();
     }
 	goto st52;
 tr208:
@@ -1354,13 +1361,14 @@ tr208:
 	{
         // Called when we found a new property for a value
         mapper.propertyName(std::move(currentString));
+        currentString.clear();
     }
 	goto st52;
 st52:
 	if ( ++p == pe )
 		goto _test_eof52;
 case 52:
-/* #line 1364 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 1372 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 32: goto st52;
 		case 58: goto st53;
@@ -1439,7 +1447,7 @@ st54:
 	if ( ++p == pe )
 		goto _test_eof54;
 case 54:
-/* #line 1443 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 1451 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 34: goto tr101;
 		case 92: goto st93;
@@ -1477,6 +1485,7 @@ tr101:
 /* #line 39 "/home/matiu/projects/yajp/parser/string.rl" */
 	{
         mapper.foundSimpleValue(std::move(currentString));
+        currentString.clear();
     }
 	goto st55;
 tr179:
@@ -1502,6 +1511,7 @@ tr179:
 /* #line 39 "/home/matiu/projects/yajp/parser/string.rl" */
 	{
         mapper.foundSimpleValue(std::move(currentString));
+        currentString.clear();
     }
 	goto st55;
 tr191:
@@ -1543,7 +1553,7 @@ st55:
 	if ( ++p == pe )
 		goto _test_eof55;
 case 55:
-/* #line 1547 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 1557 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 32: goto st55;
 		case 44: goto st56;
@@ -1583,7 +1593,7 @@ st56:
 	if ( ++p == pe )
 		goto _test_eof56;
 case 56:
-/* #line 1587 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 1597 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 32: goto st57;
 		case 34: goto st51;
@@ -1664,7 +1674,7 @@ st59:
 	if ( ++p == pe )
 		goto _test_eof59;
 case 59:
-/* #line 1668 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 1678 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 34: goto tr110;
 		case 92: goto st87;
@@ -1675,6 +1685,7 @@ tr110:
 	{
         // Called when we found a new property for a value
         mapper.propertyName(std::move(currentString));
+        currentString.clear();
     }
 	goto st60;
 tr166:
@@ -1701,13 +1712,14 @@ tr166:
 	{
         // Called when we found a new property for a value
         mapper.propertyName(std::move(currentString));
+        currentString.clear();
     }
 	goto st60;
 st60:
 	if ( ++p == pe )
 		goto _test_eof60;
 case 60:
-/* #line 1711 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 1723 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 32: goto st60;
 		case 58: goto st61;
@@ -1786,7 +1798,7 @@ st62:
 	if ( ++p == pe )
 		goto _test_eof62;
 case 62:
-/* #line 1790 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 1802 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 34: goto tr123;
 		case 92: goto st64;
@@ -1824,6 +1836,7 @@ tr123:
 /* #line 39 "/home/matiu/projects/yajp/parser/string.rl" */
 	{
         mapper.foundSimpleValue(std::move(currentString));
+        currentString.clear();
     }
 	goto st63;
 tr137:
@@ -1849,6 +1862,7 @@ tr137:
 /* #line 39 "/home/matiu/projects/yajp/parser/string.rl" */
 	{
         mapper.foundSimpleValue(std::move(currentString));
+        currentString.clear();
     }
 	goto st63;
 tr149:
@@ -1890,7 +1904,7 @@ st63:
 	if ( ++p == pe )
 		goto _test_eof63;
 case 63:
-/* #line 1894 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 1908 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 32: goto st63;
 		case 125: goto tr105;
@@ -1939,7 +1953,7 @@ st127:
 	if ( ++p == pe )
 		goto _test_eof127;
 case 127:
-/* #line 1943 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 1957 "/home/matiu/projects/yajp/parser/json.hpp" */
 	if ( (*p) == 32 )
 		goto tr105;
 	if ( 9 <= (*p) && (*p) <= 13 )
@@ -1970,7 +1984,7 @@ st64:
 	if ( ++p == pe )
 		goto _test_eof64;
 case 64:
-/* #line 1974 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 1988 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 98: goto tr126;
 		case 102: goto tr127;
@@ -2010,7 +2024,7 @@ st66:
 	if ( ++p == pe )
 		goto _test_eof66;
 case 66:
-/* #line 2014 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 2028 "/home/matiu/projects/yajp/parser/json.hpp" */
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr133;
@@ -2037,7 +2051,7 @@ st67:
 	if ( ++p == pe )
 		goto _test_eof67;
 case 67:
-/* #line 2041 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 2055 "/home/matiu/projects/yajp/parser/json.hpp" */
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr134;
@@ -2064,7 +2078,7 @@ st68:
 	if ( ++p == pe )
 		goto _test_eof68;
 case 68:
-/* #line 2068 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 2082 "/home/matiu/projects/yajp/parser/json.hpp" */
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr135;
@@ -2091,7 +2105,7 @@ st69:
 	if ( ++p == pe )
 		goto _test_eof69;
 case 69:
-/* #line 2095 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 2109 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 34: goto tr137;
 		case 92: goto tr138;
@@ -2110,7 +2124,7 @@ st70:
 	if ( ++p == pe )
 		goto _test_eof70;
 case 70:
-/* #line 2114 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 2128 "/home/matiu/projects/yajp/parser/json.hpp" */
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr116;
 	goto st0;
@@ -2128,7 +2142,7 @@ st71:
 	if ( ++p == pe )
 		goto _test_eof71;
 case 71:
-/* #line 2132 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 2146 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 32: goto tr139;
 		case 46: goto st72;
@@ -2164,7 +2178,7 @@ st73:
 	if ( ++p == pe )
 		goto _test_eof73;
 case 73:
-/* #line 2168 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 2182 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 32: goto tr139;
 		case 69: goto st74;
@@ -2202,7 +2216,7 @@ st75:
 	if ( ++p == pe )
 		goto _test_eof75;
 case 75:
-/* #line 2206 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 2220 "/home/matiu/projects/yajp/parser/json.hpp" */
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr145;
 	goto st0;
@@ -2220,7 +2234,7 @@ st76:
 	if ( ++p == pe )
 		goto _test_eof76;
 case 76:
-/* #line 2224 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 2238 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 32: goto tr139;
 		case 125: goto tr142;
@@ -2326,7 +2340,7 @@ st87:
 	if ( ++p == pe )
 		goto _test_eof87;
 case 87:
-/* #line 2330 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 2344 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 98: goto tr155;
 		case 102: goto tr156;
@@ -2366,7 +2380,7 @@ st89:
 	if ( ++p == pe )
 		goto _test_eof89;
 case 89:
-/* #line 2370 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 2384 "/home/matiu/projects/yajp/parser/json.hpp" */
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr162;
@@ -2393,7 +2407,7 @@ st90:
 	if ( ++p == pe )
 		goto _test_eof90;
 case 90:
-/* #line 2397 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 2411 "/home/matiu/projects/yajp/parser/json.hpp" */
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr163;
@@ -2420,7 +2434,7 @@ st91:
 	if ( ++p == pe )
 		goto _test_eof91;
 case 91:
-/* #line 2424 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 2438 "/home/matiu/projects/yajp/parser/json.hpp" */
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr164;
@@ -2447,7 +2461,7 @@ st92:
 	if ( ++p == pe )
 		goto _test_eof92;
 case 92:
-/* #line 2451 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 2465 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 34: goto tr166;
 		case 92: goto tr167;
@@ -2478,7 +2492,7 @@ st93:
 	if ( ++p == pe )
 		goto _test_eof93;
 case 93:
-/* #line 2482 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 2496 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 98: goto tr168;
 		case 102: goto tr169;
@@ -2518,7 +2532,7 @@ st95:
 	if ( ++p == pe )
 		goto _test_eof95;
 case 95:
-/* #line 2522 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 2536 "/home/matiu/projects/yajp/parser/json.hpp" */
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr175;
@@ -2545,7 +2559,7 @@ st96:
 	if ( ++p == pe )
 		goto _test_eof96;
 case 96:
-/* #line 2549 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 2563 "/home/matiu/projects/yajp/parser/json.hpp" */
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr176;
@@ -2572,7 +2586,7 @@ st97:
 	if ( ++p == pe )
 		goto _test_eof97;
 case 97:
-/* #line 2576 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 2590 "/home/matiu/projects/yajp/parser/json.hpp" */
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr177;
@@ -2599,7 +2613,7 @@ st98:
 	if ( ++p == pe )
 		goto _test_eof98;
 case 98:
-/* #line 2603 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 2617 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 34: goto tr179;
 		case 92: goto tr180;
@@ -2618,7 +2632,7 @@ st99:
 	if ( ++p == pe )
 		goto _test_eof99;
 case 99:
-/* #line 2622 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 2636 "/home/matiu/projects/yajp/parser/json.hpp" */
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr94;
 	goto st0;
@@ -2636,7 +2650,7 @@ st100:
 	if ( ++p == pe )
 		goto _test_eof100;
 case 100:
-/* #line 2640 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 2654 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 32: goto tr181;
 		case 44: goto tr182;
@@ -2673,7 +2687,7 @@ st102:
 	if ( ++p == pe )
 		goto _test_eof102;
 case 102:
-/* #line 2677 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 2691 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 32: goto tr181;
 		case 44: goto tr182;
@@ -2712,7 +2726,7 @@ st104:
 	if ( ++p == pe )
 		goto _test_eof104;
 case 104:
-/* #line 2716 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 2730 "/home/matiu/projects/yajp/parser/json.hpp" */
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr187;
 	goto st0;
@@ -2730,7 +2744,7 @@ st105:
 	if ( ++p == pe )
 		goto _test_eof105;
 case 105:
-/* #line 2734 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 2748 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 32: goto tr181;
 		case 44: goto tr182;
@@ -2837,7 +2851,7 @@ st116:
 	if ( ++p == pe )
 		goto _test_eof116;
 case 116:
-/* #line 2841 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 2855 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 98: goto tr197;
 		case 102: goto tr198;
@@ -2877,7 +2891,7 @@ st118:
 	if ( ++p == pe )
 		goto _test_eof118;
 case 118:
-/* #line 2881 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 2895 "/home/matiu/projects/yajp/parser/json.hpp" */
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr204;
@@ -2904,7 +2918,7 @@ st119:
 	if ( ++p == pe )
 		goto _test_eof119;
 case 119:
-/* #line 2908 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 2922 "/home/matiu/projects/yajp/parser/json.hpp" */
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr205;
@@ -2931,7 +2945,7 @@ st120:
 	if ( ++p == pe )
 		goto _test_eof120;
 case 120:
-/* #line 2935 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 2949 "/home/matiu/projects/yajp/parser/json.hpp" */
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr206;
@@ -2958,7 +2972,7 @@ st121:
 	if ( ++p == pe )
 		goto _test_eof121;
 case 121:
-/* #line 2962 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 2976 "/home/matiu/projects/yajp/parser/json.hpp" */
 	switch( (*p) ) {
 		case 34: goto tr208;
 		case 92: goto tr209;
@@ -2974,7 +2988,7 @@ st128:
 	if ( ++p == pe )
 		goto _test_eof128;
 case 128:
-/* #line 2978 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 2992 "/home/matiu/projects/yajp/parser/json.hpp" */
 	goto st0;
 	}
 	_test_eof1: cs = 1; goto _test_eof; 
@@ -3139,14 +3153,14 @@ case 128:
         }
     }
 	break;
-/* #line 3143 "/home/matiu/projects/yajp/parser/json.hpp" */
+/* #line 3157 "/home/matiu/projects/yajp/parser/json.hpp" */
 	}
 	}
 
 	_out: {}
 	}
 
-/* #line 119 "/home/matiu/projects/yajp/parser/json.rl" */
+/* #line 122 "/home/matiu/projects/yajp/parser/json.rl" */
     }
 };
 

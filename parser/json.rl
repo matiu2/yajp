@@ -43,6 +43,7 @@ namespace yajp {
     action propertyName {
         // Called when we found a new property for a value
         mapper.propertyName(std::move(currentString));
+        currentString.clear();
     }
     prepush {
         if (stack == 0)

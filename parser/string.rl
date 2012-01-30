@@ -38,6 +38,7 @@
     }
     action stringDone {
         mapper.foundSimpleValue(std::move(currentString));
+        currentString.clear();
     }
 
     esc_b = "\\b"@recordBackspace;

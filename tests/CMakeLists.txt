@@ -56,6 +56,11 @@ boost_test(
     simpleMap
 )
 
+boost_test(
+    json_value
+    simpleMap
+)
+
 #boost_test(
     #json
     #empty_string

@@ -124,6 +124,7 @@ tr3:
 /* #line 39 "/home/matiu/projects/yajp/parser/string.rl" */
 	{
         mapper.foundSimpleValue(std::move(currentString));
+        currentString.clear();
     }
 	goto st9;
 tr16:
@@ -149,13 +150,14 @@ tr16:
 /* #line 39 "/home/matiu/projects/yajp/parser/string.rl" */
 	{
         mapper.foundSimpleValue(std::move(currentString));
+        currentString.clear();
     }
 	goto st9;
 st9:
 	if ( ++p == pe )
 		goto _test_eof9;
 case 9:
-/* #line 159 "/home/matiu/projects/yajp/parser/string.hpp" */
+/* #line 161 "/home/matiu/projects/yajp/parser/string.hpp" */
 	goto st0;
 tr17:
 /* #line 21 "/home/matiu/projects/yajp/parser/string.rl" */
@@ -182,7 +184,7 @@ st3:
 	if ( ++p == pe )
 		goto _test_eof3;
 case 3:
-/* #line 186 "/home/matiu/projects/yajp/parser/string.hpp" */
+/* #line 188 "/home/matiu/projects/yajp/parser/string.hpp" */
 	switch( (*p) ) {
 		case 98: goto tr5;
 		case 102: goto tr6;
@@ -222,7 +224,7 @@ st5:
 	if ( ++p == pe )
 		goto _test_eof5;
 case 5:
-/* #line 226 "/home/matiu/projects/yajp/parser/string.hpp" */
+/* #line 228 "/home/matiu/projects/yajp/parser/string.hpp" */
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr12;
@@ -249,7 +251,7 @@ st6:
 	if ( ++p == pe )
 		goto _test_eof6;
 case 6:
-/* #line 253 "/home/matiu/projects/yajp/parser/string.hpp" */
+/* #line 255 "/home/matiu/projects/yajp/parser/string.hpp" */
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr13;
@@ -276,7 +278,7 @@ st7:
 	if ( ++p == pe )
 		goto _test_eof7;
 case 7:
-/* #line 280 "/home/matiu/projects/yajp/parser/string.hpp" */
+/* #line 282 "/home/matiu/projects/yajp/parser/string.hpp" */
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr14;
@@ -303,7 +305,7 @@ st8:
 	if ( ++p == pe )
 		goto _test_eof8;
 case 8:
-/* #line 307 "/home/matiu/projects/yajp/parser/string.hpp" */
+/* #line 309 "/home/matiu/projects/yajp/parser/string.hpp" */
 	switch( (*p) ) {
 		case 34: goto tr16;
 		case 92: goto tr17;
