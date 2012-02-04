@@ -61,4 +61,5 @@ BOOST_AUTO_TEST_CASE( simpleMap ) {
     BOOST_CHECK_EQUAL(p.name, "tweedle");
     BOOST_CHECK_EQUAL(p.age, 5);
 }
+
 BOOST_AUTO_TEST_SUITE_END()

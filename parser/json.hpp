@@ -1,5 +1,5 @@
 
-/* #line 1 "/home/matiu/projects/yajp/parser/json.rl" */
+#line 1 "/Users/matiu/projects/yajp/parser/json.rl"
 /* Ragel file for parsing json */
 
 #pragma once
@@ -16,7 +16,7 @@
 namespace yajp {
 
 
-/* #line 78 "/home/matiu/projects/yajp/parser/json.rl" */
+#line 80 "/Users/matiu/projects/yajp/parser/json.rl"
 
 
 const int STACK_JUMP_SIZE=16384; // How much memory in 'ints' to get each time the yajp stack needs an update
@@ -26,7 +26,7 @@ private:
 
     // All the bits it needs
     
-/* #line 30 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 30 "/Users/matiu/projects/yajp/parser/json.hpp"
 static const int json_start = 1;
 static const int json_first_final = 122;
 static const int json_error = 0;
@@ -36,7 +36,7 @@ static const int json_en_array = 23;
 static const int json_en_object = 50;
 
 
-/* #line 87 "/home/matiu/projects/yajp/parser/json.rl" */
+#line 89 "/Users/matiu/projects/yajp/parser/json.rl"
 
     // Ragel vars
     int cs; // Current state
@@ -70,19 +70,158 @@ public:
         std::string currentString;
         // Initialization of state machine
         
-/* #line 74 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 74 "/Users/matiu/projects/yajp/parser/json.hpp"
 	{
 	cs = json_start;
 	top = 0;
 	}
 
-/* #line 120 "/home/matiu/projects/yajp/parser/json.rl" */
+#line 122 "/Users/matiu/projects/yajp/parser/json.rl"
         // Execution of state machine
         
-/* #line 83 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 83 "/Users/matiu/projects/yajp/parser/json.hpp"
 	{
 	if ( p == pe )
 		goto _test_eof;
+	goto _resume;
+
+_again:
+	switch ( cs ) {
+		case 1: goto st1;
+		case 0: goto st0;
+		case 2: goto st2;
+		case 122: goto st122;
+		case 3: goto st3;
+		case 4: goto st4;
+		case 5: goto st5;
+		case 6: goto st6;
+		case 7: goto st7;
+		case 8: goto st8;
+		case 9: goto st9;
+		case 123: goto st123;
+		case 10: goto st10;
+		case 124: goto st124;
+		case 11: goto st11;
+		case 12: goto st12;
+		case 125: goto st125;
+		case 13: goto st13;
+		case 14: goto st14;
+		case 15: goto st15;
+		case 16: goto st16;
+		case 17: goto st17;
+		case 18: goto st18;
+		case 19: goto st19;
+		case 20: goto st20;
+		case 21: goto st21;
+		case 22: goto st22;
+		case 23: goto st23;
+		case 24: goto st24;
+		case 25: goto st25;
+		case 26: goto st26;
+		case 27: goto st27;
+		case 28: goto st28;
+		case 29: goto st29;
+		case 30: goto st30;
+		case 31: goto st31;
+		case 32: goto st32;
+		case 33: goto st33;
+		case 126: goto st126;
+		case 34: goto st34;
+		case 35: goto st35;
+		case 36: goto st36;
+		case 37: goto st37;
+		case 38: goto st38;
+		case 39: goto st39;
+		case 40: goto st40;
+		case 41: goto st41;
+		case 42: goto st42;
+		case 43: goto st43;
+		case 44: goto st44;
+		case 45: goto st45;
+		case 46: goto st46;
+		case 47: goto st47;
+		case 48: goto st48;
+		case 49: goto st49;
+		case 50: goto st50;
+		case 51: goto st51;
+		case 52: goto st52;
+		case 53: goto st53;
+		case 54: goto st54;
+		case 55: goto st55;
+		case 56: goto st56;
+		case 57: goto st57;
+		case 58: goto st58;
+		case 59: goto st59;
+		case 60: goto st60;
+		case 61: goto st61;
+		case 62: goto st62;
+		case 63: goto st63;
+		case 127: goto st127;
+		case 64: goto st64;
+		case 65: goto st65;
+		case 66: goto st66;
+		case 67: goto st67;
+		case 68: goto st68;
+		case 69: goto st69;
+		case 70: goto st70;
+		case 71: goto st71;
+		case 72: goto st72;
+		case 73: goto st73;
+		case 74: goto st74;
+		case 75: goto st75;
+		case 76: goto st76;
+		case 77: goto st77;
+		case 78: goto st78;
+		case 79: goto st79;
+		case 80: goto st80;
+		case 81: goto st81;
+		case 82: goto st82;
+		case 83: goto st83;
+		case 84: goto st84;
+		case 85: goto st85;
+		case 86: goto st86;
+		case 87: goto st87;
+		case 88: goto st88;
+		case 89: goto st89;
+		case 90: goto st90;
+		case 91: goto st91;
+		case 92: goto st92;
+		case 93: goto st93;
+		case 94: goto st94;
+		case 95: goto st95;
+		case 96: goto st96;
+		case 97: goto st97;
+		case 98: goto st98;
+		case 99: goto st99;
+		case 100: goto st100;
+		case 101: goto st101;
+		case 102: goto st102;
+		case 103: goto st103;
+		case 104: goto st104;
+		case 105: goto st105;
+		case 106: goto st106;
+		case 107: goto st107;
+		case 108: goto st108;
+		case 109: goto st109;
+		case 110: goto st110;
+		case 111: goto st111;
+		case 112: goto st112;
+		case 113: goto st113;
+		case 114: goto st114;
+		case 115: goto st115;
+		case 116: goto st116;
+		case 117: goto st117;
+		case 118: goto st118;
+		case 119: goto st119;
+		case 120: goto st120;
+		case 121: goto st121;
+		case 128: goto st128;
+	default: break;
+	}
+
+	if ( ++p == pe )
+		goto _test_eof;
+_resume:
 	switch ( cs )
 	{
 st1:
@@ -109,31 +248,31 @@ st0:
 cs = 0;
 	goto _out;
 tr10:
-/* #line 9 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 9 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += *p; }
 	goto st2;
 tr13:
-/* #line 4 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 4 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\b'; }
 	goto st2;
 tr14:
-/* #line 5 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 5 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\f'; }
 	goto st2;
 tr15:
-/* #line 6 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 6 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\n'; }
 	goto st2;
 tr16:
-/* #line 7 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 7 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\r'; }
 	goto st2;
 tr17:
-/* #line 8 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 8 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\t'; }
 	goto st2;
 tr23:
-/* #line 21 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 21 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         // Encode it into utf-8
         if (uniChar <= 0x7f) {
@@ -152,21 +291,21 @@ tr23:
             currentString += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
         }
     }
-/* #line 9 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 9 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += *p; }
 	goto st2;
 st2:
 	if ( ++p == pe )
 		goto _test_eof2;
 case 2:
-/* #line 163 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 302 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 34: goto tr11;
 		case 92: goto st3;
 	}
 	goto tr10;
 tr5:
-/* #line 25 "/home/matiu/projects/yajp/parser/json.rl" */
+#line 25 "/Users/matiu/projects/yajp/parser/json.rl"
 	{
         // Called when we hit the start of an array
         // The Array is recursive, as it can hold further arrays, so we need to employ our fake stack and use fcall
@@ -180,7 +319,7 @@ tr5:
     }
 	goto st122;
 tr9:
-/* #line 34 "/home/matiu/projects/yajp/parser/json.rl" */
+#line 35 "/Users/matiu/projects/yajp/parser/json.rl"
 	{
         // Called when we hit the start of an object '{' starts recursing to get the inside parts of an object
         // The Object is recursive, as it can hold further objects, so we need to employ our fake stack and use fcall
@@ -194,14 +333,14 @@ tr9:
     }
 	goto st122;
 tr11:
-/* #line 39 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 39 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         mapper.foundSimpleValue(std::move(currentString));
         currentString.clear();
     }
 	goto st122;
 tr24:
-/* #line 21 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 21 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         // Encode it into utf-8
         if (uniChar <= 0x7f) {
@@ -220,22 +359,22 @@ tr24:
             currentString += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
         }
     }
-/* #line 39 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 39 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         mapper.foundSimpleValue(std::move(currentString));
         currentString.clear();
     }
 	goto st122;
 tr32:
-/* #line 23 "/home/matiu/projects/yajp/parser/json.rl" */
+#line 23 "/Users/matiu/projects/yajp/parser/json.rl"
 	{ mapper.foundSimpleValue(false); }
 	goto st122;
 tr38:
-/* #line 22 "/home/matiu/projects/yajp/parser/json.rl" */
+#line 22 "/Users/matiu/projects/yajp/parser/json.rl"
 	{ mapper.foundSimpleValue(true); }
 	goto st122;
 tr210:
-/* #line 42 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 42 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         #ifdef DEBUG
         std::cout << "gotNumber " << expIsNeg << " - " << expPart1 << " - " << expPart2 << " - " << intPart << " - " << intIsNeg << " - ";
@@ -265,14 +404,14 @@ st122:
 	if ( ++p == pe )
 		goto _test_eof122;
 case 122:
-/* #line 269 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 408 "/Users/matiu/projects/yajp/parser/json.hpp"
 	if ( (*p) == 32 )
 		goto st122;
 	if ( 9 <= (*p) && (*p) <= 13 )
 		goto st122;
 	goto st0;
 tr25:
-/* #line 21 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 21 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         // Encode it into utf-8
         if (uniChar <= 0x7f) {
@@ -296,7 +435,7 @@ st3:
 	if ( ++p == pe )
 		goto _test_eof3;
 case 3:
-/* #line 300 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 439 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 98: goto tr13;
 		case 102: goto tr14;
@@ -320,7 +459,7 @@ case 4:
 		goto tr19;
 	goto st0;
 tr19:
-/* #line 11 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 11 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         uniChar <<= 4;
         char ch = *p;
@@ -336,7 +475,7 @@ st5:
 	if ( ++p == pe )
 		goto _test_eof5;
 case 5:
-/* #line 340 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 479 "/Users/matiu/projects/yajp/parser/json.hpp"
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr20;
@@ -347,7 +486,7 @@ case 5:
 		goto tr20;
 	goto st0;
 tr20:
-/* #line 11 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 11 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         uniChar <<= 4;
         char ch = *p;
@@ -363,7 +502,7 @@ st6:
 	if ( ++p == pe )
 		goto _test_eof6;
 case 6:
-/* #line 367 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 506 "/Users/matiu/projects/yajp/parser/json.hpp"
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr21;
@@ -374,7 +513,7 @@ case 6:
 		goto tr21;
 	goto st0;
 tr21:
-/* #line 11 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 11 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         uniChar <<= 4;
         char ch = *p;
@@ -390,7 +529,7 @@ st7:
 	if ( ++p == pe )
 		goto _test_eof7;
 case 7:
-/* #line 394 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 533 "/Users/matiu/projects/yajp/parser/json.hpp"
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr22;
@@ -401,7 +540,7 @@ case 7:
 		goto tr22;
 	goto st0;
 tr22:
-/* #line 11 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 11 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         uniChar <<= 4;
         char ch = *p;
@@ -417,14 +556,14 @@ st8:
 	if ( ++p == pe )
 		goto _test_eof8;
 case 8:
-/* #line 421 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 560 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 34: goto tr24;
 		case 92: goto tr25;
 	}
 	goto tr23;
 tr3:
-/* #line 7 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 7 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         #ifdef DEBUG
         std::cout << "setNegative" << std::endl;
@@ -436,12 +575,12 @@ st9:
 	if ( ++p == pe )
 		goto _test_eof9;
 case 9:
-/* #line 440 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 579 "/Users/matiu/projects/yajp/parser/json.hpp"
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr4;
 	goto st0;
 tr4:
-/* #line 13 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 13 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         intPart *= 10;
         intPart += *p - '0';
@@ -454,7 +593,7 @@ st123:
 	if ( ++p == pe )
 		goto _test_eof123;
 case 123:
-/* #line 458 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 597 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 32: goto tr210;
 		case 46: goto st10;
@@ -475,7 +614,7 @@ case 10:
 		goto tr26;
 	goto st0;
 tr26:
-/* #line 20 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 20 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         intPart *= 10;
         intPart += *p - '0';
@@ -489,7 +628,7 @@ st124:
 	if ( ++p == pe )
 		goto _test_eof124;
 case 124:
-/* #line 493 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 632 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 32: goto tr210;
 		case 69: goto st11;
@@ -513,7 +652,7 @@ case 11:
 		goto tr28;
 	goto st0;
 tr27:
-/* #line 28 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 28 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         if (*p == '-')
             expIsNeg = true;
@@ -526,12 +665,12 @@ st12:
 	if ( ++p == pe )
 		goto _test_eof12;
 case 12:
-/* #line 530 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 669 "/Users/matiu/projects/yajp/parser/json.hpp"
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr28;
 	goto st0;
 tr28:
-/* #line 35 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 35 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         expPart2 *= 10;
         expPart2 += *p - '0';
@@ -544,7 +683,7 @@ st125:
 	if ( ++p == pe )
 		goto _test_eof125;
 case 125:
-/* #line 548 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 687 "/Users/matiu/projects/yajp/parser/json.hpp"
 	if ( (*p) == 32 )
 		goto tr210;
 	if ( (*p) > 13 ) {
@@ -645,31 +784,31 @@ case 23:
 		goto st23;
 	goto st0;
 tr49:
-/* #line 9 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 9 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += *p; }
 	goto st24;
 tr71:
-/* #line 4 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 4 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\b'; }
 	goto st24;
 tr72:
-/* #line 5 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 5 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\f'; }
 	goto st24;
 tr73:
-/* #line 6 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 6 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\n'; }
 	goto st24;
 tr74:
-/* #line 7 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 7 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\r'; }
 	goto st24;
 tr75:
-/* #line 8 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 8 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\t'; }
 	goto st24;
 tr81:
-/* #line 21 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 21 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         // Encode it into utf-8
         if (uniChar <= 0x7f) {
@@ -688,21 +827,21 @@ tr81:
             currentString += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
         }
     }
-/* #line 9 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 9 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += *p; }
 	goto st24;
 st24:
 	if ( ++p == pe )
 		goto _test_eof24;
 case 24:
-/* #line 699 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 838 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 34: goto tr50;
 		case 92: goto st44;
 	}
 	goto tr49;
 tr43:
-/* #line 25 "/home/matiu/projects/yajp/parser/json.rl" */
+#line 25 "/Users/matiu/projects/yajp/parser/json.rl"
 	{
         // Called when we hit the start of an array
         // The Array is recursive, as it can hold further arrays, so we need to employ our fake stack and use fcall
@@ -716,7 +855,7 @@ tr43:
     }
 	goto st25;
 tr48:
-/* #line 34 "/home/matiu/projects/yajp/parser/json.rl" */
+#line 35 "/Users/matiu/projects/yajp/parser/json.rl"
 	{
         // Called when we hit the start of an object '{' starts recursing to get the inside parts of an object
         // The Object is recursive, as it can hold further objects, so we need to employ our fake stack and use fcall
@@ -730,14 +869,14 @@ tr48:
     }
 	goto st25;
 tr50:
-/* #line 39 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 39 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         mapper.foundSimpleValue(std::move(currentString));
         currentString.clear();
     }
 	goto st25;
 tr82:
-/* #line 21 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 21 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         // Encode it into utf-8
         if (uniChar <= 0x7f) {
@@ -756,22 +895,22 @@ tr82:
             currentString += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
         }
     }
-/* #line 39 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 39 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         mapper.foundSimpleValue(std::move(currentString));
         currentString.clear();
     }
 	goto st25;
 tr65:
-/* #line 23 "/home/matiu/projects/yajp/parser/json.rl" */
+#line 23 "/Users/matiu/projects/yajp/parser/json.rl"
 	{ mapper.foundSimpleValue(false); }
 	goto st25;
 tr70:
-/* #line 22 "/home/matiu/projects/yajp/parser/json.rl" */
+#line 22 "/Users/matiu/projects/yajp/parser/json.rl"
 	{ mapper.foundSimpleValue(true); }
 	goto st25;
 tr54:
-/* #line 42 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 42 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         #ifdef DEBUG
         std::cout << "gotNumber " << expIsNeg << " - " << expPart1 << " - " << expPart2 << " - " << intPart << " - " << intIsNeg << " - ";
@@ -801,7 +940,7 @@ st25:
 	if ( ++p == pe )
 		goto _test_eof25;
 case 25:
-/* #line 805 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 944 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 32: goto st25;
 		case 44: goto st26;
@@ -811,7 +950,7 @@ case 25:
 		goto st25;
 	goto st0;
 tr55:
-/* #line 42 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 42 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         #ifdef DEBUG
         std::cout << "gotNumber " << expIsNeg << " - " << expPart1 << " - " << expPart2 << " - " << intPart << " - " << intIsNeg << " - ";
@@ -841,7 +980,7 @@ st26:
 	if ( ++p == pe )
 		goto _test_eof26;
 case 26:
-/* #line 845 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 984 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 32: goto st26;
 		case 34: goto st24;
@@ -859,7 +998,7 @@ case 26:
 		goto st26;
 	goto st0;
 tr41:
-/* #line 7 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 7 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         #ifdef DEBUG
         std::cout << "setNegative" << std::endl;
@@ -871,12 +1010,12 @@ st27:
 	if ( ++p == pe )
 		goto _test_eof27;
 case 27:
-/* #line 875 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 1014 "/Users/matiu/projects/yajp/parser/json.hpp"
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr42;
 	goto st0;
 tr42:
-/* #line 13 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 13 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         intPart *= 10;
         intPart += *p - '0';
@@ -889,7 +1028,7 @@ st28:
 	if ( ++p == pe )
 		goto _test_eof28;
 case 28:
-/* #line 893 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 1032 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 32: goto tr54;
 		case 44: goto tr55;
@@ -912,7 +1051,7 @@ case 29:
 		goto tr59;
 	goto st0;
 tr59:
-/* #line 20 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 20 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         intPart *= 10;
         intPart += *p - '0';
@@ -926,7 +1065,7 @@ st30:
 	if ( ++p == pe )
 		goto _test_eof30;
 case 30:
-/* #line 930 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 1069 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 32: goto tr54;
 		case 44: goto tr55;
@@ -952,7 +1091,7 @@ case 31:
 		goto tr61;
 	goto st0;
 tr60:
-/* #line 28 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 28 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         if (*p == '-')
             expIsNeg = true;
@@ -965,12 +1104,12 @@ st32:
 	if ( ++p == pe )
 		goto _test_eof32;
 case 32:
-/* #line 969 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 1108 "/Users/matiu/projects/yajp/parser/json.hpp"
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr61;
 	goto st0;
 tr61:
-/* #line 35 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 35 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         expPart2 *= 10;
         expPart2 += *p - '0';
@@ -983,7 +1122,7 @@ st33:
 	if ( ++p == pe )
 		goto _test_eof33;
 case 33:
-/* #line 987 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 1126 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 32: goto tr54;
 		case 44: goto tr55;
@@ -996,13 +1135,21 @@ case 33:
 		goto tr54;
 	goto st0;
 tr44:
-/* #line 31 "/home/matiu/projects/yajp/parser/json.rl" */
+#line 31 "/Users/matiu/projects/yajp/parser/json.rl"
 	{
         mapper.endArray();
+        {cs = stack[--top];{
+        if (top == 0) {
+            free(stack);
+            stack = 0;
+        } else if ((top+1) % STACK_JUMP_SIZE == 0) {
+                stack = (int*)realloc(stack, (top+1)*sizeof(int));
+        }
+    }goto _again;}
     }
 	goto st126;
 tr58:
-/* #line 42 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 42 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         #ifdef DEBUG
         std::cout << "gotNumber " << expIsNeg << " - " << expPart1 << " - " << expPart2 << " - " << intPart << " - " << intIsNeg << " - ";
@@ -1027,16 +1174,24 @@ tr58:
             }
         }
     }
-/* #line 31 "/home/matiu/projects/yajp/parser/json.rl" */
+#line 31 "/Users/matiu/projects/yajp/parser/json.rl"
 	{
         mapper.endArray();
+        {cs = stack[--top];{
+        if (top == 0) {
+            free(stack);
+            stack = 0;
+        } else if ((top+1) % STACK_JUMP_SIZE == 0) {
+                stack = (int*)realloc(stack, (top+1)*sizeof(int));
+        }
+    }goto _again;}
     }
 	goto st126;
 st126:
 	if ( ++p == pe )
 		goto _test_eof126;
 case 126:
-/* #line 1040 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 1195 "/Users/matiu/projects/yajp/parser/json.hpp"
 	goto st0;
 st34:
 	if ( ++p == pe )
@@ -1109,7 +1264,7 @@ case 43:
 		goto tr70;
 	goto st0;
 tr83:
-/* #line 21 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 21 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         // Encode it into utf-8
         if (uniChar <= 0x7f) {
@@ -1133,7 +1288,7 @@ st44:
 	if ( ++p == pe )
 		goto _test_eof44;
 case 44:
-/* #line 1137 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 1292 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 98: goto tr71;
 		case 102: goto tr72;
@@ -1157,7 +1312,7 @@ case 45:
 		goto tr77;
 	goto st0;
 tr77:
-/* #line 11 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 11 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         uniChar <<= 4;
         char ch = *p;
@@ -1173,7 +1328,7 @@ st46:
 	if ( ++p == pe )
 		goto _test_eof46;
 case 46:
-/* #line 1177 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 1332 "/Users/matiu/projects/yajp/parser/json.hpp"
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr78;
@@ -1184,7 +1339,7 @@ case 46:
 		goto tr78;
 	goto st0;
 tr78:
-/* #line 11 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 11 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         uniChar <<= 4;
         char ch = *p;
@@ -1200,7 +1355,7 @@ st47:
 	if ( ++p == pe )
 		goto _test_eof47;
 case 47:
-/* #line 1204 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 1359 "/Users/matiu/projects/yajp/parser/json.hpp"
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr79;
@@ -1211,7 +1366,7 @@ case 47:
 		goto tr79;
 	goto st0;
 tr79:
-/* #line 11 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 11 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         uniChar <<= 4;
         char ch = *p;
@@ -1227,7 +1382,7 @@ st48:
 	if ( ++p == pe )
 		goto _test_eof48;
 case 48:
-/* #line 1231 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 1386 "/Users/matiu/projects/yajp/parser/json.hpp"
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr80;
@@ -1238,7 +1393,7 @@ case 48:
 		goto tr80;
 	goto st0;
 tr80:
-/* #line 11 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 11 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         uniChar <<= 4;
         char ch = *p;
@@ -1254,7 +1409,7 @@ st49:
 	if ( ++p == pe )
 		goto _test_eof49;
 case 49:
-/* #line 1258 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 1413 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 34: goto tr82;
 		case 92: goto tr83;
@@ -1273,31 +1428,31 @@ case 50:
 		goto st50;
 	goto st0;
 tr87:
-/* #line 9 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 9 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += *p; }
 	goto st51;
 tr197:
-/* #line 4 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 4 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\b'; }
 	goto st51;
 tr198:
-/* #line 5 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 5 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\f'; }
 	goto st51;
 tr199:
-/* #line 6 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 6 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\n'; }
 	goto st51;
 tr200:
-/* #line 7 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 7 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\r'; }
 	goto st51;
 tr201:
-/* #line 8 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 8 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\t'; }
 	goto st51;
 tr207:
-/* #line 21 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 21 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         // Encode it into utf-8
         if (uniChar <= 0x7f) {
@@ -1316,21 +1471,21 @@ tr207:
             currentString += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
         }
     }
-/* #line 9 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 9 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += *p; }
 	goto st51;
 st51:
 	if ( ++p == pe )
 		goto _test_eof51;
 case 51:
-/* #line 1327 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 1482 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 34: goto tr88;
 		case 92: goto st116;
 	}
 	goto tr87;
 tr88:
-/* #line 43 "/home/matiu/projects/yajp/parser/json.rl" */
+#line 45 "/Users/matiu/projects/yajp/parser/json.rl"
 	{
         // Called when we found a new property for a value
         mapper.propertyName(std::move(currentString));
@@ -1338,7 +1493,7 @@ tr88:
     }
 	goto st52;
 tr208:
-/* #line 21 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 21 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         // Encode it into utf-8
         if (uniChar <= 0x7f) {
@@ -1357,7 +1512,7 @@ tr208:
             currentString += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
         }
     }
-/* #line 43 "/home/matiu/projects/yajp/parser/json.rl" */
+#line 45 "/Users/matiu/projects/yajp/parser/json.rl"
 	{
         // Called when we found a new property for a value
         mapper.propertyName(std::move(currentString));
@@ -1368,7 +1523,7 @@ st52:
 	if ( ++p == pe )
 		goto _test_eof52;
 case 52:
-/* #line 1372 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 1527 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 32: goto st52;
 		case 58: goto st53;
@@ -1397,31 +1552,31 @@ case 53:
 		goto st53;
 	goto st0;
 tr100:
-/* #line 9 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 9 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += *p; }
 	goto st54;
 tr168:
-/* #line 4 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 4 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\b'; }
 	goto st54;
 tr169:
-/* #line 5 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 5 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\f'; }
 	goto st54;
 tr170:
-/* #line 6 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 6 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\n'; }
 	goto st54;
 tr171:
-/* #line 7 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 7 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\r'; }
 	goto st54;
 tr172:
-/* #line 8 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 8 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\t'; }
 	goto st54;
 tr178:
-/* #line 21 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 21 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         // Encode it into utf-8
         if (uniChar <= 0x7f) {
@@ -1440,21 +1595,21 @@ tr178:
             currentString += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
         }
     }
-/* #line 9 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 9 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += *p; }
 	goto st54;
 st54:
 	if ( ++p == pe )
 		goto _test_eof54;
 case 54:
-/* #line 1451 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 1606 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 34: goto tr101;
 		case 92: goto st93;
 	}
 	goto tr100;
 tr95:
-/* #line 25 "/home/matiu/projects/yajp/parser/json.rl" */
+#line 25 "/Users/matiu/projects/yajp/parser/json.rl"
 	{
         // Called when we hit the start of an array
         // The Array is recursive, as it can hold further arrays, so we need to employ our fake stack and use fcall
@@ -1468,7 +1623,7 @@ tr95:
     }
 	goto st55;
 tr99:
-/* #line 34 "/home/matiu/projects/yajp/parser/json.rl" */
+#line 35 "/Users/matiu/projects/yajp/parser/json.rl"
 	{
         // Called when we hit the start of an object '{' starts recursing to get the inside parts of an object
         // The Object is recursive, as it can hold further objects, so we need to employ our fake stack and use fcall
@@ -1482,14 +1637,14 @@ tr99:
     }
 	goto st55;
 tr101:
-/* #line 39 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 39 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         mapper.foundSimpleValue(std::move(currentString));
         currentString.clear();
     }
 	goto st55;
 tr179:
-/* #line 21 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 21 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         // Encode it into utf-8
         if (uniChar <= 0x7f) {
@@ -1508,22 +1663,22 @@ tr179:
             currentString += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
         }
     }
-/* #line 39 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 39 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         mapper.foundSimpleValue(std::move(currentString));
         currentString.clear();
     }
 	goto st55;
 tr191:
-/* #line 23 "/home/matiu/projects/yajp/parser/json.rl" */
+#line 23 "/Users/matiu/projects/yajp/parser/json.rl"
 	{ mapper.foundSimpleValue(false); }
 	goto st55;
 tr196:
-/* #line 22 "/home/matiu/projects/yajp/parser/json.rl" */
+#line 22 "/Users/matiu/projects/yajp/parser/json.rl"
 	{ mapper.foundSimpleValue(true); }
 	goto st55;
 tr181:
-/* #line 42 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 42 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         #ifdef DEBUG
         std::cout << "gotNumber " << expIsNeg << " - " << expPart1 << " - " << expPart2 << " - " << intPart << " - " << intIsNeg << " - ";
@@ -1553,7 +1708,7 @@ st55:
 	if ( ++p == pe )
 		goto _test_eof55;
 case 55:
-/* #line 1557 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 1712 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 32: goto st55;
 		case 44: goto st56;
@@ -1563,7 +1718,7 @@ case 55:
 		goto st55;
 	goto st0;
 tr182:
-/* #line 42 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 42 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         #ifdef DEBUG
         std::cout << "gotNumber " << expIsNeg << " - " << expPart1 << " - " << expPart2 << " - " << intPart << " - " << intIsNeg << " - ";
@@ -1593,7 +1748,7 @@ st56:
 	if ( ++p == pe )
 		goto _test_eof56;
 case 56:
-/* #line 1597 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 1752 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 32: goto st57;
 		case 34: goto st51;
@@ -1624,31 +1779,31 @@ case 58:
 		goto st58;
 	goto st0;
 tr109:
-/* #line 9 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 9 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += *p; }
 	goto st59;
 tr155:
-/* #line 4 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 4 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\b'; }
 	goto st59;
 tr156:
-/* #line 5 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 5 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\f'; }
 	goto st59;
 tr157:
-/* #line 6 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 6 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\n'; }
 	goto st59;
 tr158:
-/* #line 7 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 7 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\r'; }
 	goto st59;
 tr159:
-/* #line 8 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 8 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\t'; }
 	goto st59;
 tr165:
-/* #line 21 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 21 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         // Encode it into utf-8
         if (uniChar <= 0x7f) {
@@ -1667,21 +1822,21 @@ tr165:
             currentString += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
         }
     }
-/* #line 9 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 9 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += *p; }
 	goto st59;
 st59:
 	if ( ++p == pe )
 		goto _test_eof59;
 case 59:
-/* #line 1678 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 1833 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 34: goto tr110;
 		case 92: goto st87;
 	}
 	goto tr109;
 tr110:
-/* #line 43 "/home/matiu/projects/yajp/parser/json.rl" */
+#line 45 "/Users/matiu/projects/yajp/parser/json.rl"
 	{
         // Called when we found a new property for a value
         mapper.propertyName(std::move(currentString));
@@ -1689,7 +1844,7 @@ tr110:
     }
 	goto st60;
 tr166:
-/* #line 21 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 21 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         // Encode it into utf-8
         if (uniChar <= 0x7f) {
@@ -1708,7 +1863,7 @@ tr166:
             currentString += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
         }
     }
-/* #line 43 "/home/matiu/projects/yajp/parser/json.rl" */
+#line 45 "/Users/matiu/projects/yajp/parser/json.rl"
 	{
         // Called when we found a new property for a value
         mapper.propertyName(std::move(currentString));
@@ -1719,7 +1874,7 @@ st60:
 	if ( ++p == pe )
 		goto _test_eof60;
 case 60:
-/* #line 1723 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 1878 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 32: goto st60;
 		case 58: goto st61;
@@ -1748,31 +1903,31 @@ case 61:
 		goto st61;
 	goto st0;
 tr122:
-/* #line 9 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 9 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += *p; }
 	goto st62;
 tr126:
-/* #line 4 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 4 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\b'; }
 	goto st62;
 tr127:
-/* #line 5 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 5 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\f'; }
 	goto st62;
 tr128:
-/* #line 6 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 6 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\n'; }
 	goto st62;
 tr129:
-/* #line 7 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 7 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\r'; }
 	goto st62;
 tr130:
-/* #line 8 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 8 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\t'; }
 	goto st62;
 tr136:
-/* #line 21 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 21 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         // Encode it into utf-8
         if (uniChar <= 0x7f) {
@@ -1791,21 +1946,21 @@ tr136:
             currentString += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
         }
     }
-/* #line 9 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 9 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += *p; }
 	goto st62;
 st62:
 	if ( ++p == pe )
 		goto _test_eof62;
 case 62:
-/* #line 1802 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 1957 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 34: goto tr123;
 		case 92: goto st64;
 	}
 	goto tr122;
 tr117:
-/* #line 25 "/home/matiu/projects/yajp/parser/json.rl" */
+#line 25 "/Users/matiu/projects/yajp/parser/json.rl"
 	{
         // Called when we hit the start of an array
         // The Array is recursive, as it can hold further arrays, so we need to employ our fake stack and use fcall
@@ -1819,7 +1974,7 @@ tr117:
     }
 	goto st63;
 tr121:
-/* #line 34 "/home/matiu/projects/yajp/parser/json.rl" */
+#line 35 "/Users/matiu/projects/yajp/parser/json.rl"
 	{
         // Called when we hit the start of an object '{' starts recursing to get the inside parts of an object
         // The Object is recursive, as it can hold further objects, so we need to employ our fake stack and use fcall
@@ -1833,14 +1988,14 @@ tr121:
     }
 	goto st63;
 tr123:
-/* #line 39 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 39 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         mapper.foundSimpleValue(std::move(currentString));
         currentString.clear();
     }
 	goto st63;
 tr137:
-/* #line 21 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 21 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         // Encode it into utf-8
         if (uniChar <= 0x7f) {
@@ -1859,22 +2014,22 @@ tr137:
             currentString += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
         }
     }
-/* #line 39 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 39 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         mapper.foundSimpleValue(std::move(currentString));
         currentString.clear();
     }
 	goto st63;
 tr149:
-/* #line 23 "/home/matiu/projects/yajp/parser/json.rl" */
+#line 23 "/Users/matiu/projects/yajp/parser/json.rl"
 	{ mapper.foundSimpleValue(false); }
 	goto st63;
 tr154:
-/* #line 22 "/home/matiu/projects/yajp/parser/json.rl" */
+#line 22 "/Users/matiu/projects/yajp/parser/json.rl"
 	{ mapper.foundSimpleValue(true); }
 	goto st63;
 tr139:
-/* #line 42 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 42 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         #ifdef DEBUG
         std::cout << "gotNumber " << expIsNeg << " - " << expPart1 << " - " << expPart2 << " - " << intPart << " - " << intIsNeg << " - ";
@@ -1904,7 +2059,7 @@ st63:
 	if ( ++p == pe )
 		goto _test_eof63;
 case 63:
-/* #line 1908 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 2063 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 32: goto st63;
 		case 125: goto tr105;
@@ -1913,13 +2068,21 @@ case 63:
 		goto st63;
 	goto st0;
 tr105:
-/* #line 40 "/home/matiu/projects/yajp/parser/json.rl" */
+#line 41 "/Users/matiu/projects/yajp/parser/json.rl"
 	{
         mapper.endObj();
+        {cs = stack[--top];{
+        if (top == 0) {
+            free(stack);
+            stack = 0;
+        } else if ((top+1) % STACK_JUMP_SIZE == 0) {
+                stack = (int*)realloc(stack, (top+1)*sizeof(int));
+        }
+    }goto _again;}
     }
 	goto st127;
 tr142:
-/* #line 42 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 42 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         #ifdef DEBUG
         std::cout << "gotNumber " << expIsNeg << " - " << expPart1 << " - " << expPart2 << " - " << intPart << " - " << intIsNeg << " - ";
@@ -1944,23 +2107,31 @@ tr142:
             }
         }
     }
-/* #line 40 "/home/matiu/projects/yajp/parser/json.rl" */
+#line 41 "/Users/matiu/projects/yajp/parser/json.rl"
 	{
         mapper.endObj();
+        {cs = stack[--top];{
+        if (top == 0) {
+            free(stack);
+            stack = 0;
+        } else if ((top+1) % STACK_JUMP_SIZE == 0) {
+                stack = (int*)realloc(stack, (top+1)*sizeof(int));
+        }
+    }goto _again;}
     }
 	goto st127;
 st127:
 	if ( ++p == pe )
 		goto _test_eof127;
 case 127:
-/* #line 1957 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 2128 "/Users/matiu/projects/yajp/parser/json.hpp"
 	if ( (*p) == 32 )
 		goto tr105;
 	if ( 9 <= (*p) && (*p) <= 13 )
 		goto tr105;
 	goto st0;
 tr138:
-/* #line 21 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 21 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         // Encode it into utf-8
         if (uniChar <= 0x7f) {
@@ -1984,7 +2155,7 @@ st64:
 	if ( ++p == pe )
 		goto _test_eof64;
 case 64:
-/* #line 1988 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 2159 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 98: goto tr126;
 		case 102: goto tr127;
@@ -2008,7 +2179,7 @@ case 65:
 		goto tr132;
 	goto st0;
 tr132:
-/* #line 11 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 11 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         uniChar <<= 4;
         char ch = *p;
@@ -2024,7 +2195,7 @@ st66:
 	if ( ++p == pe )
 		goto _test_eof66;
 case 66:
-/* #line 2028 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 2199 "/Users/matiu/projects/yajp/parser/json.hpp"
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr133;
@@ -2035,7 +2206,7 @@ case 66:
 		goto tr133;
 	goto st0;
 tr133:
-/* #line 11 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 11 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         uniChar <<= 4;
         char ch = *p;
@@ -2051,7 +2222,7 @@ st67:
 	if ( ++p == pe )
 		goto _test_eof67;
 case 67:
-/* #line 2055 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 2226 "/Users/matiu/projects/yajp/parser/json.hpp"
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr134;
@@ -2062,7 +2233,7 @@ case 67:
 		goto tr134;
 	goto st0;
 tr134:
-/* #line 11 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 11 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         uniChar <<= 4;
         char ch = *p;
@@ -2078,7 +2249,7 @@ st68:
 	if ( ++p == pe )
 		goto _test_eof68;
 case 68:
-/* #line 2082 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 2253 "/Users/matiu/projects/yajp/parser/json.hpp"
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr135;
@@ -2089,7 +2260,7 @@ case 68:
 		goto tr135;
 	goto st0;
 tr135:
-/* #line 11 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 11 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         uniChar <<= 4;
         char ch = *p;
@@ -2105,14 +2276,14 @@ st69:
 	if ( ++p == pe )
 		goto _test_eof69;
 case 69:
-/* #line 2109 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 2280 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 34: goto tr137;
 		case 92: goto tr138;
 	}
 	goto tr136;
 tr115:
-/* #line 7 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 7 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         #ifdef DEBUG
         std::cout << "setNegative" << std::endl;
@@ -2124,12 +2295,12 @@ st70:
 	if ( ++p == pe )
 		goto _test_eof70;
 case 70:
-/* #line 2128 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 2299 "/Users/matiu/projects/yajp/parser/json.hpp"
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr116;
 	goto st0;
 tr116:
-/* #line 13 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 13 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         intPart *= 10;
         intPart += *p - '0';
@@ -2142,7 +2313,7 @@ st71:
 	if ( ++p == pe )
 		goto _test_eof71;
 case 71:
-/* #line 2146 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 2317 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 32: goto tr139;
 		case 46: goto st72;
@@ -2164,7 +2335,7 @@ case 72:
 		goto tr143;
 	goto st0;
 tr143:
-/* #line 20 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 20 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         intPart *= 10;
         intPart += *p - '0';
@@ -2178,7 +2349,7 @@ st73:
 	if ( ++p == pe )
 		goto _test_eof73;
 case 73:
-/* #line 2182 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 2353 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 32: goto tr139;
 		case 69: goto st74;
@@ -2203,7 +2374,7 @@ case 74:
 		goto tr145;
 	goto st0;
 tr144:
-/* #line 28 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 28 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         if (*p == '-')
             expIsNeg = true;
@@ -2216,12 +2387,12 @@ st75:
 	if ( ++p == pe )
 		goto _test_eof75;
 case 75:
-/* #line 2220 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 2391 "/Users/matiu/projects/yajp/parser/json.hpp"
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr145;
 	goto st0;
 tr145:
-/* #line 35 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 35 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         expPart2 *= 10;
         expPart2 += *p - '0';
@@ -2234,7 +2405,7 @@ st76:
 	if ( ++p == pe )
 		goto _test_eof76;
 case 76:
-/* #line 2238 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 2409 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 32: goto tr139;
 		case 125: goto tr142;
@@ -2316,7 +2487,7 @@ case 86:
 		goto tr154;
 	goto st0;
 tr167:
-/* #line 21 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 21 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         // Encode it into utf-8
         if (uniChar <= 0x7f) {
@@ -2340,7 +2511,7 @@ st87:
 	if ( ++p == pe )
 		goto _test_eof87;
 case 87:
-/* #line 2344 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 2515 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 98: goto tr155;
 		case 102: goto tr156;
@@ -2364,7 +2535,7 @@ case 88:
 		goto tr161;
 	goto st0;
 tr161:
-/* #line 11 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 11 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         uniChar <<= 4;
         char ch = *p;
@@ -2380,7 +2551,7 @@ st89:
 	if ( ++p == pe )
 		goto _test_eof89;
 case 89:
-/* #line 2384 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 2555 "/Users/matiu/projects/yajp/parser/json.hpp"
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr162;
@@ -2391,7 +2562,7 @@ case 89:
 		goto tr162;
 	goto st0;
 tr162:
-/* #line 11 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 11 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         uniChar <<= 4;
         char ch = *p;
@@ -2407,7 +2578,7 @@ st90:
 	if ( ++p == pe )
 		goto _test_eof90;
 case 90:
-/* #line 2411 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 2582 "/Users/matiu/projects/yajp/parser/json.hpp"
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr163;
@@ -2418,7 +2589,7 @@ case 90:
 		goto tr163;
 	goto st0;
 tr163:
-/* #line 11 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 11 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         uniChar <<= 4;
         char ch = *p;
@@ -2434,7 +2605,7 @@ st91:
 	if ( ++p == pe )
 		goto _test_eof91;
 case 91:
-/* #line 2438 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 2609 "/Users/matiu/projects/yajp/parser/json.hpp"
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr164;
@@ -2445,7 +2616,7 @@ case 91:
 		goto tr164;
 	goto st0;
 tr164:
-/* #line 11 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 11 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         uniChar <<= 4;
         char ch = *p;
@@ -2461,14 +2632,14 @@ st92:
 	if ( ++p == pe )
 		goto _test_eof92;
 case 92:
-/* #line 2465 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 2636 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 34: goto tr166;
 		case 92: goto tr167;
 	}
 	goto tr165;
 tr180:
-/* #line 21 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 21 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         // Encode it into utf-8
         if (uniChar <= 0x7f) {
@@ -2492,7 +2663,7 @@ st93:
 	if ( ++p == pe )
 		goto _test_eof93;
 case 93:
-/* #line 2496 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 2667 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 98: goto tr168;
 		case 102: goto tr169;
@@ -2516,7 +2687,7 @@ case 94:
 		goto tr174;
 	goto st0;
 tr174:
-/* #line 11 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 11 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         uniChar <<= 4;
         char ch = *p;
@@ -2532,7 +2703,7 @@ st95:
 	if ( ++p == pe )
 		goto _test_eof95;
 case 95:
-/* #line 2536 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 2707 "/Users/matiu/projects/yajp/parser/json.hpp"
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr175;
@@ -2543,7 +2714,7 @@ case 95:
 		goto tr175;
 	goto st0;
 tr175:
-/* #line 11 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 11 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         uniChar <<= 4;
         char ch = *p;
@@ -2559,7 +2730,7 @@ st96:
 	if ( ++p == pe )
 		goto _test_eof96;
 case 96:
-/* #line 2563 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 2734 "/Users/matiu/projects/yajp/parser/json.hpp"
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr176;
@@ -2570,7 +2741,7 @@ case 96:
 		goto tr176;
 	goto st0;
 tr176:
-/* #line 11 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 11 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         uniChar <<= 4;
         char ch = *p;
@@ -2586,7 +2757,7 @@ st97:
 	if ( ++p == pe )
 		goto _test_eof97;
 case 97:
-/* #line 2590 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 2761 "/Users/matiu/projects/yajp/parser/json.hpp"
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr177;
@@ -2597,7 +2768,7 @@ case 97:
 		goto tr177;
 	goto st0;
 tr177:
-/* #line 11 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 11 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         uniChar <<= 4;
         char ch = *p;
@@ -2613,14 +2784,14 @@ st98:
 	if ( ++p == pe )
 		goto _test_eof98;
 case 98:
-/* #line 2617 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 2788 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 34: goto tr179;
 		case 92: goto tr180;
 	}
 	goto tr178;
 tr93:
-/* #line 7 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 7 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         #ifdef DEBUG
         std::cout << "setNegative" << std::endl;
@@ -2632,12 +2803,12 @@ st99:
 	if ( ++p == pe )
 		goto _test_eof99;
 case 99:
-/* #line 2636 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 2807 "/Users/matiu/projects/yajp/parser/json.hpp"
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr94;
 	goto st0;
 tr94:
-/* #line 13 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 13 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         intPart *= 10;
         intPart += *p - '0';
@@ -2650,7 +2821,7 @@ st100:
 	if ( ++p == pe )
 		goto _test_eof100;
 case 100:
-/* #line 2654 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 2825 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 32: goto tr181;
 		case 44: goto tr182;
@@ -2673,7 +2844,7 @@ case 101:
 		goto tr185;
 	goto st0;
 tr185:
-/* #line 20 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 20 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         intPart *= 10;
         intPart += *p - '0';
@@ -2687,7 +2858,7 @@ st102:
 	if ( ++p == pe )
 		goto _test_eof102;
 case 102:
-/* #line 2691 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 2862 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 32: goto tr181;
 		case 44: goto tr182;
@@ -2713,7 +2884,7 @@ case 103:
 		goto tr187;
 	goto st0;
 tr186:
-/* #line 28 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 28 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         if (*p == '-')
             expIsNeg = true;
@@ -2726,12 +2897,12 @@ st104:
 	if ( ++p == pe )
 		goto _test_eof104;
 case 104:
-/* #line 2730 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 2901 "/Users/matiu/projects/yajp/parser/json.hpp"
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr187;
 	goto st0;
 tr187:
-/* #line 35 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 35 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         expPart2 *= 10;
         expPart2 += *p - '0';
@@ -2744,7 +2915,7 @@ st105:
 	if ( ++p == pe )
 		goto _test_eof105;
 case 105:
-/* #line 2748 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 2919 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 32: goto tr181;
 		case 44: goto tr182;
@@ -2827,7 +2998,7 @@ case 115:
 		goto tr196;
 	goto st0;
 tr209:
-/* #line 21 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 21 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         // Encode it into utf-8
         if (uniChar <= 0x7f) {
@@ -2851,7 +3022,7 @@ st116:
 	if ( ++p == pe )
 		goto _test_eof116;
 case 116:
-/* #line 2855 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 3026 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 98: goto tr197;
 		case 102: goto tr198;
@@ -2875,7 +3046,7 @@ case 117:
 		goto tr203;
 	goto st0;
 tr203:
-/* #line 11 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 11 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         uniChar <<= 4;
         char ch = *p;
@@ -2891,7 +3062,7 @@ st118:
 	if ( ++p == pe )
 		goto _test_eof118;
 case 118:
-/* #line 2895 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 3066 "/Users/matiu/projects/yajp/parser/json.hpp"
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr204;
@@ -2902,7 +3073,7 @@ case 118:
 		goto tr204;
 	goto st0;
 tr204:
-/* #line 11 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 11 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         uniChar <<= 4;
         char ch = *p;
@@ -2918,7 +3089,7 @@ st119:
 	if ( ++p == pe )
 		goto _test_eof119;
 case 119:
-/* #line 2922 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 3093 "/Users/matiu/projects/yajp/parser/json.hpp"
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr205;
@@ -2929,7 +3100,7 @@ case 119:
 		goto tr205;
 	goto st0;
 tr205:
-/* #line 11 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 11 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         uniChar <<= 4;
         char ch = *p;
@@ -2945,7 +3116,7 @@ st120:
 	if ( ++p == pe )
 		goto _test_eof120;
 case 120:
-/* #line 2949 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 3120 "/Users/matiu/projects/yajp/parser/json.hpp"
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr206;
@@ -2956,7 +3127,7 @@ case 120:
 		goto tr206;
 	goto st0;
 tr206:
-/* #line 11 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 11 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         uniChar <<= 4;
         char ch = *p;
@@ -2972,23 +3143,31 @@ st121:
 	if ( ++p == pe )
 		goto _test_eof121;
 case 121:
-/* #line 2976 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 3147 "/Users/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 34: goto tr208;
 		case 92: goto tr209;
 	}
 	goto tr207;
 tr86:
-/* #line 40 "/home/matiu/projects/yajp/parser/json.rl" */
+#line 41 "/Users/matiu/projects/yajp/parser/json.rl"
 	{
         mapper.endObj();
+        {cs = stack[--top];{
+        if (top == 0) {
+            free(stack);
+            stack = 0;
+        } else if ((top+1) % STACK_JUMP_SIZE == 0) {
+                stack = (int*)realloc(stack, (top+1)*sizeof(int));
+        }
+    }goto _again;}
     }
 	goto st128;
 st128:
 	if ( ++p == pe )
 		goto _test_eof128;
 case 128:
-/* #line 2992 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 3171 "/Users/matiu/projects/yajp/parser/json.hpp"
 	goto st0;
 	}
 	_test_eof1: cs = 1; goto _test_eof; 
@@ -3127,7 +3306,7 @@ case 128:
 	case 123: 
 	case 124: 
 	case 125: 
-/* #line 42 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 42 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         #ifdef DEBUG
         std::cout << "gotNumber " << expIsNeg << " - " << expPart1 << " - " << expPart2 << " - " << intPart << " - " << intIsNeg << " - ";
@@ -3153,14 +3332,14 @@ case 128:
         }
     }
 	break;
-/* #line 3157 "/home/matiu/projects/yajp/parser/json.hpp" */
+#line 3336 "/Users/matiu/projects/yajp/parser/json.hpp"
 	}
 	}
 
 	_out: {}
 	}
 
-/* #line 122 "/home/matiu/projects/yajp/parser/json.rl" */
+#line 124 "/Users/matiu/projects/yajp/parser/json.rl"
     }
 };
 

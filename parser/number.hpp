@@ -1,5 +1,5 @@
 
-/* #line 1 "/home/matiu/projects/yajp/parser/number_standalone.rl" */
+#line 1 "/Users/matiu/projects/yajp/parser/number_standalone.rl"
 /** Ragel file for parsing a number in json **/
 
 #include <string>
@@ -12,7 +12,7 @@ namespace yajp {
 
 // data //////////////////////////////////////////
 
-/* #line 16 "/home/matiu/projects/yajp/parser/number.hpp" */
+#line 16 "/Users/matiu/projects/yajp/parser/number.hpp"
 static const int json_start = 1;
 static const int json_first_final = 6;
 static const int json_error = 0;
@@ -20,7 +20,7 @@ static const int json_error = 0;
 static const int json_en_main = 1;
 
 
-/* #line 17 "/home/matiu/projects/yajp/parser/number_standalone.rl" */
+#line 17 "/Users/matiu/projects/yajp/parser/number_standalone.rl"
 
 
 template <class T>
@@ -38,15 +38,15 @@ void parseNumber(const std::string& json, T& mapper) {
     long expPart2=0; // The explicit exponent part from the number itself, added to the inferred exponent part
     // Initialization of state machine
     
-/* #line 42 "/home/matiu/projects/yajp/parser/number.hpp" */
+#line 42 "/Users/matiu/projects/yajp/parser/number.hpp"
 	{
 	cs = json_start;
 	}
 
-/* #line 34 "/home/matiu/projects/yajp/parser/number_standalone.rl" */
+#line 34 "/Users/matiu/projects/yajp/parser/number_standalone.rl"
     // Execution of state machine
     
-/* #line 50 "/home/matiu/projects/yajp/parser/number.hpp" */
+#line 50 "/Users/matiu/projects/yajp/parser/number.hpp"
 	{
 	if ( p == pe )
 		goto _test_eof;
@@ -62,7 +62,7 @@ st0:
 cs = 0;
 	goto _out;
 tr0:
-/* #line 7 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 7 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         #ifdef DEBUG
         std::cout << "setNegative" << std::endl;
@@ -74,12 +74,12 @@ st2:
 	if ( ++p == pe )
 		goto _test_eof2;
 case 2:
-/* #line 78 "/home/matiu/projects/yajp/parser/number.hpp" */
+#line 78 "/Users/matiu/projects/yajp/parser/number.hpp"
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr2;
 	goto st0;
 tr2:
-/* #line 13 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 13 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         intPart *= 10;
         intPart += *p - '0';
@@ -92,7 +92,7 @@ st6:
 	if ( ++p == pe )
 		goto _test_eof6;
 case 6:
-/* #line 96 "/home/matiu/projects/yajp/parser/number.hpp" */
+#line 96 "/Users/matiu/projects/yajp/parser/number.hpp"
 	switch( (*p) ) {
 		case 46: goto st3;
 		case 69: goto st4;
@@ -109,7 +109,7 @@ case 3:
 		goto tr3;
 	goto st0;
 tr3:
-/* #line 20 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 20 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         intPart *= 10;
         intPart += *p - '0';
@@ -123,7 +123,7 @@ st7:
 	if ( ++p == pe )
 		goto _test_eof7;
 case 7:
-/* #line 127 "/home/matiu/projects/yajp/parser/number.hpp" */
+#line 127 "/Users/matiu/projects/yajp/parser/number.hpp"
 	switch( (*p) ) {
 		case 69: goto st4;
 		case 101: goto st4;
@@ -143,7 +143,7 @@ case 4:
 		goto tr5;
 	goto st0;
 tr4:
-/* #line 28 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 28 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         if (*p == '-')
             expIsNeg = true;
@@ -156,12 +156,12 @@ st5:
 	if ( ++p == pe )
 		goto _test_eof5;
 case 5:
-/* #line 160 "/home/matiu/projects/yajp/parser/number.hpp" */
+#line 160 "/Users/matiu/projects/yajp/parser/number.hpp"
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr5;
 	goto st0;
 tr5:
-/* #line 35 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 35 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         expPart2 *= 10;
         expPart2 += *p - '0';
@@ -174,7 +174,7 @@ st8:
 	if ( ++p == pe )
 		goto _test_eof8;
 case 8:
-/* #line 178 "/home/matiu/projects/yajp/parser/number.hpp" */
+#line 178 "/Users/matiu/projects/yajp/parser/number.hpp"
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr5;
 	goto st0;
@@ -194,7 +194,7 @@ case 8:
 	case 6: 
 	case 7: 
 	case 8: 
-/* #line 42 "/home/matiu/projects/yajp/parser/number.rl" */
+#line 42 "/Users/matiu/projects/yajp/parser/number.rl"
 	{
         #ifdef DEBUG
         std::cout << "gotNumber " << expIsNeg << " - " << expPart1 << " - " << expPart2 << " - " << intPart << " - " << intIsNeg << " - ";
@@ -220,14 +220,14 @@ case 8:
         }
     }
 	break;
-/* #line 224 "/home/matiu/projects/yajp/parser/number.hpp" */
+#line 224 "/Users/matiu/projects/yajp/parser/number.hpp"
 	}
 	}
 
 	_out: {}
 	}
 
-/* #line 36 "/home/matiu/projects/yajp/parser/number_standalone.rl" */
+#line 36 "/Users/matiu/projects/yajp/parser/number_standalone.rl"
 }
 
 }

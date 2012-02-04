@@ -16,26 +16,24 @@ public:
 private:
     boost::any topValue;
     std::list<boost::any*> _stack; // parent objects we're working on and what not
-    boost::any& currentValue;
+    boost::any* currentValue;
     std::string lastPropertyName;
 public:
-    AnyMapper() : currentValue(topValue) {
-        _stack.push_back(&topValue);
-    }
+    AnyMapper() : currentValue(&topValue) {}
     boost::any& getValue() { return topValue; }
     template <typename T>
     void foundSimpleValue(T value) {
-        if (currentValue.type() == typeid(void)) {
+        if (currentValue->type() == typeid(void)) {
             // If it's a simple value just set it
             topValue = value;
-            currentValue = topValue;
-        } else if (currentValue.type() == typeid(Array)) {
+            currentValue = &topValue;
+        } else if (currentValue->type() == typeid(Array)) {
             // If current value is a array .. append
-            Array& array = boost::any_cast<Array&>(currentValue);
+            Array& array = boost::any_cast<Array&>(*currentValue);
             array.push_back(value);
-        } else if (currentValue.type() == typeid(Object)) {
+        } else if (currentValue->type() == typeid(Object)) {
             // If we're reading a property .. set it in the map
-            Object& object = boost::any_cast<Object&>(currentValue);
+            Object& object = boost::any_cast<Object&>(*currentValue); // Get the object out of current value
             object.insert(std::make_pair(lastPropertyName, value));
             lastPropertyName = "";
         }
@@ -45,29 +43,29 @@ public:
     }
     template <class T>
     void startArrayOrObject() {
-        if (currentValue.type() == typeid(void)) {
+        if (currentValue->type() == typeid(void)) {
             // If it's a simple value just set it
             topValue = T();
-            currentValue = topValue;
-        } else if (currentValue.type() == typeid(Array)) {
+            currentValue = &topValue;
+        } else if (currentValue->type() == typeid(Array)) {
             // If current value is an array .. append
-            Array& array = boost::any_cast<Array&>(currentValue);
+            Array& array = boost::any_cast<Array&>(*currentValue);
             array.push_back(T());
-            currentValue = array.back();
-        } else if (currentValue.type() == typeid(Object)) {
+            currentValue = &(array.back());
+        } else if (currentValue->type() == typeid(Object)) {
             // If we're reading a property .. set it in the map
-            Object& object = boost::any_cast<Object&>(currentValue);
-            currentValue = object[lastPropertyName]; // Get a refernce to the empty 'any'
-            currentValue = T(); // Initialize it with what we're going to use it for (Array/Object)
+            Object& object = boost::any_cast<Object&>(*currentValue); // Get an object out of currentValue
+            currentValue = &(object[lastPropertyName]); // Get a refernce to a new empty 'any'
+            *currentValue = T(); // Initialize it with what we're going to use it for (Array/Object)
         }
-        _stack.push_back(&currentValue);
+        _stack.push_back(currentValue);
     }
     void startArray() {
         startArrayOrObject<Array>();
     }
     void endArray() {
         _stack.pop_back();
-        currentValue = *_stack.back();
+        currentValue = _stack.back();
     }
     void startObj() {
         startArrayOrObject<Object>();

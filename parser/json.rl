@@ -30,6 +30,7 @@ namespace yajp {
     }
     action endArray {
         mapper.endArray();
+        fret;
     }
     action startObject {
         // Called when we hit the start of an object '{' starts recursing to get the inside parts of an object
@@ -39,6 +40,7 @@ namespace yajp {
     }
     action endObject {
         mapper.endObj();
+        fret;
     }
     action propertyName {
         // Called when we found a new property for a value

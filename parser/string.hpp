@@ -1,5 +1,5 @@
 
-/* #line 1 "/home/matiu/projects/yajp/parser/string_standalone.rl" */
+#line 1 "/Users/matiu/projects/yajp/parser/string_standalone.rl"
 /** Ragel file for parsing a string in json **/
 
 #include <string>
@@ -12,7 +12,7 @@ namespace yajp {
 
 // data //////////////////////////////////////////
 
-/* #line 16 "/home/matiu/projects/yajp/parser/string.hpp" */
+#line 16 "/Users/matiu/projects/yajp/parser/string.hpp"
 static const int json_start = 1;
 static const int json_first_final = 9;
 static const int json_error = 0;
@@ -20,7 +20,7 @@ static const int json_error = 0;
 static const int json_en_main = 1;
 
 
-/* #line 17 "/home/matiu/projects/yajp/parser/string_standalone.rl" */
+#line 17 "/Users/matiu/projects/yajp/parser/string_standalone.rl"
 
 
 /**
@@ -43,14 +43,14 @@ void parseString(const std::string& json, T& mapper, unsigned long expectedSize=
     currentString.reserve(expectedSize);
 
     
-/* #line 47 "/home/matiu/projects/yajp/parser/string.hpp" */
+#line 47 "/Users/matiu/projects/yajp/parser/string.hpp"
 	{
 	cs = json_start;
 	}
 
-/* #line 39 "/home/matiu/projects/yajp/parser/string_standalone.rl" */
+#line 39 "/Users/matiu/projects/yajp/parser/string_standalone.rl"
     
-/* #line 54 "/home/matiu/projects/yajp/parser/string.hpp" */
+#line 54 "/Users/matiu/projects/yajp/parser/string.hpp"
 	{
 	if ( p == pe )
 		goto _test_eof;
@@ -64,31 +64,31 @@ st0:
 cs = 0;
 	goto _out;
 tr2:
-/* #line 9 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 9 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += *p; }
 	goto st2;
 tr5:
-/* #line 4 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 4 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\b'; }
 	goto st2;
 tr6:
-/* #line 5 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 5 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\f'; }
 	goto st2;
 tr7:
-/* #line 6 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 6 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\n'; }
 	goto st2;
 tr8:
-/* #line 7 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 7 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\r'; }
 	goto st2;
 tr9:
-/* #line 8 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 8 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += '\t'; }
 	goto st2;
 tr15:
-/* #line 21 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 21 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         // Encode it into utf-8
         if (uniChar <= 0x7f) {
@@ -107,28 +107,28 @@ tr15:
             currentString += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
         }
     }
-/* #line 9 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 9 "/Users/matiu/projects/yajp/parser/string.rl"
 	{ currentString += *p; }
 	goto st2;
 st2:
 	if ( ++p == pe )
 		goto _test_eof2;
 case 2:
-/* #line 118 "/home/matiu/projects/yajp/parser/string.hpp" */
+#line 118 "/Users/matiu/projects/yajp/parser/string.hpp"
 	switch( (*p) ) {
 		case 34: goto tr3;
 		case 92: goto st3;
 	}
 	goto tr2;
 tr3:
-/* #line 39 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 39 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         mapper.foundSimpleValue(std::move(currentString));
         currentString.clear();
     }
 	goto st9;
 tr16:
-/* #line 21 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 21 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         // Encode it into utf-8
         if (uniChar <= 0x7f) {
@@ -147,7 +147,7 @@ tr16:
             currentString += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
         }
     }
-/* #line 39 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 39 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         mapper.foundSimpleValue(std::move(currentString));
         currentString.clear();
@@ -157,10 +157,10 @@ st9:
 	if ( ++p == pe )
 		goto _test_eof9;
 case 9:
-/* #line 161 "/home/matiu/projects/yajp/parser/string.hpp" */
+#line 161 "/Users/matiu/projects/yajp/parser/string.hpp"
 	goto st0;
 tr17:
-/* #line 21 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 21 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         // Encode it into utf-8
         if (uniChar <= 0x7f) {
@@ -184,7 +184,7 @@ st3:
 	if ( ++p == pe )
 		goto _test_eof3;
 case 3:
-/* #line 188 "/home/matiu/projects/yajp/parser/string.hpp" */
+#line 188 "/Users/matiu/projects/yajp/parser/string.hpp"
 	switch( (*p) ) {
 		case 98: goto tr5;
 		case 102: goto tr6;
@@ -208,7 +208,7 @@ case 4:
 		goto tr11;
 	goto st0;
 tr11:
-/* #line 11 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 11 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         uniChar <<= 4;
         char ch = *p;
@@ -224,7 +224,7 @@ st5:
 	if ( ++p == pe )
 		goto _test_eof5;
 case 5:
-/* #line 228 "/home/matiu/projects/yajp/parser/string.hpp" */
+#line 228 "/Users/matiu/projects/yajp/parser/string.hpp"
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr12;
@@ -235,7 +235,7 @@ case 5:
 		goto tr12;
 	goto st0;
 tr12:
-/* #line 11 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 11 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         uniChar <<= 4;
         char ch = *p;
@@ -251,7 +251,7 @@ st6:
 	if ( ++p == pe )
 		goto _test_eof6;
 case 6:
-/* #line 255 "/home/matiu/projects/yajp/parser/string.hpp" */
+#line 255 "/Users/matiu/projects/yajp/parser/string.hpp"
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr13;
@@ -262,7 +262,7 @@ case 6:
 		goto tr13;
 	goto st0;
 tr13:
-/* #line 11 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 11 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         uniChar <<= 4;
         char ch = *p;
@@ -278,7 +278,7 @@ st7:
 	if ( ++p == pe )
 		goto _test_eof7;
 case 7:
-/* #line 282 "/home/matiu/projects/yajp/parser/string.hpp" */
+#line 282 "/Users/matiu/projects/yajp/parser/string.hpp"
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr14;
@@ -289,7 +289,7 @@ case 7:
 		goto tr14;
 	goto st0;
 tr14:
-/* #line 11 "/home/matiu/projects/yajp/parser/string.rl" */
+#line 11 "/Users/matiu/projects/yajp/parser/string.rl"
 	{
         uniChar <<= 4;
         char ch = *p;
@@ -305,7 +305,7 @@ st8:
 	if ( ++p == pe )
 		goto _test_eof8;
 case 8:
-/* #line 309 "/home/matiu/projects/yajp/parser/string.hpp" */
+#line 309 "/Users/matiu/projects/yajp/parser/string.hpp"
 	switch( (*p) ) {
 		case 34: goto tr16;
 		case 92: goto tr17;
@@ -325,7 +325,7 @@ case 8:
 	_out: {}
 	}
 
-/* #line 40 "/home/matiu/projects/yajp/parser/string_standalone.rl" */
+#line 40 "/Users/matiu/projects/yajp/parser/string_standalone.rl"
 }
 
 }

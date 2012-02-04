@@ -54,6 +54,7 @@ boost_test("string"
 boost_test(
     any
     simpleMap
+    arrayInMap
 )
 
 boost_test(
