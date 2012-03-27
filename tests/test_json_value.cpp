@@ -32,13 +32,20 @@
 
 /// An example object that we'll be reading .. a person
 struct Person {
+    virtual const char* type() { return "Person"; }
     std::string name;
     unsigned short age;
-    template<class T>
-    void jsonify(T& translator) {
-        translator.addField("name", name);
-        translator.addField("age", age);
-    }
+};
+
+struct Employee : public Person {
+    virtual const char* type() override { return "Employee"; }
+    unsigned int number;
+    std::string department;
+};
+
+stuct Manager : public Employee {
+    virtual const char* type() override { return "Manager"; }
+    std::vector<Employee> teamMembers;
 };
 
 BOOST_AUTO_TEST_SUITE( json_value )
@@ -58,6 +65,73 @@ BOOST_AUTO_TEST_CASE( simpleMap ) {
     Person p;
     p.name = result->getString("name");
     p.age = result->getNumber<unsigned long>("age");
+    BOOST_CHECK_EQUAL(p.name, "tweedle");
+    BOOST_CHECK_EQUAL(p.age, 5);
+}
+
+/// Helper function to read a person's data from json values
+void readPerson(JSONValue* input, Person* output) {
+    output->name = input->getString("name");
+    output->age = input->getNumber<unsigned long>("age");
+    Employee* emp = dynamic_cast<Employee*>(p);
+    if (emp != 0) {
+        value->getVector<string>("departments", emp->departments)
+        Manager* man = dynamic_cast<Manager*>(p);
+        if (man != 0) {
+            value->getVector<Employee>("team-members", man->teamMembers);
+        }
+    }
+}
+
+// Our own template specializations to convert JSON objects into real c++ objects
+namespace yajp {
+
+template <> Employee json2val<Employee>(JSONValue* val) {
+    const std::string type = result->getString("type")
+    if (type == "Manager") {
+        Manager result;
+        readPerson(val, &result);
+        return result;
+    } else {
+        Employee result;
+        readPerson(val, &result);
+        return result;
+    }
+}
+
+}
+
+
+BOOST_AUTO_TEST_CASE( nestedMap ) {
+    using yajp::JSONParser;
+    using yajp::mappers::JSONValueMapper;
+    using boost::any_cast;
+    // Parse the json
+    std::string json2parse = R"( { "type": "Manager" "name": "tweedle", "age": 5, "team-members": [ { "type":
+    "Employee", "name": "dee", "age": 4, "departments": ["science", "marketing", "engineering"] }, { "type": "Manager",
+    "name": "dum", "age": 2, "departments": ["fun", "games"] } ] } )";
+    JSONParser parser(json2parse);
+    JSONValueMapper mapper;
+    parser.parseJSONValue(mapper);
+    yajp::JSONObject* result = dynamic_cast<yajp::JSONObject*>(mapper.getValue());
+    assert(result != 0);
+    // Now turn the result into a person
+    auto getPerson = [](yajp::JSONObject* value, Person* p){
+        p->name = result->getString("name");
+        p->age = result->getNumber<unsigned long>("age");
+        Employee* emp = dynamic_cast<Employee*>(p);
+        if (emp != 0) {
+            value->readVector<string>("departments", emp->departments)
+            Manager* man = dynamic_cast<Manager*>(p);
+            if (man != 0) {
+                value->getVector<Employee>("team-members", man->teamMembers);
+            }
+        }
+    };
+    auto getEmployee = [getPerson&](yajp::JSONObject* value,
+
+    Person p;
+    p.name = result->getString("name");
     BOOST_CHECK_EQUAL(p.name, "tweedle");
     BOOST_CHECK_EQUAL(p.age, 5);
 }

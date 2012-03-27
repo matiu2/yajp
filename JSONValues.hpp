@@ -23,7 +23,7 @@
 
 namespace yajp {
 
-class JSONValue;
+class JSONValue, JSONObject;
 
 typedef std::unique_ptr<JSONValue> PJSONValue;
 
@@ -52,6 +52,25 @@ public:
     const std::string& asString() { return value; }
 };
 
+class JSONArray : public JSONValue, public std::vector<PJSONValue> {
+public:
+    virtual const char* name() { return "Array"; }
+};
+
+class JSONNull : public JSONValue {
+public:
+    virtual const char* name() { return "Null"; }
+};
+
+/// An easy conversion template function
+/// Default assumes it's a number
+template <class T> T json2val(JSONValue* val) {
+    return dynamic_cast<JSONNumber<T>*>(val).asNumber();
+}
+template <> std::string <std::string> convert(JSONValue* val) {
+    JSONString* s = dynamic_cast<JSONString*>(val);
+    return s->asString();
+}
 
 class JSONObject : public JSONValue, public std::map<std::string, PJSONValue> {
 public:
@@ -71,16 +90,13 @@ public:
         else
             throw std::logic_error(std::string("Couldn't find a string value with name: ") + name);
     }
-};
-
-class JSONArray : public JSONValue, public std::vector<PJSONValue> {
-public:
-    virtual const char* name() { return "Array"; }
-};
-
-class JSONNull : public JSONValue {
-public:
-    virtual const char* name() { return "Null"; }
+    template<class T>
+    void getVector(const std::string& name, std::vector<T>& output) {
+        JSONArray* holder = dynamic_cast<JSONArray*>((*this)[name].get());
+        for (auto value : *holder) {
+            output.push_back(json2val<T>(value));
+        }
+    }
 };
 
 

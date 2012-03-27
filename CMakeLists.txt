@@ -2,7 +2,7 @@ project(yajp)
 
 cmake_minimum_required(VERSION 2.8)
 
-add_definitions( -std=c++0x -Wall -Wextra )
+add_definitions( -std=c++11 -Wall -Wextra )
 
 if ( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
     add_definitions( -D DEBUG )

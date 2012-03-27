@@ -24,6 +24,15 @@
 namespace yajp {
 namespace mappers {
 
+
+class JSONObjectMapper {
+public:
+    typedef std::vector<std::string, std::function>> ReaderMap;
+public:
+    JSONObjectMapper(ReaderMap& map) {
+    }
+};
+
 class JSONValueMapper {
 private:
     PJSONValue root;
