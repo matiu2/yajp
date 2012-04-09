@@ -3,9 +3,9 @@ project(parser)
 add_custom_target(ragel_images
     COMMAND ragel -Vp ${CMAKE_CURRENT_SOURCE_DIR}/number_standalone.rl | dot -Tpng > number.png
     COMMAND ragel -Vp "${CMAKE_CURRENT_SOURCE_DIR}/string_standalone.rl" | dot -Tpng > "string.png"
-    COMMAND ragel -Vp "${CMAKE_CURRENT_SOURCE_DIR}/json.rl" -S json | dot -Tpng > "json.png"
     COMMAND ragel -Vp "${CMAKE_CURRENT_SOURCE_DIR}/json.rl" -M array | dot -Tpng > "array.png"
     COMMAND ragel -Vp "${CMAKE_CURRENT_SOURCE_DIR}/json.rl" -M object | dot -Tpng > "object.png"
+    COMMAND ragel -Vp "${CMAKE_CURRENT_SOURCE_DIR}/json.rl" -S json | dot -Tpng > "json.png"
 )
 
 # RAGEL DOCS EXCERPT
@@ -29,13 +29,14 @@ add_custom_target(ragel_images
 #
 #       -G2    (C/D) Generate a really fast goto driven FSM by embedding action lists in the state machine control code.
 
-#set(FSM_TYPE -G2 -L) # Inhibit writing .rl line numbers for debuggers
-set(FSM_TYPE -G2)
+#set(FSM_TYPE -T0 -L) # Inhibit writing .rl line numbers for debuggers
+set(FSM_TYPE -G0 -L)
 
 add_custom_target(
     ragel_headers
-    COMMAND ragel ${FSM_TYPE} "${CMAKE_CURRENT_SOURCE_DIR}/number_standalone.rl" -o "${CMAKE_CURRENT_SOURCE_DIR}/number.hpp"
-    COMMAND ragel ${FSM_TYPE} "${CMAKE_CURRENT_SOURCE_DIR}/string_standalone.rl" -o "${CMAKE_CURRENT_SOURCE_DIR}/string.hpp"
+    #COMMAND ragel ${FSM_TYPE} "${CMAKE_CURRENT_SOURCE_DIR}/number_standalone.rl" -o "${CMAKE_CURRENT_SOURCE_DIR}/number.hpp"
+    #COMMAND ragel ${FSM_TYPE} "${CMAKE_CURRENT_SOURCE_DIR}/string_standalone.rl" -o "${CMAKE_CURRENT_SOURCE_DIR}/string.hpp"
     COMMAND ragel ${FSM_TYPE} "${CMAKE_CURRENT_SOURCE_DIR}/json.rl" -o "${CMAKE_CURRENT_SOURCE_DIR}/json.hpp"
-    DEPENDS number.rl string.rl json.rl
+    DEPENDS json.rl
+    #DEPENDS number.rl string.rl json.rl
 )

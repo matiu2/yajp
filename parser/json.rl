@@ -1,4 +1,17 @@
-/* Ragel file for parsing json */
+/* Ragel file for parsing json.
+
+** History **
+
+Originally I tried to do it all in one go. However, that's not possible as JSON is recursive.
+
+I then tried to do it as 'in one go' as possible, thinking to make it the fastest json parser available, but that's not very flexible to program on top of.
+
+** Summary **
+
+So now it I've separated it out into 4 state machines for the 4 hard JSON types of Array, Dictionary, Number and String. The static ones can be read with straight loops; 'null', 'true', 'false'.
+
+
+*/
 
 #pragma once
 #ifndef YAJP_JSON_HPP
@@ -14,114 +27,219 @@
 namespace yajp {
 
 %%{
-    machine json;
-    include "string.rl";
-    include "number.rl";
-
-    # General JSON Actions
-    action foundTrue { mapper.foundSimpleValue(true); }
-    action foundFalse { mapper.foundSimpleValue(false); }
-    action foundNull { mapper.foundNull(); }
-    action parseArray {
-        // Called when we hit the start of an array
-        // The Array is recursive, as it can hold further arrays, so we need to employ our fake stack and use fcall
-        mapper.startArray();
-        fcall array;
-    }
-    action endArray {
-        mapper.endArray();
-        fret;
-    }
-    action startObject {
-        // Called when we hit the start of an object '{' starts recursing to get the inside parts of an object
-        // The Object is recursive, as it can hold further objects, so we need to employ our fake stack and use fcall
-        mapper.startObj();
-        fcall object;
-    }
-    action endObject {
-        mapper.endObj();
-        fret;
-    }
-    action propertyName {
-        // Called when we found a new property for a value
-        mapper.propertyName(std::move(currentString));
-        currentString.clear();
-    }
-    prepush {
-        if (stack == 0)
-            stack = (int*)malloc(STACK_JUMP_SIZE);
-        else if (top % STACK_JUMP_SIZE == 0)
-            stack = (int*)realloc(stack, (top+STACK_JUMP_SIZE) * sizeof(int));
-    }
-    postpop {
-        if (top == 0) {
-            free(stack);
-            stack = 0;
-        } else if ((top+1) % STACK_JUMP_SIZE == 0) {
-                stack = (int*)realloc(stack, (top+1)*sizeof(int));
-        }
-    }
-
-    # General JSON rules
-    true = "true"@foundTrue;
-    false = "false"@foundFalse;
-    null_ = "null";
+    # Find the start of the next value
+    machine start;
     _ = space**; # Stuff to ignore
-    start_array = '['>parseArray;
-    start_object = '{'>startObject;
-    value = start_array|start_object|string@stringDone|number|true|false|null_;
-    main := _.value._;
+    action returnLiteral { return (JSONType)*p; } 
+    action returnBoolean { fhold; return JSONType::boolean; } # 'fhold' is to make sure 'frue' is not considered to be 'true'
+    action returnNumber { fhold; return JSONType::number; } # Don't eat the first letter when finding a number
+    start_array = '[';
+    start_object = '{';
+    start_boolean = [tf];
+    start_number = [\-0-9.];
+    start_string = '"';
+    start_null = 'n';
+    start_value = _.(start_array@returnLiteral|start_object@returnLiteral|start_boolean@returnBoolean|start_null@returnLiteral|start_number@returnNumber|start_string@returnLiteral);
+    main := start_value;
 
-    empty_array = _.']';
-    array := (empty_array|(_.(value._.','._)**.value._.']'))@endArray;
+    # Easy types first
 
-    empty_object = _.'}';
-    object := (empty_object|((_.string@propertyName._.':'._.value._.','._)**.(_.string@propertyName._.':'._.value._).'}'._))@endObject;
+    # Boolean machine
+    #machine boolean;
+    #action gotTrue { return true; }
+    #action gotFalse { return false; }
+    #true = "true"@gotTrue;
+    #false = "false"@gotFalse;
+    #main := (true|false);
+
+    #machine null;
+    #main := "ull";
+
+    # Harder types
+
+    # Array machine
+    machine array;
+    _ = space**; # Stuff to ignore
+    action haveMore { return true; }
+    action noMore { return false; }
+    separator = _.','._;
+    end = _.']';
+    main := separator@haveMore|end@noMore;
+
+    # For Reading an attribute of an object
+    machine before_attribute;
+    _ = space**; # Stuff to ignore
+    main := _.'"';
+
+    # For Reading an attribute of an object
+    machine after_attribute;
+    _ = space**; # Stuff to ignore
+    main := _.':';
+
+    # For checking if we have more object to read
+    machine object;
+    _ = space**; # Stuff to ignore
+    action haveMore { return true; }
+    action noMore { return false; }
+    value_separator = _.','._;
+    end = _.'}';
+    main := _.(value_separator@haveMore|end@noMore);
+
+    # string machine
+    machine string;
+    include string "string.rl";
+    main := string;
+
+    # Number machine
+    machine number;
+    include "number.rl";
+    main := number;
+
 }%%
 
 const int STACK_JUMP_SIZE=16384; // How much memory in 'ints' to get each time the yajp stack needs an update
 
 class JSONParser {
+public:
+    enum JSONType { null='n', boolean='t', array='[', object='{', number='0', string='"' };
 private:
-
-    // All the bits it needs
-    %%write data;
-
     // Ragel vars
-    int cs; // Current state
     const char *p;
     const char *pe;
     const char *eof;
+    
+    void readAttributeStart() {
+        %%{
+            machine before_attribute;
+            write data;
+            write init;
+            write exec;
+        }%%
+    }
+
+    void readAttributeEnd() {
+        %%{
+            machine after_attribute;
+            write data;
+            write init;
+            write exec;
+        }%%
+    }
+
+    /**
+    * Tests a null terminated C string. If we reach the null char .. just returns.
+    * If something doesn't match, it throws the JSONParserError.
+    *
+    * @param test A null terminated C string to compare 'p' against.
+    */
+    void checkStaticString(const char* test) {
+        while (*test)
+            if ((*test++) != (*p++))
+                throw JSONParserError(*this);
+    }
 
 public:
     /// @param json - KEEP THIS STRING ALIVE .. WE DONT COPY IT .. WE USE IT
     JSONParser(const std::string& json) : p(json.c_str()), pe(p+json.length()), eof(pe) {}
     JSONParser(JSONParser&& original) : p(original.p), pe(original.pe), eof(original.eof) {}
 
+    JSONType getNextType() {
+        int cs; // Current state
+        %%{
+            machine start;
+            write data;
+            write init;
+            write exec;
+        }%%
+    }
+
+    void readNull() { checkStaticString("ull"); }
+
+    bool readBoolean() {
+        switch (*p++) {
+            case 't':
+                checkStaticString("rue");
+                break;
+            case 'f':
+                checkStaticString("alse");
+                break;
+            default:
+                throw JSONParserError(*this);
+        }
+    }
+
     /**
-    * @brief Parses a single JSON value. 
+    * @brief Reads in a number from the json stream
     *
-    * @tparam Target The real type that we're parsing to
-    * @param mapper A reference to the mapper object that maps the json callbacks to an actual c++ object
+    * @tparam T the type of number we expect to find, defaults to double
+    *
+    * @return The value of the number we read
     */
-    template <class Mapper>
-    void parseJSONValue(Mapper& mapper) {
-        int* stack = 0; // stack for ragel's fcall
-        int top = 0;
-        // int machine action vars
+    template <typename T=double>
+    T readNumber() {
+        int cs; // Current state
         bool intIsNeg=false; // true if the int part is negative
         bool expIsNeg=false; // true if the exponent part is negative
         unsigned long long intPart=0; // The integer part of the number
-        long expPart1=0; // The inferred exponent part gotten from counting the decimal digits
-        long expPart2=0; // The explicit exponent part from the number itself, added to the inferred exponent part
-        // string machine action vars
-        unsigned long uniChar = 0;
-        std::string currentString;
-        // Initialization of state machine
-        %%write init;
-        // Execution of state machine
-        %%write exec;
+        int expPart1=0; // The inferred exponent part gotten from counting the decimal digits
+        int expPart2=0; // The explicit exponent part from the number itself, added to the inferred exponent part
+        %%{
+            machine string;
+            write data;
+            write init;
+            write exec;
+        }%%
     }
+
+    std::string readString() {
+        int cs; // Current state
+        unsigned long uniChar = 0;
+        std::string output;
+        %%{
+            machine string;
+            write data;
+            write init;
+            write exec;
+        }%%
+        return output;
+    }
+
+    bool doIHaveMoreArray() {
+        int cs; // Current state
+        %%{
+            machine array;
+            write data;
+            write init;
+            write exec;
+        }%%
+    }
+
+    /**
+    * @brief While reading an object .. get the next attribute name
+    */
+    std::string getNextAttribute {
+        int cs; // Current state
+        readAttributeStart();
+        std::string output = readString();
+        readAttributeEnd();
+        return output;
+    }
+
+    /**
+    * @brief While reading an object .. returns true if there is more to read. Also moves us forward in the parsing.
+    *
+    * @return true if there is more Object to read
+    */
+    bool doIHaveMoreObject() {
+        int cs; // Current state
+        %%{
+            machine object;
+            write data;
+            write init;
+            write exec;
+        }%%
+    }
+
 };
 
 
