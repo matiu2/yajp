@@ -44,12 +44,11 @@ struct Person2 : public Person {
 BOOST_AUTO_TEST_SUITE( any )
 
 BOOST_AUTO_TEST_CASE( simpleMap ) {
-
     using yajp::JSONParser;
     using yajp::mappers::AnyMapper;
     using boost::any_cast;
     // Parse the json
-    std::string json2parse = R"( { "name": "tweedle", "age": 5 )";
+    std::string json2parse = R"( { "name": "tweedle", "age": 5 } )";
     JSONParser parser(json2parse);
     AnyMapper mapper;
     parser.parseJSONValue(mapper);
