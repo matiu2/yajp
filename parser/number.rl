@@ -1,6 +1,6 @@
 %%{
     # number machine
-    machine json;
+    machine number;
 
     # Actions
     # handle a number
@@ -44,23 +44,15 @@
         std::cout << "gotNumber " << expIsNeg << " - " << expPart1 << " - " << expPart2 << " - " << intPart << " - " << intIsNeg << " - ";
         #endif
         long expPart = expIsNeg ? expPart1 - expPart2 : expPart1 + expPart2;
+        T result = intPart;
         if (expPart < 0) {
-            double result = intPart;
             while (expPart++ < 0)
                 result *= 0.1;
-            if (intIsNeg)
-                result = -result;
-            mapper.foundSimpleValue(result);
+            return intIsNeg ? -result : result;
         } else {
-            unsigned long result = intPart;
             while (expPart-- > 0)
                 result *= 10;
-            if (intIsNeg) {
-                signed long result2 = -result;
-                mapper.foundSimpleValue(result2);
-            } else {
-                mapper.foundSimpleValue(result);
-            }
+            return intIsNeg ? -result : result;
         }
     }
     # JSON Number expression
@@ -68,5 +60,6 @@
     basic_float = (basic_int|'-'?.'0').'.'.([0-9]+)@recordDecimal;
     exponent = [eE].([+\-]?@setExpNeg).([0-9]+)@recordExponent;
     number = (basic_int . (exponent?) | basic_float . (exponent?))%gotNumber;
+    #main := number;
 
 }%%
