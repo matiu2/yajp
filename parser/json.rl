@@ -18,7 +18,7 @@ So now it I've separated it out into 4 state machines for the 4 hard JSON types 
 #define YAJP_JSON_HPP
 
 #include <string>
-#include <vector>
+#include <stdexcept>
 
 #ifdef DEBUG
 #include <iostream>
@@ -33,6 +33,7 @@ namespace yajp {
     action returnLiteral { return (JSONType)*p; } 
     action returnBoolean { fhold; return JSONType::boolean; } # 'fhold' is to make sure 'frue' is not considered to be 'true'
     action returnNumber { fhold; return JSONType::number; } # Don't eat the first letter when finding a number
+    action handleError { hitError = true; }
     start_array = '[';
     start_object = '{';
     start_boolean = [tf];
@@ -40,7 +41,7 @@ namespace yajp {
     start_string = '"';
     start_null = 'n';
     start_value = _.(start_array@returnLiteral|start_object@returnLiteral|start_boolean@returnBoolean|start_null@returnLiteral|start_number@returnNumber|start_string@returnLiteral);
-    main := start_value;
+    main := start_value$!handleError;
 
     # Easy types first
 
@@ -67,14 +68,14 @@ namespace yajp {
     main := separator@haveMore|end@noMore;
 
     # For Reading an attribute of an object
-    machine before_attribute;
-    _ = space**; # Stuff to ignore
-    main := _.'"';
+    # machine before_attribute;
+    # _ = space**; # Stuff to ignore
+    # main := _.'"';
 
     # For Reading an attribute of an object
-    machine after_attribute;
-    _ = space**; # Stuff to ignore
-    main := _.':';
+    # machine after_attribute;
+    # _ = space**; # Stuff to ignore
+    # main := _.':';
 
     # For checking if we have more object to read
     machine object;
@@ -99,31 +100,85 @@ namespace yajp {
 
 const int STACK_JUMP_SIZE=16384; // How much memory in 'ints' to get each time the yajp stack needs an update
 
+class JSONParserError : public std::runtime_error {
+private:
+    std::string make_msg(const char* location, const std::string& msg) {
+        return msg + " at " + location;
+    }
+public:
+    JSONParserError(const char* location, const std::string& msg) : std::runtime_error(make_msg(location, msg)) { }
+};
+
 class JSONParser {
 public:
-    enum JSONType { null='n', boolean='t', array='[', object='{', number='0', string='"' };
+    enum JSONType { null='n', boolean='t', array='[', object='{', number='0', string='"', HIT_END=0, ERROR='x' };
 private:
     // Ragel vars
     const char *p;
     const char *pe;
     const char *eof;
+    // Our vars
+    bool skipOverErrors;
     
+    /// Searches though whitespace for a '"' meaning the start of an attribute name
     void readAttributeStart() {
-        %%{
-            machine before_attribute;
-            write data;
-            write init;
-            write exec;
-        }%%
+        while ((p < pe) && (p < eof)) {
+            switch (*p++) {
+            case 9:
+            case 10:
+            case 13:
+            case ' ':
+                continue;
+            case '"':
+                return;
+            default:
+                throw JSONParserError(p, "Couldn't find '\"' to signify the start of an attribute value");
+            }
+        }
+        throw JSONParserError(p, "hit end while looking for '\"' to signify the start of an attribute value");
     }
 
+    /// Searches though whitespace for a ':' meaning the change between an attribute name and an attribute value
     void readAttributeEnd() {
-        %%{
-            machine after_attribute;
-            write data;
-            write init;
-            write exec;
-        }%%
+        while ((p < pe) && (p < eof)) {
+            switch (*p++) {
+            case 9:
+            case 10:
+            case 13:
+            case ' ':
+                continue;
+            case ':':
+                return;
+            default:
+                throw JSONParserError(p, "Couldn't find ':' to signify the start of an attribute value");
+            }
+        }
+        throw JSONParserError(p, "hit end while looking for ':' to signify the start of an attribute value");
+    }
+
+    /**
+    * If 'skipOverErrors' is false, throws a JSONParserError, otherwise just returns.
+    * Context is automatically passed to the JSONParserError object.
+    *
+    * @param message The error message to show
+    */
+    void handleError(const std::string& message) {
+        if (skipOverErrors) {
+            // Skip Forward until we find a new type, then reverse one
+            while (p < pe) {
+                switch (getNextType(true)) {
+                    JSONType::number:
+                        --p;
+                        return;
+                    JSONType::ERROR:
+                        ++p;
+                        continue;
+                    default:
+                        return;
+                }
+            }
+        } else
+            throw JSONParserError(p, message);
     }
 
     /**
@@ -135,36 +190,64 @@ private:
     void checkStaticString(const char* test) {
         while (*test)
             if ((*test++) != (*p++))
-                throw JSONParserError(*this);
+                handleError(std::string("Static String '") + test + "' doesn't match");
     }
+
 
 public:
     /// @param json - KEEP THIS STRING ALIVE .. WE DONT COPY IT .. WE USE IT
-    JSONParser(const std::string& json) : p(json.c_str()), pe(p+json.length()), eof(pe) {}
-    JSONParser(JSONParser&& original) : p(original.p), pe(original.pe), eof(original.eof) {}
+    JSONParser(const std::string& json, bool skipOverErrors=false) :
+        p(json.c_str()), pe(p+json.length()), eof(pe), skipOverErrors(skipOverErrors) {}
+    JSONParser(JSONParser&& original, bool skipOverErrors=false) :
+        p(original.p), pe(original.pe), eof(original.eof), skipOverErrors(skipOverErrors) {}
 
-    JSONType getNextType() {
+    /**
+    * Eats whitespace, then tells you the next type found in the JSON stream.
+    * It eats the first letter for all types except number.
+    *
+    * @param returnError defaults to False .. true is used internally by 'handleError'
+    *    returnError - skipOverErrors - behaviour on syntax error - on end of stream
+    *      true      -   true         - returns ERROR             - returns HIT_END
+    *      true      -   false        - returns ERROR             - returns HIT_END
+    *      false     -   true         - skips forward until next type and returns that - returns HIT_END
+    *      false     -   false        - throws JSONParserError    - throws JSONParserError
+    *
+    * @return the 'JSONType' found,
+    */
+    JSONType getNextType(bool returnError=false) {
         int cs; // Current state
+        bool hitError = false; // Set to true by state machine if we hit an error.
         %%{
             machine start;
             write data;
             write init;
             write exec;
         }%%
+        if (hitError) {
+            if (returnError)
+                return p < pe ? ERROR : HIT_END;
+            else
+                handleError("Couldn't Identify next JSON Type");
+        }
     }
 
     void readNull() { checkStaticString("ull"); }
 
+    /**
+    * Read a boolean value, either 'true' or 'false'. Assume's you've already found it with 'getNextType'
+    *
+    * @return The value of the boolean read.
+    */
     bool readBoolean() {
         switch (*p++) {
             case 't':
                 checkStaticString("rue");
-                break;
+                true;
             case 'f':
                 checkStaticString("alse");
-                break;
+                false;
             default:
-                throw JSONParserError(*this);
+                handleError("Couldn't read 'true' nor 'false'");
         }
     }
 
@@ -184,8 +267,8 @@ public:
         int expPart1=0; // The inferred exponent part gotten from counting the decimal digits
         int expPart2=0; // The explicit exponent part from the number itself, added to the inferred exponent part
         %%{
-            machine string;
-            write data;
+            machine number;
+            write data nofinal noerror;
             write init;
             write exec;
         }%%
@@ -197,7 +280,7 @@ public:
         std::string output;
         %%{
             machine string;
-            write data;
+            write data nofinal noerror;
             write init;
             write exec;
         }%%
@@ -208,7 +291,7 @@ public:
         int cs; // Current state
         %%{
             machine array;
-            write data;
+            write data nofinal noerror;
             write init;
             write exec;
         }%%
@@ -217,7 +300,7 @@ public:
     /**
     * @brief While reading an object .. get the next attribute name
     */
-    std::string getNextAttribute {
+    std::string getNextAttribute() {
         int cs; // Current state
         readAttributeStart();
         std::string output = readString();
@@ -234,14 +317,13 @@ public:
         int cs; // Current state
         %%{
             machine object;
-            write data;
+            write data  nofinal noerror;
             write init;
             write exec;
         }%%
     }
 
 };
-
 
 } // namespace yajp
 
