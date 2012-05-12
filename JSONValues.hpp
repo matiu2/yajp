@@ -23,7 +23,8 @@
 
 namespace yajp {
 
-class JSONValue, JSONObject;
+class JSONValue;
+class JSONObject;
 
 typedef std::unique_ptr<JSONValue> PJSONValue;
 
@@ -49,7 +50,8 @@ public:
     virtual const char* name() { return "String"; }
     JSONString(const std::string& value="") : value(value) {}
     JSONString(std::string&& value) : value(std::move(value)) {}
-    const std::string& asString() { return value; }
+    const std::string& asString() const { return value; }
+    std::string&& asString() { return std::move(value); }
 };
 
 class JSONArray : public JSONValue, public std::vector<PJSONValue> {
@@ -57,17 +59,12 @@ public:
     virtual const char* name() { return "Array"; }
 };
 
-class JSONNull : public JSONValue {
-public:
-    virtual const char* name() { return "Null"; }
-};
-
 /// An easy conversion template function
 /// Default assumes it's a number
 template <class T> T json2val(JSONValue* val) {
     return dynamic_cast<JSONNumber<T>*>(val).asNumber();
 }
-template <> std::string <std::string> convert(JSONValue* val) {
+template <> std::string json2val<std::string> (JSONValue* val) {
     JSONString* s = dynamic_cast<JSONString*>(val);
     return s->asString();
 }
@@ -90,13 +87,22 @@ public:
         else
             throw std::logic_error(std::string("Couldn't find a string value with name: ") + name);
     }
+    /// Returns a vector of 'T' stored under 'name'
     template<class T>
-    void getVector(const std::string& name, std::vector<T>& output) {
+    std::vector<T> getVector(const std::string& name) {
+        std::vector<T> result;
         JSONArray* holder = dynamic_cast<JSONArray*>((*this)[name].get());
         for (auto value : *holder) {
-            output.push_back(json2val<T>(value));
+            result.push_back(json2val<T>(value));
         }
+        return result;
     }
+    JSONArray* getArray(const std::string& name) { return dynamic_cast<JSONArray*>((*this)[name].get()); }
+};
+
+class JSONNull : public JSONValue {
+public:
+    virtual const char* name() { return "Null"; }
 };
 
 
