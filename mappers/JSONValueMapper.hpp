@@ -18,7 +18,7 @@
 
 #include "../JSONValues.hpp"
 #include "../json_exceptions.hpp"
-#include <vector>
+#include <stack>
 #include <string>
 
 namespace yajp {
@@ -27,7 +27,7 @@ namespace mappers {
 
 class JSONObjectMapper {
 public:
-    typedef std::vector<std::string, std::function>> ReaderMap;
+    typedef std::vector<std::string, std::function> ReaderMap;
 public:
     JSONObjectMapper(ReaderMap& map) {
     }
@@ -36,7 +36,7 @@ public:
 class JSONValueMapper {
 private:
     PJSONValue root;
-    std::vector<JSONValue*> stack;
+    std::stack<JSONValue*> stack;
     JSONObject* currentObject;
     JSONArray* currentArray;
     std::string lastPropertyName;
@@ -78,31 +78,30 @@ public:
     T* startArrayOrObject() {
         T* result = new T();
         PJSONValue newVal = PJSONValue(result);
-        stack.push_back(result);
+        stack.push(result);
         storeValue(std::move(newVal));
         return result;
     }
     void startArray() {
         currentArray = startArrayOrObject<JSONArray>();
+        currentObject = 0;
     }
     void endArray() {
-        stack.pop_back();
-        currentArray = dynamic_cast<JSONArray*>(stack.back());
-        currentObject = 0;
-        if (currentArray == 0) {
-            throw InvalidJSON("We're ending an array in the json, but we don't have an array on the stack");
+        stack.pop();
+        if (!stack.empty()) {
+            currentArray = dynamic_cast<JSONArray*>(stack.top());
+            currentObject = dynamic_cast<JSONObject*>(stack.top());
+        } else {
+            currentArray = 0;
+            currentObject = 0;
         }
     }
     void startObj() {
         currentObject = startArrayOrObject<JSONObject>();
+        currentArray = 0;
     }
     void endObj() {
-        stack.pop_back();
-        currentObject = dynamic_cast<JSONObject*>(stack.back());
-        currentArray = 0;
-        if (currentObject == 0) {
-            throw InvalidJSON("We're ending an object in the json, but we don't have an object on the stack");
-        }
+        endArray();
     }
     void propertyName(std::string&& name) { lastPropertyName = std::move(name); }
 };
