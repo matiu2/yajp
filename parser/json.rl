@@ -30,10 +30,9 @@ namespace yajp {
     # Find the start of the next value
     machine start;
     _ = space**; # Stuff to ignore
-    action returnLiteral { return (JSONType)*p; } 
-    action returnBoolean { fhold; return JSONType::boolean; } # 'fhold' is to make sure 'frue' is not considered to be 'true'
-    action returnNumber { fhold; return JSONType::number; } # Don't eat the first letter when finding a number
-    action handleError { hitError = true; }
+    action returnLiteral { return (JSONType)*p++; } 
+    action returnBoolean { return JSONType::boolean; } # 'fhold' is to make sure 'frue' is not considered to be 'true'
+    action returnNumber { return JSONType::number; } # Don't eat the first letter when finding a number
     start_array = '[';
     start_object = '{';
     start_boolean = [tf];
@@ -41,50 +40,9 @@ namespace yajp {
     start_string = '"';
     start_null = 'n';
     start_value = _.(start_array@returnLiteral|start_object@returnLiteral|start_boolean@returnBoolean|start_null@returnLiteral|start_number@returnNumber|start_string@returnLiteral);
-    main := start_value$!handleError;
-
-    # Easy types first
-
-    # Boolean machine
-    #machine boolean;
-    #action gotTrue { return true; }
-    #action gotFalse { return false; }
-    #true = "true"@gotTrue;
-    #false = "false"@gotFalse;
-    #main := (true|false);
-
-    #machine null;
-    #main := "ull";
+    main := start_value;
 
     # Harder types
-
-    # Array machine
-    machine array;
-    _ = space**; # Stuff to ignore
-    action haveMore { return true; }
-    action noMore { return false; }
-    separator = _.','._;
-    end = _.']';
-    main := separator@haveMore|end@noMore;
-
-    # For Reading an attribute of an object
-    # machine before_attribute;
-    # _ = space**; # Stuff to ignore
-    # main := _.'"';
-
-    # For Reading an attribute of an object
-    # machine after_attribute;
-    # _ = space**; # Stuff to ignore
-    # main := _.':';
-
-    # For checking if we have more object to read
-    machine object;
-    _ = space**; # Stuff to ignore
-    action haveMore { return true; }
-    action noMore { return false; }
-    value_separator = _.','._;
-    end = _.'}';
-    main := _.(value_separator@haveMore|end@noMore);
 
     # string machine
     machine string;
@@ -97,8 +55,6 @@ namespace yajp {
     main := number;
 
 }%%
-
-const int STACK_JUMP_SIZE=16384; // How much memory in 'ints' to get each time the yajp stack needs an update
 
 class JSONParserError : public std::runtime_error {
 private:
@@ -167,10 +123,10 @@ private:
             // Skip Forward until we find a new type, then reverse one
             while (p < pe) {
                 switch (getNextType(true)) {
-                    JSONType::number:
+                    case number:
                         --p;
                         return;
-                    JSONType::ERROR:
+                    case ERROR:
                         ++p;
                         continue;
                     default:
@@ -193,7 +149,6 @@ private:
                 handleError(std::string("Static String '") + test + "' doesn't match");
     }
 
-
 public:
     /// @param json - KEEP THIS STRING ALIVE .. WE DONT COPY IT .. WE USE IT
     JSONParser(const std::string& json, bool skipOverErrors=false) :
@@ -215,19 +170,33 @@ public:
     * @return the 'JSONType' found,
     */
     JSONType getNextType(bool returnError=false) {
-        int cs; // Current state
-        bool hitError = false; // Set to true by state machine if we hit an error.
-        %%{
-            machine start;
-            write data;
-            write init;
-            write exec;
-        }%%
-        if (hitError) {
-            if (returnError)
-                return p < pe ? ERROR : HIT_END;
-            else
-                handleError("Couldn't Identify next JSON Type");
+        while ((p < pe) && (p < eof)) {
+            switch( (*p++) ) {
+                case 9: case 10: case 13:
+                case ' ':
+                    continue;
+                case '"': return string;
+                case '-': case '0': case '1': case '2': case '3': case '4':
+                case '5': case '6': case '7': case '8': case '9': {
+                    --p;
+                    return number;
+                }
+                case '[': return array;
+                case 'f': return boolean;
+                case 'n': return null;
+                case 't': return boolean;
+                case '{': return object;
+                default:
+                    break;
+            }
+        }
+        if ((p >= pe) || (p >= eof)) {
+
+        if (returnError)
+            return p < pe ? ERROR : HIT_END;
+        else {
+            handleError("Couldn't Identify next JSON Type");
+            return getNextType(returnError); // 
         }
     }
 
@@ -242,10 +211,10 @@ public:
         switch (*p++) {
             case 't':
                 checkStaticString("rue");
-                true;
+                return true;
             case 'f':
                 checkStaticString("alse");
-                false;
+                return false;
             default:
                 handleError("Couldn't read 'true' nor 'false'");
         }
@@ -260,52 +229,91 @@ public:
     */
     template <typename T=double>
     T readNumber() {
-        int cs; // Current state
         bool intIsNeg=false; // true if the int part is negative
         bool expIsNeg=false; // true if the exponent part is negative
         unsigned long long intPart=0; // The integer part of the number
         int expPart1=0; // The inferred exponent part gotten from counting the decimal digits
         int expPart2=0; // The explicit exponent part from the number itself, added to the inferred exponent part
+        %%machine number;
+        int startState = 
+            %%write start;
+        ;
+        int errState =
+            %%write error;
+        ;
+        int cs = startState; // Current state
         %%{
-            machine number;
-            write data nofinal noerror;
-            write init;
+            #write data nofinal noerror;
+            #write init;
             write exec;
         }%%
+        if (cs == errState)
+            handleError("Couldn't read a number");
     }
 
     std::string readString() {
-        int cs; // Current state
+        %%machine string;
+        int startState = 
+            %%write start;
+        ;
+        int errState =
+            %%write error;
+        ;
+        int cs = startState; // Current state
         unsigned long uniChar = 0;
         std::string output;
-        %%{
-            machine string;
-            write data nofinal noerror;
-            write init;
-            write exec;
-        }%%
+        %%write exec;
+        if (cs == errState)
+            handleError("Couldn't read a string");
         return output;
     }
 
+    /**
+    * @brief checks if we have more array items to read
+    *
+    * @return true if there are more array to read; false if we've hit the end; throw's for unexpected hit
+    */
     bool doIHaveMoreArray() {
-        int cs; // Current state
-        %%{
-            machine array;
-            write data nofinal noerror;
-            write init;
-            write exec;
-        }%%
+        return doIHaveMore<']'>();
     }
 
     /**
     * @brief While reading an object .. get the next attribute name
     */
     std::string getNextAttribute() {
-        int cs; // Current state
         readAttributeStart();
         std::string output = readString();
         readAttributeEnd();
         return output;
+    }
+
+    /**
+    * Reads through whitespace, return true if it hits @a separator first, false if it hits @a end first. 
+    * Throws a 'JSONParser' error if it hits any other non-whitespace character
+    *
+    * @tparam end The character that means we hit the end, no more to come
+    * @tparam separator The character that means we have more to come
+    *
+    * @return returns true if we can expect more input, true if we just hit the end
+    */
+    template <char end, char separator=','>
+    bool doIHaveMore() {
+        while ((p < pe) && (p < eof)) {
+            switch (*p++) {
+            case 9:
+            case 10:
+            case 13:
+            case ' ':
+                continue;
+            case separator:
+                return true;
+            case end:
+                return false;
+            default:
+                handleError(std::string("Expected a '") + separator + "' or a '" + end + "' but got:");
+            }
+        }
+        handleError(std::string("Expected a '") + separator + "' or a '" + end + "' but hit the end of the input");
     }
 
     /**
@@ -314,13 +322,7 @@ public:
     * @return true if there is more Object to read
     */
     bool doIHaveMoreObject() {
-        int cs; // Current state
-        %%{
-            machine object;
-            write data  nofinal noerror;
-            write init;
-            write exec;
-        }%%
+        return doIHaveMore<'}'>();
     }
 
 };
