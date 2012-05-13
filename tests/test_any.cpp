@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE( simpleMap ) {
     std::string json2parse = R"( { "name": "tweedle", "age": 5 } )";
     JSONParser parser(json2parse);
     AnyMapper mapper;
-    BOOST_CHECK_EQUAL(parser.getNextType(), JSONParser::object);
+    parser.parseJSONValue(mapper);
     boost::any& result = mapper.getValue();
     // Now turn the result into a person
     Person p;

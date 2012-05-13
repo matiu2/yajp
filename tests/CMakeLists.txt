@@ -60,8 +60,6 @@ boost_test(
 boost_test(
     json_value
     simpleMap
-    employee
-    manager
 )
 
 #boost_test(
