@@ -27,77 +27,87 @@
 BOOST_AUTO_TEST_SUITE( string )
 
 BOOST_AUTO_TEST_CASE( empty_string ) {
-    std::string json(r[[""]]);
+    std::string json("\"\"");
     yajp::JSONParser parser(json);
+    BOOST_CHECK_EQUAL(parser.getNextType(), yajp::JSONParser::string);
     BOOST_CHECK_EQUAL("", parser.readString());
 }
 
 BOOST_AUTO_TEST_CASE( simple_string ) {
     std::string json("\"ABC\"");
     yajp::JSONParser parser(json);
+    BOOST_CHECK_EQUAL(parser.getNextType(), yajp::JSONParser::string);
     BOOST_CHECK_EQUAL("ABC", parser.readString());
 }
 
 BOOST_AUTO_TEST_CASE( carriage  ) {
     std::string json("\"x\\ry\"");
     yajp::JSONParser parser(json);
+    BOOST_CHECK_EQUAL(parser.getNextType(), yajp::JSONParser::string);
     BOOST_CHECK_EQUAL("x\ry", parser.readString());
 }
 
 BOOST_AUTO_TEST_CASE( back_slash  ) {
     std::string json("\"one \\\\ two\"");
     yajp::JSONParser parser(json);
+    BOOST_CHECK_EQUAL(parser.getNextType(), yajp::JSONParser::string);
     BOOST_CHECK_EQUAL("one \\ two", parser.readString());
 }
 
 BOOST_AUTO_TEST_CASE( quote_start ) {
     std::string json("\"\\\"This is a quote.\"");
     yajp::JSONParser parser(json);
+    BOOST_CHECK_EQUAL(parser.getNextType(), yajp::JSONParser::string);
     BOOST_CHECK_EQUAL("\"This is a quote.", parser.readString());
 }
 
 BOOST_AUTO_TEST_CASE( quote_middle ) {
     std::string json("\"This is a \\\"quote\"");
     yajp::JSONParser parser(json);
+    BOOST_CHECK_EQUAL(parser.getNextType(), yajp::JSONParser::string);
     BOOST_CHECK_EQUAL("This is a \"quote", parser.readString());
 }
 
 BOOST_AUTO_TEST_CASE( quote_end ) {
     std::string json("\"This is a quote\\\"\"");
     yajp::JSONParser parser(json);
+    BOOST_CHECK_EQUAL(parser.getNextType(), yajp::JSONParser::string);
     BOOST_CHECK_EQUAL("This is a quote\"", parser.readString());
 }
 
 BOOST_AUTO_TEST_CASE( quote_three ) {
     std::string json("\"\\\"This is a \\\"quote\\\"\"");
     yajp::JSONParser parser(json);
+    BOOST_CHECK_EQUAL(parser.getNextType(), yajp::JSONParser::string);
     BOOST_CHECK_EQUAL("\"This is a \"quote\"", parser.readString());
 }
 
 BOOST_AUTO_TEST_CASE( lots_of_specials1 ) {
-    std::string json(r[[\"This is a \"quote. A backslash \\. A front slash /. A formfeed \f. A new line \n. a
-    carriage return \\r.BC\"]]);
+    std::string json("\"This is a \\\"quote. A backslash \\\\. A front slash /. A formfeed \\f. A new line \\n. a carriage return \\r.BC\"");
     yajp::JSONParser parser(json);
-    BOOST_CHECK_EQUAL("This is a \"quote. A backslash \. A front slash /. A formfeed \f. A new line \n. a carriage
-    return \r.BC", parser.readString());
+    BOOST_CHECK_EQUAL(parser.getNextType(), yajp::JSONParser::string);
+    BOOST_CHECK_EQUAL("This is a \"quote. A backslash \\. A front slash /. A formfeed \f. A new line \n. a carriage return \r.BC", parser.readString());
 }
 
 BOOST_AUTO_TEST_CASE( unicode_cents ) {
     std::string json("\"This is \\u00A2 unicode\"");
     yajp::JSONParser parser(json);
+    BOOST_CHECK_EQUAL(parser.getNextType(), yajp::JSONParser::string);
     BOOST_CHECK_EQUAL(u8"This is \u00A2 unicode", parser.readString());
 }
 
 BOOST_AUTO_TEST_CASE( unicode_euro ) {
     std::string json("\"This is \\u20aC unicode\"");
     yajp::JSONParser parser(json);
-    BOOST_CHECK_EQUAL(u8"This is \u20ac unicode", this->parser.readString());
+    BOOST_CHECK_EQUAL(parser.getNextType(), yajp::JSONParser::string);
+    BOOST_CHECK_EQUAL(u8"This is \u20ac unicode", parser.readString());
 }
 
 BOOST_AUTO_TEST_CASE( unicode_square ) {
     std::string json("\"This is \\u20aC unicode\"");
     yajp::JSONParser parser(json);
-    BOOST_CHECK_EQUAL(u8"This is \u20ac unicode", this->parser.readString());
+    BOOST_CHECK_EQUAL(parser.getNextType(), yajp::JSONParser::string);
+    BOOST_CHECK_EQUAL(u8"This is \u20ac unicode", parser.readString());
 }
 
 BOOST_AUTO_TEST_SUITE_END()
