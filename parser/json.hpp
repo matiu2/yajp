@@ -166,7 +166,8 @@ public:
             }
         }
         if ((p >= pe) || (p >= eof)) {
-
+            returnError = true;
+        }
         if (returnError)
             return p < pe ? ERROR : HIT_END;
         else {
@@ -210,22 +211,22 @@ public:
         int expPart1=0; // The inferred exponent part gotten from counting the decimal digits
         int expPart2=0; // The explicit exponent part from the number itself, added to the inferred exponent part
         
-#line 222 "/home/matiu/projects/yajp/parser/json.rl"
+#line 223 "/home/matiu/projects/yajp/parser/json.rl"
         int startState = 
             
-#line 217 "/home/matiu/projects/yajp/parser/json.hpp"
+#line 218 "/home/matiu/projects/yajp/parser/json.hpp"
 1
-#line 224 "/home/matiu/projects/yajp/parser/json.rl"
+#line 225 "/home/matiu/projects/yajp/parser/json.rl"
         ;
         int errState =
             
-#line 223 "/home/matiu/projects/yajp/parser/json.hpp"
+#line 224 "/home/matiu/projects/yajp/parser/json.hpp"
 0
-#line 227 "/home/matiu/projects/yajp/parser/json.rl"
+#line 228 "/home/matiu/projects/yajp/parser/json.rl"
         ;
         int cs = startState; // Current state
         
-#line 229 "/home/matiu/projects/yajp/parser/json.hpp"
+#line 230 "/home/matiu/projects/yajp/parser/json.hpp"
 	{
 	if ( p == pe )
 		goto _test_eof;
@@ -253,7 +254,7 @@ st2:
 	if ( ++p == pe )
 		goto _test_eof2;
 case 2:
-#line 257 "/home/matiu/projects/yajp/parser/json.hpp"
+#line 258 "/home/matiu/projects/yajp/parser/json.hpp"
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr2;
 	goto st0;
@@ -271,7 +272,7 @@ st6:
 	if ( ++p == pe )
 		goto _test_eof6;
 case 6:
-#line 275 "/home/matiu/projects/yajp/parser/json.hpp"
+#line 276 "/home/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 46: goto st3;
 		case 69: goto st4;
@@ -302,7 +303,7 @@ st7:
 	if ( ++p == pe )
 		goto _test_eof7;
 case 7:
-#line 306 "/home/matiu/projects/yajp/parser/json.hpp"
+#line 307 "/home/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 69: goto st4;
 		case 101: goto st4;
@@ -335,7 +336,7 @@ st5:
 	if ( ++p == pe )
 		goto _test_eof5;
 case 5:
-#line 339 "/home/matiu/projects/yajp/parser/json.hpp"
+#line 340 "/home/matiu/projects/yajp/parser/json.hpp"
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr5;
 	goto st0;
@@ -353,7 +354,7 @@ st8:
 	if ( ++p == pe )
 		goto _test_eof8;
 case 8:
-#line 357 "/home/matiu/projects/yajp/parser/json.hpp"
+#line 358 "/home/matiu/projects/yajp/parser/json.hpp"
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr5;
 	goto st0;
@@ -391,17 +392,18 @@ case 8:
         }
     }
 	break;
-#line 395 "/home/matiu/projects/yajp/parser/json.hpp"
+#line 396 "/home/matiu/projects/yajp/parser/json.hpp"
 	}
 	}
 
 	_out: {}
 	}
 
-#line 233 "/home/matiu/projects/yajp/parser/json.rl"
+#line 232 "/home/matiu/projects/yajp/parser/json.rl"
 
         if (cs == errState)
             handleError("Couldn't read a number");
+        return 0;
     }
 
     std::string readString() {
@@ -409,13 +411,13 @@ case 8:
 #line 240 "/home/matiu/projects/yajp/parser/json.rl"
         int startState = 
             
-#line 413 "/home/matiu/projects/yajp/parser/json.hpp"
+#line 415 "/home/matiu/projects/yajp/parser/json.hpp"
 1
 #line 242 "/home/matiu/projects/yajp/parser/json.rl"
         ;
         int errState =
             
-#line 419 "/home/matiu/projects/yajp/parser/json.hpp"
+#line 421 "/home/matiu/projects/yajp/parser/json.hpp"
 0
 #line 245 "/home/matiu/projects/yajp/parser/json.rl"
         ;
@@ -423,7 +425,7 @@ case 8:
         unsigned long uniChar = 0;
         std::string output;
         
-#line 427 "/home/matiu/projects/yajp/parser/json.hpp"
+#line 429 "/home/matiu/projects/yajp/parser/json.hpp"
 	{
 	if ( p == pe )
 		goto _test_eof;
@@ -480,7 +482,7 @@ st1:
 	if ( ++p == pe )
 		goto _test_eof1;
 case 1:
-#line 484 "/home/matiu/projects/yajp/parser/json.hpp"
+#line 486 "/home/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 34: goto st5;
 		case 92: goto st2;
@@ -511,7 +513,7 @@ st5:
 	if ( ++p == pe )
 		goto _test_eof5;
 case 5:
-#line 515 "/home/matiu/projects/yajp/parser/json.hpp"
+#line 517 "/home/matiu/projects/yajp/parser/json.hpp"
 	goto st0;
 st0:
 cs = 0;
@@ -541,7 +543,7 @@ st2:
 	if ( ++p == pe )
 		goto _test_eof2;
 case 2:
-#line 545 "/home/matiu/projects/yajp/parser/json.hpp"
+#line 547 "/home/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 98: goto tr3;
 		case 102: goto tr4;
@@ -581,7 +583,7 @@ st4:
 	if ( ++p == pe )
 		goto _test_eof4;
 case 4:
-#line 585 "/home/matiu/projects/yajp/parser/json.hpp"
+#line 587 "/home/matiu/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 34: goto tr12;
 		case 92: goto tr13;

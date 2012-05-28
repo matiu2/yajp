@@ -175,7 +175,8 @@ public:
             }
         }
         if ((p >= pe) || (p >= eof)) {
-
+            returnError = true;
+        }
         if (returnError)
             return p < pe ? ERROR : HIT_END;
         else {
@@ -227,12 +228,11 @@ public:
         ;
         int cs = startState; // Current state
         %%{
-            #write data nofinal noerror;
-            #write init;
             write exec;
         }%%
         if (cs == errState)
             handleError("Couldn't read a number");
+        return 0;
     }
 
     std::string readString() {
