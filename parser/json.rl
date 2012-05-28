@@ -8,8 +8,7 @@ I then tried to do it as 'in one go' as possible, thinking to make it the fastes
 
 ** Summary **
 
-So now it I've separated it out into 4 state machines for the 4 hard JSON types of Array, Dictionary, Number and String. The static ones can be read with straight loops; 'null', 'true', 'false'.
-
+I've turned a lot of the ragel state machines into hard coded switch based state machines. The only two left that are ragel 'string' and 'number'.
 
 */
 
@@ -27,21 +26,6 @@ So now it I've separated it out into 4 state machines for the 4 hard JSON types 
 namespace yajp {
 
 %%{
-    # Find the start of the next value
-    machine start;
-    _ = space**; # Stuff to ignore
-    action returnLiteral { return (JSONType)*p++; } 
-    action returnBoolean { return JSONType::boolean; } # 'fhold' is to make sure 'frue' is not considered to be 'true'
-    action returnNumber { return JSONType::number; } # Don't eat the first letter when finding a number
-    start_array = '[';
-    start_object = '{';
-    start_boolean = [tf];
-    start_number = [\-0-9.];
-    start_string = '"';
-    start_null = 'n';
-    start_value = _.(start_array@returnLiteral|start_object@returnLiteral|start_boolean@returnBoolean|start_null@returnLiteral|start_number@returnNumber|start_string@returnLiteral);
-    main := start_value;
-
     # Harder types
 
     # string machine
@@ -196,7 +180,7 @@ public:
             return p < pe ? ERROR : HIT_END;
         else {
             handleError("Couldn't Identify next JSON Type");
-            return getNextType(returnError); // 
+            return getNextType(returnError);
         }
     }
 
@@ -262,7 +246,11 @@ public:
         int cs = startState; // Current state
         unsigned long uniChar = 0;
         std::string output;
-        %%write exec;
+        %%{
+            #write data nofinal noerror;
+            #write init;
+            write exec;
+        }%%
         if (cs == errState)
             handleError("Couldn't read a string");
         return output;
