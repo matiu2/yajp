@@ -16,62 +16,57 @@
  * =====================================================================================
  */
 
-#include "../parser/number.hpp"
-#include <vector>
-
-struct CallbackHandler {
-    std::vector<double> result;
-    inline void foundSimpleValue(double num) {
-        result.push_back(num);
-    }
-};
+#include "../parser/json.hpp"
 
 int main(int, char**) {
-    CallbackHandler cb;
     
     for(int i=0;i<1024*1024;++i) {
-        cb.result.clear();
-        cb.result.reserve(39);
-        yajp::parseNumber("0", cb);
-        yajp::parseNumber("1.354", cb);
-        yajp::parseNumber("1054E-3", cb);
-        yajp::parseNumber("-1054E-3", cb);
-        yajp::parseNumber("-10.54E30", cb);
-        yajp::parseNumber("-10.54E45", cb);
-        yajp::parseNumber("-345554.54e-5", cb);
-        yajp::parseNumber("-34555.534954e-5", cb);
-        yajp::parseNumber("-34555.534954e-5", cb);
-        yajp::parseNumber("549067", cb);
-        yajp::parseNumber("567", cb);
-        yajp::parseNumber("446", cb);
-        yajp::parseNumber("7", cb);
-        yajp::parseNumber("73", cb);
-        yajp::parseNumber("256", cb);
-        yajp::parseNumber("5676", cb);
-        yajp::parseNumber("3", cb);
-        yajp::parseNumber("738", cb);
-        yajp::parseNumber("684", cb);
-        yajp::parseNumber("26", cb);
-        yajp::parseNumber("673.678e-56", cb);
-        yajp::parseNumber("53", cb);
-        yajp::parseNumber("67", cb);
-        yajp::parseNumber("684", cb);
-        yajp::parseNumber("-5437E24", cb);
-        yajp::parseNumber("8", cb);
-        yajp::parseNumber("84", cb);
-        yajp::parseNumber("3", cb);
-        yajp::parseNumber("56733.68", cb);
-        yajp::parseNumber("786", cb);
-        yajp::parseNumber("6478", cb);
-        yajp::parseNumber("34563.65683598734", cb);
-        yajp::parseNumber("5673", cb);
-        yajp::parseNumber("784e-3", cb);
-        yajp::parseNumber("6", cb);
-        yajp::parseNumber("5", cb);
-        yajp::parseNumber("8678", cb);
-        yajp::parseNumber("46784", cb);
-        yajp::parseNumber("-54.0888e-6", cb);
-        yajp::parseNumber("784", cb);
+        auto read = [](const char* input) {
+             yajp::JSONParser parser(input);
+             if (parser.getNextType() != yajp::JSONParser::number)
+                 abort();
+             return parser.readNumber();
+        };
+        read("0");
+        read("1.354");
+        read("1054E-3");
+        read("-1054E-3");
+        read("-10.54E30");
+        read("-10.54E45");
+        read("-345554.54e-5");
+        read("-34555.534954e-5");
+        read("-34555.534954e-5");
+        read("549067");
+        read("567");
+        read("446");
+        read("7");
+        read("73");
+        read("256");
+        read("5676");
+        read("3");
+        read("738");
+        read("684");
+        read("26");
+        read("673.678e-56");
+        read("53");
+        read("67");
+        read("684");
+        read("-5437E24");
+        read("8");
+        read("84");
+        read("3");
+        read("56733.68");
+        read("786");
+        read("6478");
+        read("34563.65683598734");
+        read("5673");
+        read("784e-3");
+        read("6");
+        read("5");
+        read("8678");
+        read("46784");
+        read("-54.0888e-6");
+        read("784");
     }
 
 }
