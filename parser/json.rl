@@ -331,14 +331,15 @@ public:
                 readBoolean();
                 return;
             case JSONParser::array:
-                while (doIHaveMoreArray())
+                do {
                     consumeOneValue();
+                } while (doIHaveMoreArray());
                 return;
             case JSONParser::object:
-                while (doIHaveMoreObject()) {
+                do {
                     readNextAttribute();
                     consumeOneValue();
-                }
+                } while (doIHaveMoreObject());
                 return;
             case JSONParser::number:
                 readNumber<int>();
