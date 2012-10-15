@@ -697,7 +697,6 @@ case 4:
             case JSONParser::object:
                 do {
                     readNextAttribute();
-                    getNextType();
                     consumeOneValue();
                } while (doIHaveMoreObject());
                 return;
