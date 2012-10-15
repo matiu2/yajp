@@ -223,11 +223,11 @@ public:
     */
     bool readBoolean() {
         switch (*p++) {
-            case 't':
-                checkStaticString("rue");
+            case 'r':
+                checkStaticString("ue");
                 return true;
-            case 'f':
-                checkStaticString("alse");
+            case 'a':
+                checkStaticString("lse");
                 return false;
             default:
                 handleError("Couldn't read 'true' nor 'false'");
@@ -698,7 +698,7 @@ case 4:
                 do {
                     readNextAttribute();
                     consumeOneValue();
-                } while (doIHaveMoreObject());
+               } while (doIHaveMoreObject());
                 return;
             case JSONParser::number:
                 readNumber<int>();
