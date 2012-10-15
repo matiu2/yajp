@@ -1,6 +1,6 @@
 Yet another JSON Parser.
 
-Based on 'ragel' and state machines.
+Powered by 'ragel' and state machines.
 
 To build on ubuntu:
 
@@ -21,16 +21,22 @@ eog number.png # Check out the state diagram
 Architecture
 ------------
 
-** History **
-
-Originally I tried to do it all in one go. However, that's not possible as JSON is recursive.
-
-I then tried to do it as 'in one go' as possible, thinking to make it the fastest json parser available, but that's not very flexible to program on top of.
-
 ** Summary **
 
-There are two levels, the *parser level* 'JSONParser' is the lowest level and won't be needed by most uses of the library.
+There are two levels of useable code in the library.
 
-The next level I call the *Generalized Layer*; this level provides generic methods and types that can be used to map
-JSON types to your real C++ classes.
+The 'parser' directory is the lowest level and is fast and dangerous and has a functionalish usage style. It uses pointers, so the json string has to live longer than the yajp::JSONParser, and the Parser has to live longer than any exceptions it throws.
 
+Look in 'tests/parser/test_person_example' for an example on how to use the parser level to turn json text into useable c++ objects quickly;
+
+The 'json_types' directory contains higher level classes, and using the 'mapper' directory code, you can get a hierachy of JSON classes out of JSON string. These use smart pointers and virtual methods, and once you've got them, they're much easier and safer to use. However there will be a negligble performance hit, that shouldn't bother really any one.
+
+You can also use 'mappers/AnyMapper' to convert a JSONString to a hierachy of Boost::Any variant like objects.
+
+------------
+Status
+------------
+
+ * The 'parser' code works and is well tested
+ * The 'json_types' and 'mapper' code is still under development
+ * The 'mappers/AnyMapper' code is still under development

@@ -40,13 +40,63 @@ namespace yajp {
 
 }%%
 
+/// Allows lazy evaluation of number types
+class JSONNumberInfo {
+private:
+    bool _intIsNeg;
+    unsigned long long _intPart;
+    int _expPart;
+public:
+    JSONNumberInfo(bool intIsNeg, unsigned long long intPart, int expPart) : _intIsNeg(intIsNeg), _intPart(intPart), _expPart(expPart) {}
+
+    template<typename NumberType>
+    NumberType value() const {
+        NumberType result = _intPart;
+        int expPart = _expPart;
+        if (expPart < 0) {
+            while (expPart++ < 0)
+                result *= 0.1;
+            return _intIsNeg ? -result : result;
+        } else {
+            while (expPart-- > 0)
+                result *= 10;
+            return _intIsNeg ? -result : result;
+        }
+    }
+
+    operator int() { return value<int>(); }
+    operator unsigned int() { return value<unsigned int>(); }
+    operator long() { return value<long>(); }
+    operator unsigned long() { return value<unsigned long>(); }
+    operator long long() { return value<long long>(); }
+    operator unsigned long long() { return value<unsigned long long>(); }
+    operator float() { return value<float>(); }
+    operator double() { return value<double>(); }
+    operator short() { return value<short>(); }
+    operator unsigned short() { return value<unsigned short>(); }
+    operator char() { return value<char>(); }
+    operator unsigned char() { return value<unsigned char>(); }
+};
+
+class JSONParser;
+
 class JSONParserError : public std::runtime_error {
 private:
+    const JSONParser* _parser;
+    const char* _location;
+    std::string _msg;
     std::string make_msg(const char* location, const std::string& msg) {
         return msg + " at " + location;
     }
 public:
-    JSONParserError(const char* location, const std::string& msg) : std::runtime_error(make_msg(location, msg)) { }
+    JSONParserError(const JSONParser* parser, const char* location, const std::string& msg) :
+        std::runtime_error(make_msg(location, msg)),
+        _parser(parser),
+        _location(location),
+        _msg(msg) { }
+    const JSONParser* parser() const { return _parser; }
+    const char* location() const { return _location; }
+    const std::string& msg() const { return _msg; }
 };
 
 class JSONParser {
@@ -72,28 +122,10 @@ private:
             case '"':
                 return;
             default:
-                throw JSONParserError(p, "Couldn't find '\"' to signify the start of an attribute value");
+                throw JSONParserError(this, p, "Couldn't find '\"' to signify the start of an attribute value");
             }
         }
-        throw JSONParserError(p, "hit end while looking for '\"' to signify the start of an attribute value");
-    }
-
-    /// Searches though whitespace for a ':' meaning the change between an attribute name and an attribute value
-    void readAttributeEnd() {
-        while ((p < pe) && (p < eof)) {
-            switch (*p++) {
-            case 9:
-            case 10:
-            case 13:
-            case ' ':
-                continue;
-            case ':':
-                return;
-            default:
-                throw JSONParserError(p, "Couldn't find ':' to signify the start of an attribute value");
-            }
-        }
-        throw JSONParserError(p, "hit end while looking for ':' to signify the start of an attribute value");
+        throw JSONParserError(this, p, "hit end while looking for '\"' to signify the start of an attribute value");
     }
 
     /**
@@ -104,21 +136,24 @@ private:
     */
     void handleError(const std::string& message) {
         if (skipOverErrors) {
-            // Skip Forward until we find a new type, then reverse one
+            // Skip Forward until we find a new type
             while (p < pe) {
                 switch (getNextType(true)) {
                     case number:
-                        --p;
+                        --p; // Put the read cursor in the right position to read the number
                         return;
                     case ERROR:
                         ++p;
                         continue;
+                    case HIT_END:
+                        // We have to raise an error here. There's no way we can skip forward anymore
+                        throw JSONParserError(this, p, std::string("Hit end: ") + message);
                     default:
                         return;
                 }
             }
         } else
-            throw JSONParserError(p, message);
+            throw JSONParserError(this, p, message);
     }
 
     /**
@@ -134,9 +169,12 @@ private:
     }
 
 public:
-    /// @param json - KEEP THIS STRING ALIVE .. WE DONT COPY IT .. WE USE IT
+    /// @param json - KEEP THIS STRING ALIVE .. WE DONT COPY IT .. WE USE IT .. You can't just call it with an ("inplace string")
     JSONParser(const std::string& json, bool skipOverErrors=false) :
         p(json.c_str()), pe(p+json.length()), eof(pe), skipOverErrors(skipOverErrors) {}
+    /// @param json - KEEP THIS STRING ALIVE .. WE DONT COPY IT .. WE USE IT .. You can't just call it with an ("inplace string")
+    JSONParser(const char* json, const char* end, bool skipOverErrors=false) :
+        p(json), pe(end), eof(pe), skipOverErrors(skipOverErrors) {}
     JSONParser(JSONParser&& original, bool skipOverErrors=false) :
         p(original.p), pe(original.pe), eof(original.eof), skipOverErrors(skipOverErrors) {}
 
@@ -202,6 +240,11 @@ public:
                 return false;
             default:
                 handleError("Couldn't read 'true' nor 'false'");
+                // Once the code reaches here, it means that error raising is turned off
+                // And we couldn't read a boolean value, so it has skipped us ahead to the start
+                // of the next json value. We'll just keep trying to read the boolean until we get it
+                // or we stack overflow.
+                return readBoolean();
         }
     }
 
@@ -219,29 +262,31 @@ public:
         unsigned long long intPart=0; // The integer part of the number
         int expPart1=0; // The inferred exponent part gotten from counting the decimal digits
         int expPart2=0; // The explicit exponent part from the number itself, added to the inferred exponent part
+        bool gotAtLeastOneDigit = false;
+        auto makeJSONNumber = [&expIsNeg, &expPart1, &expPart2, &intIsNeg, &intPart]() {
+            long expPart = expIsNeg ? expPart1 - expPart2 : expPart1 + expPart2;
+            return JSONNumberInfo(intIsNeg, intPart, expPart);
+        };
         %%machine number;
         int startState = 
             %%write start;
-        ;
-        int errState =
-            %%write error;
         ;
         int cs = startState; // Current state
         %%{
             write exec;
         }%%
-        if (cs == errState)
+        // The state machine returns, so the code will only get here if it can't parse the string
+        if (gotAtLeastOneDigit)
+            return makeJSONNumber();
+        else
             handleError("Couldn't read a number");
-        return 0;
+        return T();
     }
 
     std::string readString() {
         %%machine string;
         int startState = 
             %%write start;
-        ;
-        int errState =
-            %%write error;
         ;
         int cs = startState; // Current state
         unsigned long uniChar = 0;
@@ -251,8 +296,8 @@ public:
             #write init;
             write exec;
         }%%
-        if (cs == errState)
-            handleError("Couldn't read a string");
+        // The state machine returns, so the code will only get here if it can't parse the string
+        handleError("Couldn't read a string");
         return output;
     }
 
@@ -268,11 +313,44 @@ public:
     /**
     * @brief While reading an object .. get the next attribute name
     */
-    std::string getNextAttribute() {
+    std::string readNextAttribute() {
         readAttributeStart();
         std::string output = readString();
-        readAttributeEnd();
         return output;
+    }
+
+    /**
+      * Consumes and throws away one value
+      **/
+    void consumeOneValue() {
+        switch (getNextType()) {
+            case JSONParser::null:
+                readNull();
+                return;
+            case JSONParser::boolean:
+                readBoolean();
+                return;
+            case JSONParser::array:
+                while (doIHaveMoreArray())
+                    consumeOneValue();
+                return;
+            case JSONParser::object:
+                while (doIHaveMoreObject()) {
+                    readNextAttribute();
+                    consumeOneValue();
+                }
+                return;
+            case JSONParser::number:
+                readNumber<int>();
+                return;
+            case JSONParser::string:
+                readString();
+                return;
+            case JSONParser::HIT_END:
+                return;
+            case JSONParser::ERROR:
+                return; // Code should never hit here
+        };
     }
 
     /**
@@ -299,9 +377,11 @@ public:
                 return false;
             default:
                 handleError(std::string("Expected a '") + separator + "' or a '" + end + "' but got:");
+                return doIHaveMore<end, separator>(); // We skipped over the error bit, lets try some more
             }
         }
         handleError(std::string("Expected a '") + separator + "' or a '" + end + "' but hit the end of the input");
+        return false;
     }
 
     /**
@@ -313,6 +393,8 @@ public:
         return doIHaveMore<'}'>();
     }
 
+    /// Returns the pointer to the json we are parsing
+    const char* json() const { return p; }
 };
 
 } // namespace yajp

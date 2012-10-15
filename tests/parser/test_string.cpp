@@ -22,7 +22,7 @@
 #include <string>
 #include <boost/test/unit_test.hpp>
 #include <boost/test/test_tools.hpp>
-#include "../parser/json.hpp"
+#include <parser/json.hpp>
 
 BOOST_AUTO_TEST_SUITE( string )
 
@@ -108,6 +108,13 @@ BOOST_AUTO_TEST_CASE( unicode_square ) {
     yajp::JSONParser parser(json);
     BOOST_CHECK_EQUAL(parser.getNextType(), yajp::JSONParser::string);
     BOOST_CHECK_EQUAL(u8"This is \u20ac unicode", parser.readString());
+}
+
+BOOST_AUTO_TEST_CASE( junk_after ) {
+    std::string json(" \"name\" : junkyStuff");
+    yajp::JSONParser parser(json);
+    BOOST_CHECK_EQUAL(parser.getNextType(), yajp::JSONParser::string);
+    BOOST_CHECK_EQUAL(u8"name", parser.readString());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

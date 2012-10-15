@@ -1,5 +1,5 @@
 
-#line 1 "/home/matiu/projects/yajp/parser/json.rl"
+#line 1 "/home/matthew/projects/yajp/parser/json.rl"
 /* Ragel file for parsing json.
 
 ** History **
@@ -28,16 +28,66 @@ I've turned a lot of the ragel state machines into hard coded switch based state
 namespace yajp {
 
 
-#line 41 "/home/matiu/projects/yajp/parser/json.rl"
+#line 41 "/home/matthew/projects/yajp/parser/json.rl"
 
+
+/// Allows lazy evaluation of number types
+class JSONNumberInfo {
+private:
+    bool _intIsNeg;
+    unsigned long long _intPart;
+    int _expPart;
+public:
+    JSONNumberInfo(bool intIsNeg, unsigned long long intPart, int expPart) : _intIsNeg(intIsNeg), _intPart(intPart), _expPart(expPart) {}
+
+    template<typename NumberType>
+    NumberType value() const {
+        NumberType result = _intPart;
+        int expPart = _expPart;
+        if (expPart < 0) {
+            while (expPart++ < 0)
+                result *= 0.1;
+            return _intIsNeg ? -result : result;
+        } else {
+            while (expPart-- > 0)
+                result *= 10;
+            return _intIsNeg ? -result : result;
+        }
+    }
+
+    operator int() { return value<int>(); }
+    operator unsigned int() { return value<unsigned int>(); }
+    operator long() { return value<long>(); }
+    operator unsigned long() { return value<unsigned long>(); }
+    operator long long() { return value<long long>(); }
+    operator unsigned long long() { return value<unsigned long long>(); }
+    operator float() { return value<float>(); }
+    operator double() { return value<double>(); }
+    operator short() { return value<short>(); }
+    operator unsigned short() { return value<unsigned short>(); }
+    operator char() { return value<char>(); }
+    operator unsigned char() { return value<unsigned char>(); }
+};
+
+class JSONParser;
 
 class JSONParserError : public std::runtime_error {
 private:
+    const JSONParser* _parser;
+    const char* _location;
+    std::string _msg;
     std::string make_msg(const char* location, const std::string& msg) {
         return msg + " at " + location;
     }
 public:
-    JSONParserError(const char* location, const std::string& msg) : std::runtime_error(make_msg(location, msg)) { }
+    JSONParserError(const JSONParser* parser, const char* location, const std::string& msg) :
+        std::runtime_error(make_msg(location, msg)),
+        _parser(parser),
+        _location(location),
+        _msg(msg) { }
+    const JSONParser* parser() const { return _parser; }
+    const char* location() const { return _location; }
+    const std::string& msg() const { return _msg; }
 };
 
 class JSONParser {
@@ -63,28 +113,10 @@ private:
             case '"':
                 return;
             default:
-                throw JSONParserError(p, "Couldn't find '\"' to signify the start of an attribute value");
+                throw JSONParserError(this, p, "Couldn't find '\"' to signify the start of an attribute value");
             }
         }
-        throw JSONParserError(p, "hit end while looking for '\"' to signify the start of an attribute value");
-    }
-
-    /// Searches though whitespace for a ':' meaning the change between an attribute name and an attribute value
-    void readAttributeEnd() {
-        while ((p < pe) && (p < eof)) {
-            switch (*p++) {
-            case 9:
-            case 10:
-            case 13:
-            case ' ':
-                continue;
-            case ':':
-                return;
-            default:
-                throw JSONParserError(p, "Couldn't find ':' to signify the start of an attribute value");
-            }
-        }
-        throw JSONParserError(p, "hit end while looking for ':' to signify the start of an attribute value");
+        throw JSONParserError(this, p, "hit end while looking for '\"' to signify the start of an attribute value");
     }
 
     /**
@@ -95,21 +127,24 @@ private:
     */
     void handleError(const std::string& message) {
         if (skipOverErrors) {
-            // Skip Forward until we find a new type, then reverse one
+            // Skip Forward until we find a new type
             while (p < pe) {
                 switch (getNextType(true)) {
                     case number:
-                        --p;
+                        --p; // Put the read cursor in the right position to read the number
                         return;
                     case ERROR:
                         ++p;
                         continue;
+                    case HIT_END:
+                        // We have to raise an error here. There's no way we can skip forward anymore
+                        throw JSONParserError(this, p, std::string("Hit end: ") + message);
                     default:
                         return;
                 }
             }
         } else
-            throw JSONParserError(p, message);
+            throw JSONParserError(this, p, message);
     }
 
     /**
@@ -125,9 +160,12 @@ private:
     }
 
 public:
-    /// @param json - KEEP THIS STRING ALIVE .. WE DONT COPY IT .. WE USE IT
+    /// @param json - KEEP THIS STRING ALIVE .. WE DONT COPY IT .. WE USE IT .. You can't just call it with an ("inplace string")
     JSONParser(const std::string& json, bool skipOverErrors=false) :
         p(json.c_str()), pe(p+json.length()), eof(pe), skipOverErrors(skipOverErrors) {}
+    /// @param json - KEEP THIS STRING ALIVE .. WE DONT COPY IT .. WE USE IT .. You can't just call it with an ("inplace string")
+    JSONParser(const char* json, const char* end, bool skipOverErrors=false) :
+        p(json), pe(end), eof(pe), skipOverErrors(skipOverErrors) {}
     JSONParser(JSONParser&& original, bool skipOverErrors=false) :
         p(original.p), pe(original.pe), eof(original.eof), skipOverErrors(skipOverErrors) {}
 
@@ -193,6 +231,11 @@ public:
                 return false;
             default:
                 handleError("Couldn't read 'true' nor 'false'");
+                // Once the code reaches here, it means that error raising is turned off
+                // And we couldn't read a boolean value, so it has skipped us ahead to the start
+                // of the next json value. We'll just keep trying to read the boolean until we get it
+                // or we stack overflow.
+                return readBoolean();
         }
     }
 
@@ -210,23 +253,22 @@ public:
         unsigned long long intPart=0; // The integer part of the number
         int expPart1=0; // The inferred exponent part gotten from counting the decimal digits
         int expPart2=0; // The explicit exponent part from the number itself, added to the inferred exponent part
+        bool gotAtLeastOneDigit = false;
+        auto makeJSONNumber = [&expIsNeg, &expPart1, &expPart2, &intIsNeg, &intPart]() {
+            long expPart = expIsNeg ? expPart1 - expPart2 : expPart1 + expPart2;
+            return JSONNumberInfo(intIsNeg, intPart, expPart);
+        };
         
-#line 223 "/home/matiu/projects/yajp/parser/json.rl"
+#line 271 "/home/matthew/projects/yajp/parser/json.rl"
         int startState = 
             
-#line 218 "/home/matiu/projects/yajp/parser/json.hpp"
+#line 266 "/home/matthew/projects/yajp/parser/json.hpp"
 1
-#line 225 "/home/matiu/projects/yajp/parser/json.rl"
-        ;
-        int errState =
-            
-#line 224 "/home/matiu/projects/yajp/parser/json.hpp"
-0
-#line 228 "/home/matiu/projects/yajp/parser/json.rl"
+#line 273 "/home/matthew/projects/yajp/parser/json.rl"
         ;
         int cs = startState; // Current state
         
-#line 230 "/home/matiu/projects/yajp/parser/json.hpp"
+#line 272 "/home/matthew/projects/yajp/parser/json.hpp"
 	{
 	if ( p == pe )
 		goto _test_eof;
@@ -242,7 +284,7 @@ st0:
 cs = 0;
 	goto _out;
 tr0:
-#line 7 "/home/matiu/projects/yajp/parser/number.rl"
+#line 7 "/home/matthew/projects/yajp/parser/number.rl"
 	{
         #ifdef DEBUG
         std::cout << "setNegative" << std::endl;
@@ -254,13 +296,14 @@ st2:
 	if ( ++p == pe )
 		goto _test_eof2;
 case 2:
-#line 258 "/home/matiu/projects/yajp/parser/json.hpp"
+#line 300 "/home/matthew/projects/yajp/parser/json.hpp"
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr2;
 	goto st0;
 tr2:
-#line 13 "/home/matiu/projects/yajp/parser/number.rl"
+#line 13 "/home/matthew/projects/yajp/parser/number.rl"
 	{
+        gotAtLeastOneDigit = true;
         intPart *= 10;
         intPart += *p - '0';
         #ifdef DEBUG
@@ -272,7 +315,7 @@ st6:
 	if ( ++p == pe )
 		goto _test_eof6;
 case 6:
-#line 276 "/home/matiu/projects/yajp/parser/json.hpp"
+#line 319 "/home/matthew/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 46: goto st3;
 		case 69: goto st4;
@@ -289,7 +332,7 @@ case 3:
 		goto tr3;
 	goto st0;
 tr3:
-#line 20 "/home/matiu/projects/yajp/parser/number.rl"
+#line 21 "/home/matthew/projects/yajp/parser/number.rl"
 	{
         intPart *= 10;
         intPart += *p - '0';
@@ -303,7 +346,7 @@ st7:
 	if ( ++p == pe )
 		goto _test_eof7;
 case 7:
-#line 307 "/home/matiu/projects/yajp/parser/json.hpp"
+#line 350 "/home/matthew/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 69: goto st4;
 		case 101: goto st4;
@@ -323,7 +366,7 @@ case 4:
 		goto tr5;
 	goto st0;
 tr4:
-#line 28 "/home/matiu/projects/yajp/parser/number.rl"
+#line 29 "/home/matthew/projects/yajp/parser/number.rl"
 	{
         if (*p == '-')
             expIsNeg = true;
@@ -336,12 +379,12 @@ st5:
 	if ( ++p == pe )
 		goto _test_eof5;
 case 5:
-#line 340 "/home/matiu/projects/yajp/parser/json.hpp"
+#line 383 "/home/matthew/projects/yajp/parser/json.hpp"
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr5;
 	goto st0;
 tr5:
-#line 35 "/home/matiu/projects/yajp/parser/number.rl"
+#line 36 "/home/matthew/projects/yajp/parser/number.rl"
 	{
         expPart2 *= 10;
         expPart2 += *p - '0';
@@ -354,7 +397,7 @@ st8:
 	if ( ++p == pe )
 		goto _test_eof8;
 case 8:
-#line 358 "/home/matiu/projects/yajp/parser/json.hpp"
+#line 401 "/home/matthew/projects/yajp/parser/json.hpp"
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr5;
 	goto st0;
@@ -374,89 +417,76 @@ case 8:
 	case 6: 
 	case 7: 
 	case 8: 
-#line 42 "/home/matiu/projects/yajp/parser/number.rl"
+#line 43 "/home/matthew/projects/yajp/parser/number.rl"
 	{
         #ifdef DEBUG
         std::cout << "gotNumber " << expIsNeg << " - " << expPart1 << " - " << expPart2 << " - " << intPart << " - " << intIsNeg << " - ";
         #endif
-        long expPart = expIsNeg ? expPart1 - expPart2 : expPart1 + expPart2;
-        T result = intPart;
-        if (expPart < 0) {
-            while (expPart++ < 0)
-                result *= 0.1;
-            return intIsNeg ? -result : result;
-        } else {
-            while (expPart-- > 0)
-                result *= 10;
-            return intIsNeg ? -result : result;
-        }
+        return makeJSONNumber();
     }
 	break;
-#line 396 "/home/matiu/projects/yajp/parser/json.hpp"
+#line 429 "/home/matthew/projects/yajp/parser/json.hpp"
 	}
 	}
 
 	_out: {}
 	}
 
-#line 232 "/home/matiu/projects/yajp/parser/json.rl"
+#line 277 "/home/matthew/projects/yajp/parser/json.rl"
 
-        if (cs == errState)
+        // The state machine returns, so the code will only get here if it can't parse the string
+        if (gotAtLeastOneDigit)
+            return makeJSONNumber();
+        else
             handleError("Couldn't read a number");
-        return 0;
+        return T();
     }
 
     std::string readString() {
         
-#line 240 "/home/matiu/projects/yajp/parser/json.rl"
+#line 288 "/home/matthew/projects/yajp/parser/json.rl"
         int startState = 
             
-#line 415 "/home/matiu/projects/yajp/parser/json.hpp"
+#line 451 "/home/matthew/projects/yajp/parser/json.hpp"
 1
-#line 242 "/home/matiu/projects/yajp/parser/json.rl"
-        ;
-        int errState =
-            
-#line 421 "/home/matiu/projects/yajp/parser/json.hpp"
-0
-#line 245 "/home/matiu/projects/yajp/parser/json.rl"
+#line 290 "/home/matthew/projects/yajp/parser/json.rl"
         ;
         int cs = startState; // Current state
         unsigned long uniChar = 0;
         std::string output;
         
-#line 429 "/home/matiu/projects/yajp/parser/json.hpp"
+#line 459 "/home/matthew/projects/yajp/parser/json.hpp"
 	{
 	if ( p == pe )
 		goto _test_eof;
 	switch ( cs )
 	{
 tr0:
-#line 9 "/home/matiu/projects/yajp/parser/string.rl"
+#line 9 "/home/matthew/projects/yajp/parser/string.rl"
 	{ output += *p; }
 	goto st1;
 tr3:
-#line 4 "/home/matiu/projects/yajp/parser/string.rl"
+#line 4 "/home/matthew/projects/yajp/parser/string.rl"
 	{ output += '\b'; }
 	goto st1;
 tr4:
-#line 5 "/home/matiu/projects/yajp/parser/string.rl"
+#line 5 "/home/matthew/projects/yajp/parser/string.rl"
 	{ output += '\f'; }
 	goto st1;
 tr5:
-#line 6 "/home/matiu/projects/yajp/parser/string.rl"
+#line 6 "/home/matthew/projects/yajp/parser/string.rl"
 	{ output += '\n'; }
 	goto st1;
 tr6:
-#line 7 "/home/matiu/projects/yajp/parser/string.rl"
+#line 7 "/home/matthew/projects/yajp/parser/string.rl"
 	{ output += '\r'; }
 	goto st1;
 tr7:
-#line 8 "/home/matiu/projects/yajp/parser/string.rl"
+#line 8 "/home/matthew/projects/yajp/parser/string.rl"
 	{ output += '\t'; }
 	goto st1;
 tr11:
-#line 21 "/home/matiu/projects/yajp/parser/string.rl"
+#line 21 "/home/matthew/projects/yajp/parser/string.rl"
 	{
         // Encode it into utf-8
         if (uniChar <= 0x7f) {
@@ -474,22 +504,30 @@ tr11:
             output += ((uniChar >> 6) & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
             output += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
         }
+        // TODO: Handle unicode numbers with more than 3 digits
     }
-#line 9 "/home/matiu/projects/yajp/parser/string.rl"
+#line 9 "/home/matthew/projects/yajp/parser/string.rl"
 	{ output += *p; }
 	goto st1;
 st1:
 	if ( ++p == pe )
 		goto _test_eof1;
 case 1:
-#line 486 "/home/matiu/projects/yajp/parser/json.hpp"
+#line 517 "/home/matthew/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
-		case 34: goto st5;
+		case 34: goto tr1;
 		case 92: goto st2;
 	}
 	goto tr0;
+tr1:
+#line 40 "/home/matthew/projects/yajp/parser/string.rl"
+	{
+        ++p;
+        return output;
+    }
+	goto st5;
 tr12:
-#line 21 "/home/matiu/projects/yajp/parser/string.rl"
+#line 21 "/home/matthew/projects/yajp/parser/string.rl"
 	{
         // Encode it into utf-8
         if (uniChar <= 0x7f) {
@@ -507,19 +545,25 @@ tr12:
             output += ((uniChar >> 6) & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
             output += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
         }
+        // TODO: Handle unicode numbers with more than 3 digits
+    }
+#line 40 "/home/matthew/projects/yajp/parser/string.rl"
+	{
+        ++p;
+        return output;
     }
 	goto st5;
 st5:
 	if ( ++p == pe )
 		goto _test_eof5;
 case 5:
-#line 517 "/home/matiu/projects/yajp/parser/json.hpp"
+#line 561 "/home/matthew/projects/yajp/parser/json.hpp"
 	goto st0;
 st0:
 cs = 0;
 	goto _out;
 tr13:
-#line 21 "/home/matiu/projects/yajp/parser/string.rl"
+#line 21 "/home/matthew/projects/yajp/parser/string.rl"
 	{
         // Encode it into utf-8
         if (uniChar <= 0x7f) {
@@ -537,13 +581,14 @@ tr13:
             output += ((uniChar >> 6) & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
             output += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
         }
+        // TODO: Handle unicode numbers with more than 3 digits
     }
 	goto st2;
 st2:
 	if ( ++p == pe )
 		goto _test_eof2;
 case 2:
-#line 547 "/home/matiu/projects/yajp/parser/json.hpp"
+#line 592 "/home/matthew/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 98: goto tr3;
 		case 102: goto tr4;
@@ -567,7 +612,7 @@ case 3:
 		goto tr9;
 	goto st0;
 tr9:
-#line 11 "/home/matiu/projects/yajp/parser/string.rl"
+#line 11 "/home/matthew/projects/yajp/parser/string.rl"
 	{
         uniChar <<= 4;
         char ch = *p;
@@ -583,7 +628,7 @@ st4:
 	if ( ++p == pe )
 		goto _test_eof4;
 case 4:
-#line 587 "/home/matiu/projects/yajp/parser/json.hpp"
+#line 632 "/home/matthew/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 34: goto tr12;
 		case 92: goto tr13;
@@ -608,10 +653,10 @@ case 4:
 	_out: {}
 	}
 
-#line 253 "/home/matiu/projects/yajp/parser/json.rl"
+#line 298 "/home/matthew/projects/yajp/parser/json.rl"
 
-        if (cs == errState)
-            handleError("Couldn't read a string");
+        // The state machine returns, so the code will only get here if it can't parse the string
+        handleError("Couldn't read a string");
         return output;
     }
 
@@ -627,11 +672,44 @@ case 4:
     /**
     * @brief While reading an object .. get the next attribute name
     */
-    std::string getNextAttribute() {
+    std::string readNextAttribute() {
         readAttributeStart();
         std::string output = readString();
-        readAttributeEnd();
         return output;
+    }
+
+    /**
+      * Consumes and throws away one value
+      **/
+    void consumeOneValue() {
+        switch (getNextType()) {
+            case JSONParser::null:
+                readNull();
+                return;
+            case JSONParser::boolean:
+                readBoolean();
+                return;
+            case JSONParser::array:
+                while (doIHaveMoreArray())
+                    consumeOneValue();
+                return;
+            case JSONParser::object:
+                while (doIHaveMoreObject()) {
+                    readNextAttribute();
+                    consumeOneValue();
+                }
+                return;
+            case JSONParser::number:
+                readNumber<int>();
+                return;
+            case JSONParser::string:
+                readString();
+                return;
+            case JSONParser::HIT_END:
+                return;
+            case JSONParser::ERROR:
+                return; // Code should never hit here
+        };
     }
 
     /**
@@ -658,9 +736,11 @@ case 4:
                 return false;
             default:
                 handleError(std::string("Expected a '") + separator + "' or a '" + end + "' but got:");
+                return doIHaveMore<end, separator>(); // We skipped over the error bit, lets try some more
             }
         }
         handleError(std::string("Expected a '") + separator + "' or a '" + end + "' but hit the end of the input");
+        return false;
     }
 
     /**
@@ -672,6 +752,8 @@ case 4:
         return doIHaveMore<'}'>();
     }
 
+    /// Returns the pointer to the json we are parsing
+    const char* json() const { return p; }
 };
 
 } // namespace yajp

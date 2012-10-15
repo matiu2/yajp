@@ -35,6 +35,11 @@
             output += ((uniChar >> 6) & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
             output += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
         }
+        // TODO: Handle unicode numbers with more than 3 digits
+    }
+    action gotString {
+        ++p;
+        return output;
     }
 
     esc_b = "\\b"@recordBackspace;
@@ -47,6 +52,5 @@
     esc_uni = '\\u'.hex_digit+ % endUnicode;
     esc_any = "\\".[^bfnrut]@getChar;
 
-    string = (esc_b|esc_f|esc_n|esc_r|esc_t|esc_any|esc_uni|normal_char)**:>'"'; 
-    #main := string;
+    string = (esc_b|esc_f|esc_n|esc_r|esc_t|esc_any|esc_uni|normal_char)**:>'"' @ gotString; 
 }%%

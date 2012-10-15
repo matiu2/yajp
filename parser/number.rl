@@ -11,6 +11,7 @@
         intIsNeg = true;
     }
     action recordInt {
+        gotAtLeastOneDigit = true;
         intPart *= 10;
         intPart += *p - '0';
         #ifdef DEBUG
@@ -43,23 +44,14 @@
         #ifdef DEBUG
         std::cout << "gotNumber " << expIsNeg << " - " << expPart1 << " - " << expPart2 << " - " << intPart << " - " << intIsNeg << " - ";
         #endif
-        long expPart = expIsNeg ? expPart1 - expPart2 : expPart1 + expPart2;
-        T result = intPart;
-        if (expPart < 0) {
-            while (expPart++ < 0)
-                result *= 0.1;
-            return intIsNeg ? -result : result;
-        } else {
-            while (expPart-- > 0)
-                result *= 10;
-            return intIsNeg ? -result : result;
-        }
+        return makeJSONNumber();
     }
     # JSON Number expression
     basic_int = ('-'?@setNegative).([0-9]+@recordInt)@recordInt;
     basic_float = (basic_int|'-'?.'0').'.'.([0-9]+)@recordDecimal;
     exponent = [eE].([+\-]?@setExpNeg).([0-9]+)@recordExponent;
-    number = (basic_int . (exponent?) | basic_float . (exponent?))%gotNumber;
+    #theEnd = ((,%gotNumberIfInObjOrArray) | (]%gotNumberIfInArray) | (}%gotNumberIfInObj))?
+    number = (basic_int . (exponent?) | basic_float . (exponent?)) % gotNumber;
     #main := number;
 
 }%%
