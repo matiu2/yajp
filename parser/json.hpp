@@ -690,15 +690,15 @@ case 4:
                 readBoolean();
                 return;
             case JSONParser::array:
-                do {
+                while (doIHaveMoreArray()) {
                     consumeOneValue();
-                } while (doIHaveMoreArray());
+                }
                 return;
             case JSONParser::object:
-                do {
+                while (doIHaveMoreObject()) {
                     readNextAttribute();
                     consumeOneValue();
-               } while (doIHaveMoreObject());
+                }
                 return;
             case JSONParser::number:
                 readNumber<int>();
@@ -714,13 +714,13 @@ case 4:
     }
 
     /**
-    * Reads through whitespace, return true if it hits @a separator first, false if it hits @a end first. 
-    * Throws a 'JSONParser' error if it hits any other non-whitespace character
+    * Reads through whitespace, return true if it hits @a separator first, false if it hits @a end first.
+    * If it hits anything other than these or whitespace, it return true and backpedals one char
     *
     * @tparam end The character that means we hit the end, no more to come
     * @tparam separator The character that means we have more to come
     *
-    * @return returns true if we can expect more input, true if we just hit the end
+    * @return returns true if we can expect more input, false if we just hit the end
     */
     template <char end, char separator=','>
     bool doIHaveMore() {
@@ -736,8 +736,8 @@ case 4:
             case end:
                 return false;
             default:
-                handleError(std::string("Expected a '") + separator + "' or a '" + end + "' but got:");
-                return doIHaveMore<end, separator>(); // We skipped over the error bit, lets try some more
+                --p;
+                return true;
             }
         }
         handleError(std::string("Expected a '") + separator + "' or a '" + end + "' but hit the end of the input");
