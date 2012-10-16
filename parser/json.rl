@@ -426,6 +426,14 @@ public:
             auto expectedType = pair.first;
             auto reader = pair.second;
             if (nextTokenType != expectedType) {
+                if (nextTokenType == JSONType::null) {
+                    readNull();
+                    // If we expected something and found null,
+                    // We'll just pretend we didn't find it
+                    // TODO: possibly make the reader() smarter and able
+                    //       to be notified about finding null
+                    continue;
+                }
                 std::stringstream errMsg;
                 errMsg << "When reading attribute "
                        << nextAttrName
