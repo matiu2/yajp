@@ -18,10 +18,14 @@ I've turned a lot of the ragel state machines into hard coded switch based state
 
 #include <string>
 #include <stdexcept>
+#include <functional>
+#include <sstream>
+#include <map>
 
 #ifdef DEBUG
 #include <iostream>
 #endif
+
 
 namespace yajp {
 
@@ -396,6 +400,46 @@ public:
 
     /// Returns the pointer to the json we are parsing
     const char* json() const { return p; }
+
+    /// This is the type you can pass to 'readObject'
+    typedef std::function<void()> Reader;
+    typedef std::pair<JSONType, Reader> TypeReaderPair;
+    typedef std::map<std::string, TypeReaderPair> ReaderMap;
+
+    /// Reads an object
+    /// @a readerMap - a map of attribute name to expected JSONType, reader function pair.
+    /// For expample: { { "name", { JSONType::string, [&parser, &person]() { person.setName(parser.readString()); } }}}
+    /// @returns - the number of attributes read
+    size_t readObject(const ReaderMap& readerMap) {
+        size_t attrsRead = 0;
+        while (doIHaveMoreObject()) {
+            std::string nextAttrName = readNextAttribute();
+            // See if we expected an attribute with that name
+            auto pReader = readerMap.find(nextAttrName);
+            if (pReader == readerMap.end()) {
+                consumeOneValue();
+                continue;
+            }
+            // See if the type matches what we expected
+            JSONType nextTokenType = getNextType();
+            auto pair = pReader->second;
+            auto expectedType = pair.first;
+            auto reader = pair.second;
+            if (nextTokenType != expectedType) {
+                std::stringstream errMsg;
+                errMsg << "When reading attribute "
+                       << nextAttrName
+                       << "I expected a value of type "
+                       << expectedType
+                       << "but got one of type "
+                       << nextTokenType;
+                throw JSONParserError(this, p, errMsg.str());
+            }
+            reader(); // Actually read in the value to the person object
+            ++attrsRead;
+        }
+        return attrsRead;
+    }
 };
 
 } // namespace yajp

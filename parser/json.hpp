@@ -20,15 +20,19 @@ I've turned a lot of the ragel state machines into hard coded switch based state
 
 #include <string>
 #include <stdexcept>
+#include <functional>
+#include <sstream>
+#include <map>
 
 #ifdef DEBUG
 #include <iostream>
 #endif
 
+
 namespace yajp {
 
 
-#line 41 "/home/matthew/projects/yajp/parser/json.rl"
+#line 45 "/home/matthew/projects/yajp/parser/json.rl"
 
 
 /// Allows lazy evaluation of number types
@@ -259,16 +263,16 @@ public:
             return JSONNumberInfo(intIsNeg, intPart, expPart);
         };
         
-#line 271 "/home/matthew/projects/yajp/parser/json.rl"
+#line 275 "/home/matthew/projects/yajp/parser/json.rl"
         int startState = 
             
-#line 266 "/home/matthew/projects/yajp/parser/json.hpp"
+#line 270 "/home/matthew/projects/yajp/parser/json.hpp"
 1
-#line 273 "/home/matthew/projects/yajp/parser/json.rl"
+#line 277 "/home/matthew/projects/yajp/parser/json.rl"
         ;
         int cs = startState; // Current state
         
-#line 272 "/home/matthew/projects/yajp/parser/json.hpp"
+#line 276 "/home/matthew/projects/yajp/parser/json.hpp"
 	{
 	if ( p == pe )
 		goto _test_eof;
@@ -296,7 +300,7 @@ st2:
 	if ( ++p == pe )
 		goto _test_eof2;
 case 2:
-#line 300 "/home/matthew/projects/yajp/parser/json.hpp"
+#line 304 "/home/matthew/projects/yajp/parser/json.hpp"
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr2;
 	goto st0;
@@ -315,7 +319,7 @@ st6:
 	if ( ++p == pe )
 		goto _test_eof6;
 case 6:
-#line 319 "/home/matthew/projects/yajp/parser/json.hpp"
+#line 323 "/home/matthew/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 46: goto st3;
 		case 69: goto st4;
@@ -346,7 +350,7 @@ st7:
 	if ( ++p == pe )
 		goto _test_eof7;
 case 7:
-#line 350 "/home/matthew/projects/yajp/parser/json.hpp"
+#line 354 "/home/matthew/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 69: goto st4;
 		case 101: goto st4;
@@ -379,7 +383,7 @@ st5:
 	if ( ++p == pe )
 		goto _test_eof5;
 case 5:
-#line 383 "/home/matthew/projects/yajp/parser/json.hpp"
+#line 387 "/home/matthew/projects/yajp/parser/json.hpp"
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr5;
 	goto st0;
@@ -397,7 +401,7 @@ st8:
 	if ( ++p == pe )
 		goto _test_eof8;
 case 8:
-#line 401 "/home/matthew/projects/yajp/parser/json.hpp"
+#line 405 "/home/matthew/projects/yajp/parser/json.hpp"
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr5;
 	goto st0;
@@ -425,14 +429,14 @@ case 8:
         return makeJSONNumber();
     }
 	break;
-#line 429 "/home/matthew/projects/yajp/parser/json.hpp"
+#line 433 "/home/matthew/projects/yajp/parser/json.hpp"
 	}
 	}
 
 	_out: {}
 	}
 
-#line 277 "/home/matthew/projects/yajp/parser/json.rl"
+#line 281 "/home/matthew/projects/yajp/parser/json.rl"
 
         // The state machine returns, so the code will only get here if it can't parse the string
         if (gotAtLeastOneDigit)
@@ -444,18 +448,18 @@ case 8:
 
     std::string readString() {
         
-#line 288 "/home/matthew/projects/yajp/parser/json.rl"
+#line 292 "/home/matthew/projects/yajp/parser/json.rl"
         int startState = 
             
-#line 451 "/home/matthew/projects/yajp/parser/json.hpp"
+#line 455 "/home/matthew/projects/yajp/parser/json.hpp"
 1
-#line 290 "/home/matthew/projects/yajp/parser/json.rl"
+#line 294 "/home/matthew/projects/yajp/parser/json.rl"
         ;
         int cs = startState; // Current state
         unsigned long uniChar = 0;
         std::string output;
         
-#line 459 "/home/matthew/projects/yajp/parser/json.hpp"
+#line 463 "/home/matthew/projects/yajp/parser/json.hpp"
 	{
 	if ( p == pe )
 		goto _test_eof;
@@ -513,7 +517,7 @@ st1:
 	if ( ++p == pe )
 		goto _test_eof1;
 case 1:
-#line 517 "/home/matthew/projects/yajp/parser/json.hpp"
+#line 521 "/home/matthew/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 34: goto tr1;
 		case 92: goto st2;
@@ -557,7 +561,7 @@ st5:
 	if ( ++p == pe )
 		goto _test_eof5;
 case 5:
-#line 561 "/home/matthew/projects/yajp/parser/json.hpp"
+#line 565 "/home/matthew/projects/yajp/parser/json.hpp"
 	goto st0;
 st0:
 cs = 0;
@@ -588,7 +592,7 @@ st2:
 	if ( ++p == pe )
 		goto _test_eof2;
 case 2:
-#line 592 "/home/matthew/projects/yajp/parser/json.hpp"
+#line 596 "/home/matthew/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 98: goto tr3;
 		case 102: goto tr4;
@@ -628,7 +632,7 @@ st4:
 	if ( ++p == pe )
 		goto _test_eof4;
 case 4:
-#line 632 "/home/matthew/projects/yajp/parser/json.hpp"
+#line 636 "/home/matthew/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 34: goto tr12;
 		case 92: goto tr13;
@@ -653,7 +657,7 @@ case 4:
 	_out: {}
 	}
 
-#line 298 "/home/matthew/projects/yajp/parser/json.rl"
+#line 302 "/home/matthew/projects/yajp/parser/json.rl"
 
         // The state machine returns, so the code will only get here if it can't parse the string
         handleError("Couldn't read a string");
@@ -755,6 +759,46 @@ case 4:
 
     /// Returns the pointer to the json we are parsing
     const char* json() const { return p; }
+
+    /// This is the type you can pass to 'readObject'
+    typedef std::function<void()> Reader;
+    typedef std::pair<JSONType, Reader> TypeReaderPair;
+    typedef std::map<std::string, TypeReaderPair> ReaderMap;
+
+    /// Reads an object
+    /// @a readerMap - a map of attribute name to expected JSONType, reader function pair.
+    /// For expample: { { "name", { JSONType::string, [&parser, &person]() { person.setName(parser.readString()); } }}}
+    /// @returns - the number of attributes read
+    size_t readObject(const ReaderMap& readerMap) {
+        size_t attrsRead = 0;
+        while (doIHaveMoreObject()) {
+            std::string nextAttrName = readNextAttribute();
+            // See if we expected an attribute with that name
+            auto pReader = readerMap.find(nextAttrName);
+            if (pReader == readerMap.end()) {
+                consumeOneValue();
+                continue;
+            }
+            // See if the type matches what we expected
+            JSONType nextTokenType = getNextType();
+            auto pair = pReader->second;
+            auto expectedType = pair.first;
+            auto reader = pair.second;
+            if (nextTokenType != expectedType) {
+                std::stringstream errMsg;
+                errMsg << "When reading attribute "
+                       << nextAttrName
+                       << "I expected a value of type "
+                       << expectedType
+                       << "but got one of type "
+                       << nextTokenType;
+                throw JSONParserError(this, p, errMsg.str());
+            }
+            reader(); // Actually read in the value to the person object
+            ++attrsRead;
+        }
+        return attrsRead;
+    }
 };
 
 } // namespace yajp
