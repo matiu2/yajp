@@ -110,6 +110,13 @@ BOOST_AUTO_TEST_CASE( unicode_kanbun ) {
     BOOST_CHECK_EQUAL(u8"This is \u319e unicode", parser.readString());
 }
 
+BOOST_AUTO_TEST_CASE( unicode_multiple ) {
+    std::string json("\"This is \\u319e\\u20aC unicode\"");
+    yajp::JSONParser parser(json);
+    BOOST_CHECK_EQUAL(parser.getNextType(), yajp::JSONParser::string);
+    BOOST_CHECK_EQUAL(u8"This is \u319e\u20aC unicode", parser.readString());
+}
+
 BOOST_AUTO_TEST_CASE( unicode_square ) {
     std::string json("\"This is \\u20aC unicode\"");
     yajp::JSONParser parser(json);

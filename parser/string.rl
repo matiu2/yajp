@@ -7,8 +7,13 @@
     action recordReturn { output += '\r'; }
     action recordTab { output += '\t'; }
     action getChar { output += *p; }
-    action startUnicode { uniChar = 0; }
+    action startUnicode {
+        uniChar = 0;
+        uniCharBytes = 0;
+    }
     action getUnicode {
+        if (uniCharBytes == 4)
+            throw std::logic_error("Max unicode char is 32 bits");
         uniChar <<= 4;
         char ch = *p;
         if (ch >= 'a') 
@@ -67,7 +72,7 @@
     esc_t = "\\t"@recordTab;
     normal_char = [^\\"]@getChar;
     hex_digit = [0-9a-fA-F]@getUnicode;
-    esc_uni = '\\u'.hex_digit+ % endUnicode;
+    esc_uni = '\\u'@startUnicode.hex_digit+ % endUnicode;
     esc_any = "\\".[^bfnrut]@getChar;
 
     string = (esc_b|esc_f|esc_n|esc_r|esc_t|esc_any|esc_uni|normal_char)**:>'"' @ gotString; 

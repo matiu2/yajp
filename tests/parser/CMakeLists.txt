@@ -31,6 +31,7 @@ boost_test("string"
     unicode_cents
     unicode_euro
     unicode_kanbun
+    unicode_multiple
     unicode_square
     junk_after
 )

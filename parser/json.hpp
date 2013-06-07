@@ -480,10 +480,11 @@ case 8:
 #line 318 "/home/matthew/projects/yajp/parser/json.rl"
         ;
         int cs = startState; // Current state
-        unsigned long uniChar = 0;
+        UniChar uniChar = 0;
+        int uniCharBytes = 0;
         std::string output;
         
-#line 487 "/home/matthew/projects/yajp/parser/json.hpp"
+#line 488 "/home/matthew/projects/yajp/parser/json.hpp"
 	{
 	if ( p == pe )
 		goto _test_eof;
@@ -514,7 +515,7 @@ tr7:
 	{ output += '\t'; }
 	goto st1;
 tr11:
-#line 21 "/home/matthew/projects/yajp/parser/string.rl"
+#line 26 "/home/matthew/projects/yajp/parser/string.rl"
 	{
         /*
            UCS-4 range (hex.)           UTF-8 octet sequence (binary)
@@ -559,21 +560,21 @@ st1:
 	if ( ++p == pe )
 		goto _test_eof1;
 case 1:
-#line 563 "/home/matthew/projects/yajp/parser/json.hpp"
+#line 564 "/home/matthew/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 34: goto tr1;
 		case 92: goto st2;
 	}
 	goto tr0;
 tr1:
-#line 58 "/home/matthew/projects/yajp/parser/string.rl"
+#line 63 "/home/matthew/projects/yajp/parser/string.rl"
 	{
         ++p;
         return output;
     }
 	goto st5;
 tr12:
-#line 21 "/home/matthew/projects/yajp/parser/string.rl"
+#line 26 "/home/matthew/projects/yajp/parser/string.rl"
 	{
         /*
            UCS-4 range (hex.)           UTF-8 octet sequence (binary)
@@ -611,7 +612,7 @@ tr12:
                 output += *i;
         }
     }
-#line 58 "/home/matthew/projects/yajp/parser/string.rl"
+#line 63 "/home/matthew/projects/yajp/parser/string.rl"
 	{
         ++p;
         return output;
@@ -621,13 +622,13 @@ st5:
 	if ( ++p == pe )
 		goto _test_eof5;
 case 5:
-#line 625 "/home/matthew/projects/yajp/parser/json.hpp"
+#line 626 "/home/matthew/projects/yajp/parser/json.hpp"
 	goto st0;
 st0:
 cs = 0;
 	goto _out;
 tr13:
-#line 21 "/home/matthew/projects/yajp/parser/string.rl"
+#line 26 "/home/matthew/projects/yajp/parser/string.rl"
 	{
         /*
            UCS-4 range (hex.)           UTF-8 octet sequence (binary)
@@ -670,20 +671,28 @@ st2:
 	if ( ++p == pe )
 		goto _test_eof2;
 case 2:
-#line 674 "/home/matthew/projects/yajp/parser/json.hpp"
+#line 675 "/home/matthew/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 98: goto tr3;
 		case 102: goto tr4;
 		case 110: goto tr5;
 		case 114: goto tr6;
 		case 116: goto tr7;
-		case 117: goto st3;
+		case 117: goto tr8;
 	}
 	goto tr0;
+tr8:
+#line 10 "/home/matthew/projects/yajp/parser/string.rl"
+	{
+        uniChar = 0;
+        uniCharBytes = 0;
+    }
+	goto st3;
 st3:
 	if ( ++p == pe )
 		goto _test_eof3;
 case 3:
+#line 696 "/home/matthew/projects/yajp/parser/json.hpp"
 	if ( (*p) < 65 ) {
 		if ( 48 <= (*p) && (*p) <= 57 )
 			goto tr9;
@@ -694,8 +703,10 @@ case 3:
 		goto tr9;
 	goto st0;
 tr9:
-#line 11 "/home/matthew/projects/yajp/parser/string.rl"
+#line 14 "/home/matthew/projects/yajp/parser/string.rl"
 	{
+        if (uniCharBytes == 4)
+            throw std::logic_error("Max unicode char is 32 bits");
         uniChar <<= 4;
         char ch = *p;
         if (ch >= 'a') 
@@ -710,7 +721,7 @@ st4:
 	if ( ++p == pe )
 		goto _test_eof4;
 case 4:
-#line 714 "/home/matthew/projects/yajp/parser/json.hpp"
+#line 725 "/home/matthew/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 34: goto tr12;
 		case 92: goto tr13;
@@ -735,7 +746,7 @@ case 4:
 	_out: {}
 	}
 
-#line 326 "/home/matthew/projects/yajp/parser/json.rl"
+#line 327 "/home/matthew/projects/yajp/parser/json.rl"
 
         // The state machine returns, so the code will only get here if it can't parse the string
         handleError("Couldn't read a string");

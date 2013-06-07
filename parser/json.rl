@@ -317,7 +317,8 @@ public:
             %%write start;
         ;
         int cs = startState; // Current state
-        unsigned long uniChar = 0;
+        UniChar uniChar = 0;
+        int uniCharBytes = 0;
         std::string output;
         %%{
             #write data nofinal noerror;
