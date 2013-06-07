@@ -705,7 +705,7 @@ case 3:
 tr9:
 #line 14 "/home/matthew/projects/yajp/parser/string.rl"
 	{
-        if (uniCharBytes == 4)
+        if (uniCharBytes++ == 4)
             throw std::logic_error("Max unicode char is 32 bits");
         uniChar <<= 4;
         char ch = *p;

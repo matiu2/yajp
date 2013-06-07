@@ -12,7 +12,7 @@
         uniCharBytes = 0;
     }
     action getUnicode {
-        if (uniCharBytes == 4)
+        if (uniCharBytes++ == 4)
             throw std::logic_error("Max unicode char is 32 bits");
         uniChar <<= 4;
         char ch = *p;

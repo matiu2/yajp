@@ -124,6 +124,14 @@ BOOST_AUTO_TEST_CASE( unicode_square ) {
     BOOST_CHECK_EQUAL(u8"This is \u20ac unicode", parser.readString());
 }
 
+BOOST_AUTO_TEST_CASE( unicode_too_big ) {
+    std::string json("\"This is \\u12345 unicode\"");
+
+    yajp::JSONParser parser(json);
+    BOOST_CHECK_EQUAL(parser.getNextType(), yajp::JSONParser::string);
+    BOOST_REQUIRE_THROW(parser.readString(), std::logic_error);
+}
+
 BOOST_AUTO_TEST_CASE( junk_after ) {
     std::string json(" \"name\" : junkyStuff");
     yajp::JSONParser parser(json);

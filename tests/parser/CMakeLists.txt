@@ -33,6 +33,7 @@ boost_test("string"
     unicode_kanbun
     unicode_multiple
     unicode_square
+    unicode_too_big
     junk_after
 )
 
