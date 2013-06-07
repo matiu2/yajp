@@ -30,6 +30,7 @@ boost_test("string"
     lots_of_specials1
     unicode_cents
     unicode_euro
+    unicode_kanbun
     unicode_square
     junk_after
 )

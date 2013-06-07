@@ -19,6 +19,7 @@ I've turned a lot of the ragel state machines into hard coded switch based state
 #include <string>
 #include <stdexcept>
 #include <functional>
+#include <vector>
 #include <sstream>
 #include <map>
 
@@ -106,6 +107,7 @@ public:
 class JSONParser {
 public:
     enum JSONType { null='n', boolean='t', array='[', object='{', number='0', string='"', HIT_END=0, ERROR='x' };
+    typedef uint32_t UniChar; // 32 bit unicode characters max
 private:
     // Ragel vars
     const char *p;
@@ -171,6 +173,28 @@ private:
             if ((*test++) != (*p++))
                 handleError(std::string("Static String '") + test + "' doesn't match");
     }
+
+    /**
+     * Returns the number of bytes needed to encode a unicode character in utf8
+     */ 
+    int getNumBytes (UniChar c) {
+        int result = 1;
+        UniChar checker = 0x7f;
+        if (c <= checker)
+            return result;
+        checker <<= 4;
+        checker |= 0xf;
+        result += 1;
+        if (c <= checker)
+            return result;
+        while (c > checker) {
+            checker <<= 5;
+            checker |= 0x1f;
+            ++result;
+        }
+        return result;
+    }
+
 
 public:
     /// @param json - KEEP THIS STRING ALIVE .. WE DONT COPY IT .. WE USE IT .. You can't just call it with an ("inplace string")

@@ -21,6 +21,7 @@ I've turned a lot of the ragel state machines into hard coded switch based state
 #include <string>
 #include <stdexcept>
 #include <functional>
+#include <vector>
 #include <sstream>
 #include <map>
 
@@ -32,7 +33,7 @@ I've turned a lot of the ragel state machines into hard coded switch based state
 namespace yajp {
 
 
-#line 45 "/home/matthew/projects/yajp/parser/json.rl"
+#line 46 "/home/matthew/projects/yajp/parser/json.rl"
 
 
 /// Allows lazy evaluation of number types
@@ -97,6 +98,7 @@ public:
 class JSONParser {
 public:
     enum JSONType { null='n', boolean='t', array='[', object='{', number='0', string='"', HIT_END=0, ERROR='x' };
+    typedef uint32_t UniChar; // 32 bit unicode characters max
 private:
     // Ragel vars
     const char *p;
@@ -162,6 +164,28 @@ private:
             if ((*test++) != (*p++))
                 handleError(std::string("Static String '") + test + "' doesn't match");
     }
+
+    /**
+     * Returns the number of bytes needed to encode a unicode character in utf8
+     */ 
+    int getNumBytes (UniChar c) {
+        int result = 1;
+        UniChar checker = 0x7f;
+        if (c <= checker)
+            return result;
+        checker <<= 4;
+        checker |= 0xf;
+        result += 1;
+        if (c <= checker)
+            return result;
+        while (c > checker) {
+            checker <<= 5;
+            checker |= 0x1f;
+            ++result;
+        }
+        return result;
+    }
+
 
 public:
     /// @param json - KEEP THIS STRING ALIVE .. WE DONT COPY IT .. WE USE IT .. You can't just call it with an ("inplace string")
@@ -263,16 +287,16 @@ public:
             return JSONNumberInfo(intIsNeg, intPart, expPart);
         };
         
-#line 275 "/home/matthew/projects/yajp/parser/json.rl"
+#line 299 "/home/matthew/projects/yajp/parser/json.rl"
         int startState = 
             
-#line 270 "/home/matthew/projects/yajp/parser/json.hpp"
+#line 294 "/home/matthew/projects/yajp/parser/json.hpp"
 1
-#line 277 "/home/matthew/projects/yajp/parser/json.rl"
+#line 301 "/home/matthew/projects/yajp/parser/json.rl"
         ;
         int cs = startState; // Current state
         
-#line 276 "/home/matthew/projects/yajp/parser/json.hpp"
+#line 300 "/home/matthew/projects/yajp/parser/json.hpp"
 	{
 	if ( p == pe )
 		goto _test_eof;
@@ -300,7 +324,7 @@ st2:
 	if ( ++p == pe )
 		goto _test_eof2;
 case 2:
-#line 304 "/home/matthew/projects/yajp/parser/json.hpp"
+#line 328 "/home/matthew/projects/yajp/parser/json.hpp"
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr2;
 	goto st0;
@@ -319,7 +343,7 @@ st6:
 	if ( ++p == pe )
 		goto _test_eof6;
 case 6:
-#line 323 "/home/matthew/projects/yajp/parser/json.hpp"
+#line 347 "/home/matthew/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 46: goto st3;
 		case 69: goto st4;
@@ -350,7 +374,7 @@ st7:
 	if ( ++p == pe )
 		goto _test_eof7;
 case 7:
-#line 354 "/home/matthew/projects/yajp/parser/json.hpp"
+#line 378 "/home/matthew/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 69: goto st4;
 		case 101: goto st4;
@@ -383,7 +407,7 @@ st5:
 	if ( ++p == pe )
 		goto _test_eof5;
 case 5:
-#line 387 "/home/matthew/projects/yajp/parser/json.hpp"
+#line 411 "/home/matthew/projects/yajp/parser/json.hpp"
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr5;
 	goto st0;
@@ -401,7 +425,7 @@ st8:
 	if ( ++p == pe )
 		goto _test_eof8;
 case 8:
-#line 405 "/home/matthew/projects/yajp/parser/json.hpp"
+#line 429 "/home/matthew/projects/yajp/parser/json.hpp"
 	if ( 48 <= (*p) && (*p) <= 57 )
 		goto tr5;
 	goto st0;
@@ -429,14 +453,14 @@ case 8:
         return makeJSONNumber();
     }
 	break;
-#line 433 "/home/matthew/projects/yajp/parser/json.hpp"
+#line 457 "/home/matthew/projects/yajp/parser/json.hpp"
 	}
 	}
 
 	_out: {}
 	}
 
-#line 281 "/home/matthew/projects/yajp/parser/json.rl"
+#line 305 "/home/matthew/projects/yajp/parser/json.rl"
 
         // The state machine returns, so the code will only get here if it can't parse the string
         if (gotAtLeastOneDigit)
@@ -448,18 +472,18 @@ case 8:
 
     std::string readString() {
         
-#line 292 "/home/matthew/projects/yajp/parser/json.rl"
+#line 316 "/home/matthew/projects/yajp/parser/json.rl"
         int startState = 
             
-#line 455 "/home/matthew/projects/yajp/parser/json.hpp"
+#line 479 "/home/matthew/projects/yajp/parser/json.hpp"
 1
-#line 294 "/home/matthew/projects/yajp/parser/json.rl"
+#line 318 "/home/matthew/projects/yajp/parser/json.rl"
         ;
         int cs = startState; // Current state
         unsigned long uniChar = 0;
         std::string output;
         
-#line 463 "/home/matthew/projects/yajp/parser/json.hpp"
+#line 487 "/home/matthew/projects/yajp/parser/json.hpp"
 	{
 	if ( p == pe )
 		goto _test_eof;
@@ -492,23 +516,41 @@ tr7:
 tr11:
 #line 21 "/home/matthew/projects/yajp/parser/string.rl"
 	{
-        // Encode it into utf-8
-        if (uniChar <= 0x7f) {
-            output += static_cast<unsigned char>(uniChar);
-        } else if (uniChar <= 0x7ff) {
-            output += (uniChar >> 6) | 0xC0; // 110 to indicate 2 byte encoding + 5 bits of data
-            output += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
-        } else if (uniChar <= 0xffff) {
-            output += (uniChar >> 12) | 0xE0; // 1110 to indicate 3 byte encoding + 4 bits of data
-            output += ((uniChar >> 6) & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
-            output += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
-        } else if (uniChar <= 0x10ffff) {
-            output += (uniChar >> 18) | 0xF0; // 11110 to indicate 4 byte encoding + 3 bits of data
-            output += ((uniChar >> 12) & 0x3f) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
-            output += ((uniChar >> 6) & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
-            output += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
+        /*
+           UCS-4 range (hex.)           UTF-8 octet sequence (binary)
+           0000 0000-0000 007F   0xxxxxxx
+           0000 0080-0000 07FF   110xxxxx 10xxxxxx
+           0000 0800-0000 FFFF   1110xxxx 10xxxxxx 10xxxxxx
+
+           0001 0000-001F FFFF   11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+           0020 0000-03FF FFFF   111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+           0400 0000-7FFF FFFF   1111110x 10xxxxxx ... 10xxxxxx
+        */
+        int numBytes = getNumBytes(uniChar); // number of bytes needed for utf-8 encoding
+        if (numBytes == 1) {
+            output += uniChar;
+        } else {
+            std::vector<char> bytes;
+            for (int i=1; i<numBytes; ++i) {
+                char byte = uniChar & 0x3f; // Only encoding 6 bits right now
+                byte |= 0x80; // Make sure the high bit is set
+                bytes.push_back(byte);
+                uniChar >>= 6;
+            }
+            // The last byte is special
+            char mask = 0x3f >> (numBytes - 2);
+            char byte = uniChar & mask;
+            char top = 0xc0;
+            for (int i=2; i<numBytes; ++i) {
+                top >>= 1;
+                top |= 0x80;
+            }
+            byte |= top;
+            bytes.push_back(byte);
+            // Output it
+            for (auto i=bytes.rbegin(); i!=bytes.rend(); ++i)
+                output += *i;
         }
-        // TODO: Handle unicode numbers with more than 3 digits
     }
 #line 9 "/home/matthew/projects/yajp/parser/string.rl"
 	{ output += *p; }
@@ -517,14 +559,14 @@ st1:
 	if ( ++p == pe )
 		goto _test_eof1;
 case 1:
-#line 521 "/home/matthew/projects/yajp/parser/json.hpp"
+#line 563 "/home/matthew/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 34: goto tr1;
 		case 92: goto st2;
 	}
 	goto tr0;
 tr1:
-#line 40 "/home/matthew/projects/yajp/parser/string.rl"
+#line 58 "/home/matthew/projects/yajp/parser/string.rl"
 	{
         ++p;
         return output;
@@ -533,25 +575,43 @@ tr1:
 tr12:
 #line 21 "/home/matthew/projects/yajp/parser/string.rl"
 	{
-        // Encode it into utf-8
-        if (uniChar <= 0x7f) {
-            output += static_cast<unsigned char>(uniChar);
-        } else if (uniChar <= 0x7ff) {
-            output += (uniChar >> 6) | 0xC0; // 110 to indicate 2 byte encoding + 5 bits of data
-            output += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
-        } else if (uniChar <= 0xffff) {
-            output += (uniChar >> 12) | 0xE0; // 1110 to indicate 3 byte encoding + 4 bits of data
-            output += ((uniChar >> 6) & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
-            output += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
-        } else if (uniChar <= 0x10ffff) {
-            output += (uniChar >> 18) | 0xF0; // 11110 to indicate 4 byte encoding + 3 bits of data
-            output += ((uniChar >> 12) & 0x3f) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
-            output += ((uniChar >> 6) & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
-            output += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
+        /*
+           UCS-4 range (hex.)           UTF-8 octet sequence (binary)
+           0000 0000-0000 007F   0xxxxxxx
+           0000 0080-0000 07FF   110xxxxx 10xxxxxx
+           0000 0800-0000 FFFF   1110xxxx 10xxxxxx 10xxxxxx
+
+           0001 0000-001F FFFF   11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+           0020 0000-03FF FFFF   111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+           0400 0000-7FFF FFFF   1111110x 10xxxxxx ... 10xxxxxx
+        */
+        int numBytes = getNumBytes(uniChar); // number of bytes needed for utf-8 encoding
+        if (numBytes == 1) {
+            output += uniChar;
+        } else {
+            std::vector<char> bytes;
+            for (int i=1; i<numBytes; ++i) {
+                char byte = uniChar & 0x3f; // Only encoding 6 bits right now
+                byte |= 0x80; // Make sure the high bit is set
+                bytes.push_back(byte);
+                uniChar >>= 6;
+            }
+            // The last byte is special
+            char mask = 0x3f >> (numBytes - 2);
+            char byte = uniChar & mask;
+            char top = 0xc0;
+            for (int i=2; i<numBytes; ++i) {
+                top >>= 1;
+                top |= 0x80;
+            }
+            byte |= top;
+            bytes.push_back(byte);
+            // Output it
+            for (auto i=bytes.rbegin(); i!=bytes.rend(); ++i)
+                output += *i;
         }
-        // TODO: Handle unicode numbers with more than 3 digits
     }
-#line 40 "/home/matthew/projects/yajp/parser/string.rl"
+#line 58 "/home/matthew/projects/yajp/parser/string.rl"
 	{
         ++p;
         return output;
@@ -561,7 +621,7 @@ st5:
 	if ( ++p == pe )
 		goto _test_eof5;
 case 5:
-#line 565 "/home/matthew/projects/yajp/parser/json.hpp"
+#line 625 "/home/matthew/projects/yajp/parser/json.hpp"
 	goto st0;
 st0:
 cs = 0;
@@ -569,30 +629,48 @@ cs = 0;
 tr13:
 #line 21 "/home/matthew/projects/yajp/parser/string.rl"
 	{
-        // Encode it into utf-8
-        if (uniChar <= 0x7f) {
-            output += static_cast<unsigned char>(uniChar);
-        } else if (uniChar <= 0x7ff) {
-            output += (uniChar >> 6) | 0xC0; // 110 to indicate 2 byte encoding + 5 bits of data
-            output += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
-        } else if (uniChar <= 0xffff) {
-            output += (uniChar >> 12) | 0xE0; // 1110 to indicate 3 byte encoding + 4 bits of data
-            output += ((uniChar >> 6) & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
-            output += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
-        } else if (uniChar <= 0x10ffff) {
-            output += (uniChar >> 18) | 0xF0; // 11110 to indicate 4 byte encoding + 3 bits of data
-            output += ((uniChar >> 12) & 0x3f) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
-            output += ((uniChar >> 6) & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
-            output += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
+        /*
+           UCS-4 range (hex.)           UTF-8 octet sequence (binary)
+           0000 0000-0000 007F   0xxxxxxx
+           0000 0080-0000 07FF   110xxxxx 10xxxxxx
+           0000 0800-0000 FFFF   1110xxxx 10xxxxxx 10xxxxxx
+
+           0001 0000-001F FFFF   11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+           0020 0000-03FF FFFF   111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+           0400 0000-7FFF FFFF   1111110x 10xxxxxx ... 10xxxxxx
+        */
+        int numBytes = getNumBytes(uniChar); // number of bytes needed for utf-8 encoding
+        if (numBytes == 1) {
+            output += uniChar;
+        } else {
+            std::vector<char> bytes;
+            for (int i=1; i<numBytes; ++i) {
+                char byte = uniChar & 0x3f; // Only encoding 6 bits right now
+                byte |= 0x80; // Make sure the high bit is set
+                bytes.push_back(byte);
+                uniChar >>= 6;
+            }
+            // The last byte is special
+            char mask = 0x3f >> (numBytes - 2);
+            char byte = uniChar & mask;
+            char top = 0xc0;
+            for (int i=2; i<numBytes; ++i) {
+                top >>= 1;
+                top |= 0x80;
+            }
+            byte |= top;
+            bytes.push_back(byte);
+            // Output it
+            for (auto i=bytes.rbegin(); i!=bytes.rend(); ++i)
+                output += *i;
         }
-        // TODO: Handle unicode numbers with more than 3 digits
     }
 	goto st2;
 st2:
 	if ( ++p == pe )
 		goto _test_eof2;
 case 2:
-#line 596 "/home/matthew/projects/yajp/parser/json.hpp"
+#line 674 "/home/matthew/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 98: goto tr3;
 		case 102: goto tr4;
@@ -632,7 +710,7 @@ st4:
 	if ( ++p == pe )
 		goto _test_eof4;
 case 4:
-#line 636 "/home/matthew/projects/yajp/parser/json.hpp"
+#line 714 "/home/matthew/projects/yajp/parser/json.hpp"
 	switch( (*p) ) {
 		case 34: goto tr12;
 		case 92: goto tr13;
@@ -657,7 +735,7 @@ case 4:
 	_out: {}
 	}
 
-#line 302 "/home/matthew/projects/yajp/parser/json.rl"
+#line 326 "/home/matthew/projects/yajp/parser/json.rl"
 
         // The state machine returns, so the code will only get here if it can't parse the string
         handleError("Couldn't read a string");

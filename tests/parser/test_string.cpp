@@ -103,6 +103,13 @@ BOOST_AUTO_TEST_CASE( unicode_euro ) {
     BOOST_CHECK_EQUAL(u8"This is \u20ac unicode", parser.readString());
 }
 
+BOOST_AUTO_TEST_CASE( unicode_kanbun ) {
+    std::string json("\"This is \\u319e unicode\"");
+    yajp::JSONParser parser(json);
+    BOOST_CHECK_EQUAL(parser.getNextType(), yajp::JSONParser::string);
+    BOOST_CHECK_EQUAL(u8"This is \u319e unicode", parser.readString());
+}
+
 BOOST_AUTO_TEST_CASE( unicode_square ) {
     std::string json("\"This is \\u20aC unicode\"");
     yajp::JSONParser parser(json);

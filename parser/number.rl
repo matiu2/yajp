@@ -50,8 +50,6 @@
     basic_int = ('-'?@setNegative).([0-9]+@recordInt)@recordInt;
     basic_float = (basic_int|'-'?.'0').'.'.([0-9]+)@recordDecimal;
     exponent = [eE].([+\-]?@setExpNeg).([0-9]+)@recordExponent;
-    #theEnd = ((,%gotNumberIfInObjOrArray) | (]%gotNumberIfInArray) | (}%gotNumberIfInObj))?
     number = (basic_int . (exponent?) | basic_float . (exponent?)) % gotNumber;
-    #main := number;
 
 }%%

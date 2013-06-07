@@ -19,23 +19,41 @@
             uniChar += ch - '0';
     }
     action endUnicode {
-        // Encode it into utf-8
-        if (uniChar <= 0x7f) {
-            output += static_cast<unsigned char>(uniChar);
-        } else if (uniChar <= 0x7ff) {
-            output += (uniChar >> 6) | 0xC0; // 110 to indicate 2 byte encoding + 5 bits of data
-            output += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
-        } else if (uniChar <= 0xffff) {
-            output += (uniChar >> 12) | 0xE0; // 1110 to indicate 3 byte encoding + 4 bits of data
-            output += ((uniChar >> 6) & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
-            output += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
-        } else if (uniChar <= 0x10ffff) {
-            output += (uniChar >> 18) | 0xF0; // 11110 to indicate 4 byte encoding + 3 bits of data
-            output += ((uniChar >> 12) & 0x3f) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
-            output += ((uniChar >> 6) & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
-            output += (uniChar & 0x3F) | 0x80; // 10 to indicate a byte in the sequence + 6 bits of data 
+        /*
+           UCS-4 range (hex.)           UTF-8 octet sequence (binary)
+           0000 0000-0000 007F   0xxxxxxx
+           0000 0080-0000 07FF   110xxxxx 10xxxxxx
+           0000 0800-0000 FFFF   1110xxxx 10xxxxxx 10xxxxxx
+
+           0001 0000-001F FFFF   11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+           0020 0000-03FF FFFF   111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+           0400 0000-7FFF FFFF   1111110x 10xxxxxx ... 10xxxxxx
+        */
+        int numBytes = getNumBytes(uniChar); // number of bytes needed for utf-8 encoding
+        if (numBytes == 1) {
+            output += uniChar;
+        } else {
+            std::vector<char> bytes;
+            for (int i=1; i<numBytes; ++i) {
+                char byte = uniChar & 0x3f; // Only encoding 6 bits right now
+                byte |= 0x80; // Make sure the high bit is set
+                bytes.push_back(byte);
+                uniChar >>= 6;
+            }
+            // The last byte is special
+            char mask = 0x3f >> (numBytes - 2);
+            char byte = uniChar & mask;
+            char top = 0xc0;
+            for (int i=2; i<numBytes; ++i) {
+                top >>= 1;
+                top |= 0x80;
+            }
+            byte |= top;
+            bytes.push_back(byte);
+            // Output it
+            for (auto i=bytes.rbegin(); i!=bytes.rend(); ++i)
+                output += *i;
         }
-        // TODO: Handle unicode numbers with more than 3 digits
     }
     action gotString {
         ++p;
